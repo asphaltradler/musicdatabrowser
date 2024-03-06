@@ -31,6 +31,18 @@ public class CityController {
 		}
 		return cities;
 	}
+	
+	@GetMapping("/add")
+	public String addCity(@RequestParam(value = "name", required = true) String name) {
+		int count = cityRepository.findByName(name).size();
+		City city = new City(name, false);
+		cityRepository.save(city);
+		if (count == 0) {
+			return name + " created";
+		} else {
+			return name + " added, already existed " + count + " times";
+		}
+	}
 
 	private void increaseAccessCounter(City city) {
 		city.setAccessCounter(city.getAccessCounter() + 1);
