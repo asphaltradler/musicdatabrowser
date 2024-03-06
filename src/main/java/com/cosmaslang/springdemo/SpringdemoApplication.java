@@ -3,8 +3,6 @@ package com.cosmaslang.springdemo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -68,7 +66,7 @@ public class SpringdemoApplication {
 		CityRepository cityRepository;
 		
 		@GetMapping("/city")
-		public List<City> getCities(@RequestParam(value = "name") String name) {
+		public List<City> getCities(@RequestParam(value = "name", required = false) String name) {
 			List<City> cities;
 			if (StringUtils.hasLength(name)) {
 				cities = cityRepository.findByName(name);
