@@ -59,15 +59,22 @@ public class SpringdemoApplication {
 		SaySomethingService service = context.getBean(SaySomethingService.class);
 		System.out.printf("SaySomethingService %s: %s\n", service.getClass().getName(), service.saySomething());
 		
-		CityRepository cityRepo = context.getBean(CityRepository.class);
-		if (cityRepo.findByName("Köln").size() == 0) {
-			City newCity = new City("Köln", false);
-			cityRepo.save(newCity);
-		}
+		CityRepository cityRepository = context.getBean(CityRepository.class);
+		createCity(cityRepository, "Berlin", true, true);
+		createCity(cityRepository, "Frankfurt", false, true);
+		createCity(cityRepository, "München", false, true);
 		
-		Iterable<City> allCities = cityRepo.findAll();
-		System.out.printf("CityRepository %s contains %d entries\n\n", cityRepo.getClass().getName(), cityRepo.count());
+		Iterable<City> allCities = cityRepository.findAll();
+		System.out.printf("CityRepository %s contains %d entries\n\n", cityRepository.getClass().getName(), cityRepository.count());
 		allCities.forEach(city -> System.out.printf("City: %s accessed %s times\n", city.getName(), city.getAccessCounter()));
+	}
+	
+	private static void createCity(CityRepository cityRepository, String name, boolean isCapital, boolean onlyCreateNew) {
+		if (!onlyCreateNew || cityRepository.findByName(name).size() == 0) {
+			City city = new City(name, isCapital);
+			cityRepository.save(city);
+		}
+
 	}
 
 }

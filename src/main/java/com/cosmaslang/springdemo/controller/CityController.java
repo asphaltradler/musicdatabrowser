@@ -36,4 +36,5 @@ public class CityController {
 		city.setAccessCounter(city.getAccessCounter() + 1);
 		cityRepository.save(city);
 	}
+	
 }
