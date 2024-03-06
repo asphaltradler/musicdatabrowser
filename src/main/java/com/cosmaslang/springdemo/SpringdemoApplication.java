@@ -1,10 +1,5 @@
 package com.cosmaslang.springdemo;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,10 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.cosmaslang.springdemo.db.CityRepository;
 import com.cosmaslang.springdemo.db.entities.City;
@@ -48,37 +39,6 @@ public class SpringdemoApplication {
 		}
 	}
 	
-	@RestController
-	public class SaySomethingController {
-		@Autowired
-		@Qualifier("sayHelloService")
-		SaySomethingService service;
-		
-		@GetMapping("/")
-		public String root() {
-			return service.saySomething();
-		}
-	}
-	
-	@RestController
-	public class CityController {
-		@Autowired
-		CityRepository cityRepository;
-		
-		@GetMapping("/city")
-		public List<City> getCities(@RequestParam(value = "name", required = false) String name) {
-			List<City> cities;
-			if (StringUtils.hasLength(name)) {
-				cities = cityRepository.findByName(name);
-			} else {
-				Iterator<City> allCities = cityRepository.findAll().iterator();
-				cities = new ArrayList<City>();
-				allCities.forEachRemaining(cities::add);
-			}
-			return cities;
-		}
-	}
-	
 	public class SaySomethingConfigurableService implements SaySomethingService {
 		private String whatToSay;
 		
@@ -99,16 +59,15 @@ public class SpringdemoApplication {
 		SaySomethingService service = context.getBean(SaySomethingService.class);
 		System.out.printf("SaySomethingService %s: %s\n", service.getClass().getName(), service.saySomething());
 		
-		//City berlin = new City("Berlin", true);
-		//City mainz = new City("Mainz", false);
-		
 		CityRepository cityRepo = context.getBean(CityRepository.class);
-		//cityRepo.save(berlin);
-		//cityRepo.save(mainz);
+		if (cityRepo.findByName("Köln").size() == 0) {
+			City newCity = new City("Köln", false);
+			cityRepo.save(newCity);
+		}
+		
 		Iterable<City> allCities = cityRepo.findAll();
 		System.out.printf("CityRepository %s contains %d entries\n\n", cityRepo.getClass().getName(), cityRepo.count());
-		allCities.forEach(city -> System.out.printf("City: %s\n", city.getName()));
-		
+		allCities.forEach(city -> System.out.printf("City: %s accessed %s times\n", city.getName(), city.getAccessCounter()));
 	}
 
 }
