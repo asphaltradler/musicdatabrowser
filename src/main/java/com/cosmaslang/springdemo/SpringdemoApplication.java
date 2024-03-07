@@ -77,7 +77,7 @@ public class SpringdemoApplication {
 		
 		Iterable<City> allCities = cityRepository.findAll();
 		System.out.printf("CityRepository %s contains %d entries\n\n", cityRepository.getClass().getName(), cityRepository.count());
-		allCities.forEach(city -> System.out.printf("City: %s accessed %s times\n", city.getName(), city.getCount()));
+		allCities.forEach(city -> System.out.printf("City: %s count=%s\n", city.getName(), city.getCount()));
 	}
 	
 	private static void createCity(CityRepository cityRepository, String name, boolean isCapital, boolean onlyCreateNew) {

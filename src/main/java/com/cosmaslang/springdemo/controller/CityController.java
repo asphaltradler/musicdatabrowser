@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +39,6 @@ public class CityController {
 			cities = cityRepository.findByName(name);
 		} else if (id != null) {
 			cities = Collections.singletonList(cityRepository.findById(id).orElse(null));
-			//cities.forEach(this::increaseCount);
 		} else if (count != null) {
 			cities = cityRepository.findByCount(count);
 		} else {
@@ -89,6 +89,23 @@ public class CityController {
 		String result = city.getName() + " added, count=" +city.getCount();
 		System.out.println(result);
 		return result;
+	}
+	
+	@DeleteMapping("/remove")
+	public String removeCity(@RequestParam(value = "name", required = true) String name) {
+		List<City> cities = cityRepository.findByName(name);
+		if (!cities.isEmpty()) {
+			City city = cities.get(0);
+			if (city.getCount() > 0) {
+				city.setCount(city.getCount() - 1 );
+				cityRepository.save(city);
+				return city.getName() + " removed, remaining=" + city.getCount();
+			} else {
+				cityRepository.delete(city);
+				return city.getName() + " removed, none remaining";
+			}
+		}
+		return "City " + name + " not found!";
 	}
 	
 }
