@@ -13,7 +13,7 @@ public class City {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	private long accessCounter;
+	private long count;
 	private String name;
 	private boolean isCapital;
 	
@@ -24,6 +24,10 @@ public class City {
 	public City(String name, boolean isCapital) {
 		this.name = name;
 		this.isCapital = isCapital;
+	}
+	
+	public Long getId() {
+		return id;
 	}
 	
 	public String getName() {
@@ -42,12 +46,12 @@ public class City {
 		this.isCapital = isCapital;
 	}
 	
-	public long getAccessCounter() {
-		return accessCounter;
+	public long getCount() {
+		return count;
 	}
 
-	public void setAccessCounter(long accessCounter) {
-		this.accessCounter = accessCounter;
+	public void setCount(long accessCounter) {
+		this.count = accessCounter;
 	}
 
 }
