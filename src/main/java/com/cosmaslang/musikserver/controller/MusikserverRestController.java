@@ -4,6 +4,7 @@ import com.cosmaslang.musikserver.db.entities.Album;
 import com.cosmaslang.musikserver.db.entities.Genre;
 import com.cosmaslang.musikserver.db.entities.Komponist;
 import com.cosmaslang.musikserver.db.entities.Track;
+import com.cosmaslang.musikserver.db.repositories.AlbumRepository;
 import com.cosmaslang.musikserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikserver.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class MusikserverRestController {
 	@Autowired
 	TrackRepository trackRepository;
 	@Autowired
-	NamedEntityRepository<Album> albumRepository;
+	AlbumRepository albumRepository;
 	@Autowired
 	NamedEntityRepository<Komponist> komponistRepository;
 	@Autowired
@@ -33,12 +34,21 @@ public class MusikserverRestController {
 	@RequestMapping(value = "/track/get", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<Track> getTracks(@RequestParam(required = false) String title,
 			@RequestParam(required = false) String album,
+			@RequestParam(required = false) String komponist,
+			@RequestParam(required = false) String werk,
+			@RequestParam(required = false) String genre,
 			@RequestParam(required = false) Long id) {
 		List<Track> tracks;
 		if (StringUtils.hasLength(title)) {
 			tracks = trackRepository.findByTitle(title);
-		/*} else if (album != null) {
-			tracks = trackRepository.findByAlbum(album);*/
+		} else if (album != null) {
+			tracks = trackRepository.findByAlbumLike(album);
+		} else if (komponist != null) {
+			tracks = trackRepository.findByKomponist(komponist);
+		} else if (werk != null) {
+			tracks = trackRepository.findByWerkLike(werk);
+		} else if (genre != null) {
+			tracks = trackRepository.findByGenre(genre);
 		} else if (id != null) {
 			tracks = Collections.singletonList(trackRepository.findById(id).orElse(null));
 		} else {
@@ -86,26 +96,28 @@ public class MusikserverRestController {
 		return "Track " + id + " not found!";
 	}
 
-	/*
 	@RequestMapping(value = "/album/get", method = { RequestMethod.GET, RequestMethod.POST })
-	public List<Track> getAlbumBy(@RequestParam(required = false) String komponist,
+	public List<Album> getAlben(@RequestParam(required = false) String album,
+								 @RequestParam(required = false) String komponist,
 								 @RequestParam(required = false) String werk,
-								 @RequestParam(required = false) String genre) {
+								 @RequestParam(required = false) String genre,
+								 @RequestParam(required = false) Long id) {
 		List<Album> alben;
-		if (StringUtils.hasLength(komponist)) {
-			Komponist k = komponistRepository.findByName(komponist);
-			trackRepository
-			alben = komponistRepository.findByName(;
-		} else if (album != null) {
-			tracks = trackRepository.findByAlbum(album);
+		if (album != null) {
+			alben = Collections.singletonList(albumRepository.findByName(album));
+		} else if (komponist != null) {
+			alben = albumRepository.findByKomponist(komponist);
+		} else if (werk != null) {
+			alben = albumRepository.findByWerkLike(werk);
+		} else if (genre != null) {
+			alben = albumRepository.findByGenre(genre);
 		} else if (id != null) {
-			tracks = Collections.singletonList(trackRepository.findById(id).orElse(null));
+			alben = Collections.singletonList(albumRepository.findById(id).orElse(null));
 		} else {
-			Iterator<Track> allTracks = trackRepository.findAll().iterator();
-			tracks = new ArrayList<Track>();
-			allTracks.forEachRemaining(tracks::add);
+			Iterator<Album> allAlben = albumRepository.findAll().iterator();
+			alben = new ArrayList<>();
+			allAlben.forEachRemaining(alben::add);
 		}
-		return tracks;
+		return alben;
 	}
-*/
 }
