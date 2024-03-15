@@ -4,5 +4,5 @@ import com.cosmaslang.musikserver.db.entities.Album;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AlbumRepository extends NamedRepository<Album> {
+public interface AlbumRepository extends NamedEntityRepository<Album> {
 }

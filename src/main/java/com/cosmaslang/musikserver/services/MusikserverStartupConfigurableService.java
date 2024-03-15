@@ -2,8 +2,10 @@ package com.cosmaslang.musikserver.services;
 
 import com.cosmaslang.musikserver.MusikScanner;
 import com.cosmaslang.musikserver.db.entities.*;
-import com.cosmaslang.musikserver.db.repositories.NamedRepository;
+import com.cosmaslang.musikserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikserver.db.repositories.TrackRepository;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.List;
@@ -31,15 +34,15 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
     @Autowired
     TrackRepository trackRepository;
     @Autowired
-    NamedRepository<Interpret> interpretRepository;
+    NamedEntityRepository<Interpret> interpretRepository;
     @Autowired
-    NamedRepository<Album> albumRepository;
+    NamedEntityRepository<Album> albumRepository;
     @Autowired
-    NamedRepository<Werk> werkRepository;
+    NamedEntityRepository<Werk> werkRepository;
     @Autowired
-    NamedRepository<Genre> genreRepository;
+    NamedEntityRepository<Genre> genreRepository;
     @Autowired
-    NamedRepository<Komponist> komponistRepository;
+    NamedEntityRepository<Komponist> komponistRepository;
 
     private File rootDirFile;
     private int rootPathSteps;
@@ -65,7 +68,7 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
 
     private Track createTrack(AudioFile audioFile) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Path filepath = audioFile.getFile().toPath();
-        String path = filepath.subpath(rootPathSteps, filepath.getNameCount()).toString();
+        String path = filepath.subpath(rootPathSteps, filepath.getNameCount()).toString().replace('\\', '/');
         Track track = trackRepository.findByPath(path);
         if (track == null) {
             track = new Track();
@@ -135,7 +138,7 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
      * Generische Erzeugung der richtigen Klasse, falls in der zugeordneten Repository nicht gefunden.
      * Leider nicht möglich, das Repository direkt aus der Klasse herzuleiten
      */
-    private <T extends NamedEntity> T createEntity(Class<T> clazz, NamedRepository<T> repo,
+    private <T extends NamedEntity> T createEntity(Class<T> clazz, NamedEntityRepository<T> repo,
                                                    String name) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         T entity = repo.findByName(name);
         if (entity == null) {

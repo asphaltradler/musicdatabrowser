@@ -4,5 +4,5 @@ import com.cosmaslang.musikserver.db.entities.Komponist;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface KomponistRepository extends NamedRepository<Komponist> {
+public interface KomponistRepository extends NamedEntityRepository<Komponist> {
 }

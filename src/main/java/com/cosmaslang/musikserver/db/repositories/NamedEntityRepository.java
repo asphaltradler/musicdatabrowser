@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface NamedRepository<T> extends CrudRepository<T, Long> {
+public interface NamedEntityRepository<T> extends CrudRepository<T, Long> {
     T findByName(String name);
 }

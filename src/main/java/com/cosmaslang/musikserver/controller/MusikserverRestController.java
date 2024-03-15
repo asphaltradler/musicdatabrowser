@@ -4,7 +4,7 @@ import com.cosmaslang.musikserver.db.entities.Album;
 import com.cosmaslang.musikserver.db.entities.Genre;
 import com.cosmaslang.musikserver.db.entities.Komponist;
 import com.cosmaslang.musikserver.db.entities.Track;
-import com.cosmaslang.musikserver.db.repositories.NamedRepository;
+import com.cosmaslang.musikserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikserver.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,11 +24,11 @@ public class MusikserverRestController {
 	@Autowired
 	TrackRepository trackRepository;
 	@Autowired
-	NamedRepository<Album> albumRepository;
+	NamedEntityRepository<Album> albumRepository;
 	@Autowired
-	NamedRepository<Komponist> komponistRepository;
+	NamedEntityRepository<Komponist> komponistRepository;
 	@Autowired
-	NamedRepository<Genre> genreRepository;
+	NamedEntityRepository<Genre> genreRepository;
 
 	@RequestMapping(value = "/track/get", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<Track> getTracks(@RequestParam(required = false) String title,
