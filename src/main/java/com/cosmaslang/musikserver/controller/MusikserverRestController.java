@@ -1,31 +1,19 @@
 package com.cosmaslang.musikserver.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.logging.Logger;
-
-import com.cosmaslang.musikserver.db.repositories.AlbumRepository;
-import com.cosmaslang.musikserver.db.repositories.GenreRepository;
-import com.cosmaslang.musikserver.db.repositories.KomponistRepository;
+import com.cosmaslang.musikserver.db.entities.Album;
+import com.cosmaslang.musikserver.db.entities.Genre;
+import com.cosmaslang.musikserver.db.entities.Komponist;
+import com.cosmaslang.musikserver.db.entities.Track;
+import com.cosmaslang.musikserver.db.repositories.NamedRepository;
+import com.cosmaslang.musikserver.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cosmaslang.musikserver.db.repositories.TrackRepository;
-import com.cosmaslang.musikserver.db.entities.Track;
+import java.util.*;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/musik")
@@ -36,11 +24,11 @@ public class MusikserverRestController {
 	@Autowired
 	TrackRepository trackRepository;
 	@Autowired
-	AlbumRepository albumRepository;
+	NamedRepository<Album> albumRepository;
 	@Autowired
-	KomponistRepository komponistRepository;
+	NamedRepository<Komponist> komponistRepository;
 	@Autowired
-	GenreRepository genreRepository;
+	NamedRepository<Genre> genreRepository;
 
 	@RequestMapping(value = "/track/get", method = { RequestMethod.GET, RequestMethod.POST })
 	public List<Track> getTracks(@RequestParam(required = false) String title,

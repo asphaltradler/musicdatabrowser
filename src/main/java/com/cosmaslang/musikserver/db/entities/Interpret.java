@@ -2,10 +2,6 @@ package com.cosmaslang.musikserver.db.entities;
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
 @Entity
 @Table(name = "interpret")
 public class Interpret extends NamedEntity {

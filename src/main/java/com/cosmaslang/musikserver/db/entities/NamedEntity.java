@@ -1,7 +1,5 @@
 package com.cosmaslang.musikserver.db.entities;
 
-import com.fasterxml.jackson.databind.util.Named;
-
 import java.util.Objects;
 
 public abstract class NamedEntity {

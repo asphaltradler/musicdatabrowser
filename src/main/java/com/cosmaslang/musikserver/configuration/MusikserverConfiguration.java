@@ -2,7 +2,6 @@ package com.cosmaslang.musikserver.configuration;
 
 import com.cosmaslang.musikserver.services.MusikserverStartupConfigurableService;
 import com.cosmaslang.musikserver.services.MusikserverStartupService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
