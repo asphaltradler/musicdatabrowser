@@ -21,5 +21,8 @@ public abstract class NamedEntity {
         return Objects.hash(getName());
     }
 
-
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
