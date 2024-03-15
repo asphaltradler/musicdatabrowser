@@ -8,19 +8,19 @@ import jakarta.persistence.Id;
 @Entity
 //@Table(name = "work")
 public class Werk extends NamedEntity {
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Id
-	long id;
-	//muss man leider hier drin definieren, sonst wird es nicht gefunden
-	private String name;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    long id;
+    //muss man leider hier drin definieren, sonst wird es nicht gefunden
+    private String name;
 
-	@Override
-	public String getName() {
-		return name;
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
 }

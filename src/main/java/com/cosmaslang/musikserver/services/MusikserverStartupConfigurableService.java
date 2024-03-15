@@ -4,8 +4,6 @@ import com.cosmaslang.musikserver.MusikScanner;
 import com.cosmaslang.musikserver.db.entities.*;
 import com.cosmaslang.musikserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikserver.db.repositories.TrackRepository;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.List;
@@ -116,7 +113,7 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
         //ManyToMany Zuordnung
         List<TagField> tagFields = tag.getFields(FieldKey.ARTIST);
         if (tagFields != null) {
-            for (TagField field: tagFields) {
+            for (TagField field : tagFields) {
                 Interpret interpret = createEntity(Interpret.class, interpretRepository, field.toString());
                 track.addInterpret(interpret);
             }
@@ -171,7 +168,7 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
     }
 
     @Override
-    public void start()  {
+    public void start() {
         try {
             scanMusikdirectory();
         } catch (FileNotFoundException e) {

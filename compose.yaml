@@ -21,9 +21,9 @@ services:
     volumes:
       - db-volume:/var/lib/postgresql/data
       #- /F/Cosmas/Musikarchiv:/usr/src/app/Musikarchiv
-      -  /C/Users/CosmasLang/Music:/usr/src/app/Musikarchiv
+      - /C/Users/CosmasLang/Music:/usr/src/app/Musikarchiv
     environment:
-#      POSTGRES_USER: postgres
+      #      POSTGRES_USER: postgres
       POSTGRES_PASSWORD_FILE: /run/secrets/database-password
       #benutze lokale Datenbank mit IP aus ipconfig
       #SPRING_DATASOURCE_URL: jdbc:postgresql://192.168.0.86:5432/musik
@@ -31,11 +31,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/musik
       #SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/musik
 
-#    networks:
-#      - bridgenet
-      
+      #    networks:
+      #      - bridgenet
+
   database:
-  # default-docker-3rdparty.bahnhub.tech.rz.db.de/postgres
+    # default-docker-3rdparty.bahnhub.tech.rz.db.de/postgres
     image: postgres
     restart: always
     user: postgres
@@ -50,21 +50,21 @@ services:
     ports:
       - 5432:5432
     healthcheck:
-       test: [ "CMD", "pg_isready" ]
-       interval: 10s
-       timeout: 5s
-       retries: 5
-#    networks:
-#      - bridgenet
-       
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      #    networks:
+      #      - bridgenet
+
 #networks:
 #  bridgenet:
 #    driver: bridge
 
 volumes:
-   db-volume:
-   
+  db-volume:
+
 secrets:
-   database-password:
-     file: database/password.txt
+  database-password:
+    file: database/password.txt
 

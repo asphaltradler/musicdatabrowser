@@ -7,10 +7,10 @@ import jakarta.persistence.Id;
 
 @Entity
 public class AlbumArt {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	long id;
-	
-	String imageName;
-	String embeddedImage;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    long id;
+
+    String imageName;
+    String embeddedImage;
 }
