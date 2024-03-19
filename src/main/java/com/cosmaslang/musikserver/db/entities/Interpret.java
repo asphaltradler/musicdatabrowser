@@ -3,7 +3,6 @@ package com.cosmaslang.musikserver.db.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "interpret")
 public class Interpret extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id

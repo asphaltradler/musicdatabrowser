@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 //@Table(name = "track")
 public class Track {
 
+    public static final String FIELDKEY_ORGANIZATION = "ORGANIZATION";
+    public static final String FIELDKEY_WORK = "WORK";
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
@@ -24,9 +27,6 @@ public class Track {
     @JoinColumn(name = "komponist_id")
     private Komponist komponist;
     @ManyToOne(cascade = {CascadeType.MERGE})
-    @JoinColumn(name = "genre_id")
-    private Genre genre;
-    @ManyToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "werk_id")
     private Werk werk;
     //EAGER ist hier wichtig!
@@ -35,7 +35,13 @@ public class Track {
             name = "interpreten_tracks",
             joinColumns = @JoinColumn(name = "track_id"),
             inverseJoinColumns = @JoinColumn(name = "interpret_id"))
-    Set<Interpret> interpreten = new HashSet<>();
+    private Set<Interpret> interpreten = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "genre_tracks",
+            joinColumns = @JoinColumn(name = "track_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    private Set<Genre> genres = new HashSet<>();
     private String publisher;
     private String comment;
 
@@ -56,6 +62,7 @@ public class Track {
     }
 
     private Integer lengthInSeconds;
+    private Long size;
     private String encoding;
     private Integer samplerate;
     private Integer bitsPerSample;
@@ -112,12 +119,16 @@ public class Track {
         this.komponist = komponist;
     }
 
-    public Genre getGenre() {
-        return genre;
+    public Set<Genre> getGenres() {
+        return genres;
     }
 
-    public void setGenre(Genre genre) {
-        this.genre = genre;
+    public void setGenres(Set<Genre> genres) {
+        this.genres = genres;
+    }
+
+    public void addGenre(Genre genre) {
+        this.genres.add(genre);
     }
 
     public String getPublisher() {
@@ -159,6 +170,15 @@ public class Track {
     public void setBitsPerSample(Integer bitrate) {
         this.bitsPerSample = bitrate;
     }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long length) {
+        this.size = length;
+    }
+
 
     @Override
     public String toString() {

@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-//@Table(name = "album")
 public class Komponist extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id

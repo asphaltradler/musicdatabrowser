@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MusikserverApplication -noreload" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="dev" />
+    <module name="springdemo" />
+    <option name="PROGRAM_PARAMETERS" value="-noreload" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.cosmaslang.musikserver.MusikserverApplication" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.cosmaslang.musikserver.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

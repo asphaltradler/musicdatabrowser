@@ -20,6 +20,9 @@ public class MusikserverConfiguration {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private String rootdir;
 
+    /**
+     * Automatisch gesetzt aus application.properties
+     */
     public void setRootdir(String rootdir) {
         logger.info("setting root Directory=" + rootdir);
         this.rootdir = rootdir;

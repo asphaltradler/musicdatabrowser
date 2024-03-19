@@ -1,15 +1,12 @@
 package com.cosmaslang.musikserver.controller;
 
-import com.cosmaslang.musikserver.db.entities.Album;
-import com.cosmaslang.musikserver.db.entities.Genre;
-import com.cosmaslang.musikserver.db.entities.Komponist;
-import com.cosmaslang.musikserver.db.entities.Track;
+import com.cosmaslang.musikserver.db.entities.*;
 import com.cosmaslang.musikserver.db.repositories.AlbumRepository;
 import com.cosmaslang.musikserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikserver.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -30,6 +27,8 @@ public class MusikserverRestController {
     NamedEntityRepository<Komponist> komponistRepository;
     @Autowired
     NamedEntityRepository<Genre> genreRepository;
+    @Autowired
+    NamedEntityRepository<Interpret> interpretRepository;
 
     @RequestMapping(value = "/track/get", method = {RequestMethod.GET, RequestMethod.POST})
     public List<Track> getTracks(@RequestParam(required = false) String title,
@@ -37,9 +36,10 @@ public class MusikserverRestController {
                                  @RequestParam(required = false) String komponist,
                                  @RequestParam(required = false) String werk,
                                  @RequestParam(required = false) String genre,
+                                 @RequestParam(required = false) String interpret,
                                  @RequestParam(required = false) Long id) {
         List<Track> tracks;
-        if (StringUtils.hasLength(title)) {
+        if (title != null) {
             tracks = trackRepository.findByTitle(title);
         } else if (album != null) {
             tracks = trackRepository.findByAlbumLike(album);
@@ -48,12 +48,16 @@ public class MusikserverRestController {
         } else if (werk != null) {
             tracks = trackRepository.findByWerkLike(werk);
         } else if (genre != null) {
-            tracks = trackRepository.findByGenre(genre);
-        } else if (id != null) {
-            tracks = Collections.singletonList(trackRepository.findById(id).orElse(null));
+            List<Genre> genres = genreRepository.findByNameContaining(genre);
+            tracks = trackRepository.findByGenresIsIn(new HashSet<>(genres));
+        } else if (interpret != null) {
+            List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
+            tracks = trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
+         } else if (id != null) {
+            tracks = getEntityIfExists(id, trackRepository);
         } else {
             Iterator<Track> allTracks = trackRepository.findAll().iterator();
-            tracks = new ArrayList<Track>();
+            tracks = new ArrayList<>();
             allTracks.forEachRemaining(tracks::add);
         }
         return tracks;
@@ -87,7 +91,7 @@ public class MusikserverRestController {
     }
 
     @DeleteMapping("/track/remove")
-    public String removeTrack(@RequestParam(required = true) Long id) {
+    public String removeTrack(@RequestParam() Long id) {
         Optional<Track> track = trackRepository.findById(id);
         if (track.isPresent()) {
             trackRepository.delete(track.get());
@@ -101,6 +105,7 @@ public class MusikserverRestController {
                                 @RequestParam(required = false) String komponist,
                                 @RequestParam(required = false) String werk,
                                 @RequestParam(required = false) String genre,
+                                @RequestParam(required = false) String interpret,
                                 @RequestParam(required = false) Long id) {
         List<Album> alben;
         if (album != null) {
@@ -110,14 +115,26 @@ public class MusikserverRestController {
         } else if (werk != null) {
             alben = albumRepository.findByWerkLike(werk);
         } else if (genre != null) {
-            alben = albumRepository.findByGenre(genre);
+            List<Genre> genres = genreRepository.findByNameContaining(genre);
+            List<Track> tracks = trackRepository.findByGenresIsIn(new HashSet<>(genres));
+            alben = tracks.stream().map(Track::getAlbum).distinct().toList();
+            //alben = albumRepository.findByGenre(new HashSet<>(genres));
+        } else if (interpret != null) {
+            List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
+            List<Track> tracks = trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
+            alben = tracks.stream().map(Track::getAlbum).distinct().toList();
         } else if (id != null) {
-            alben = Collections.singletonList(albumRepository.findById(id).orElse(null));
+            alben = getEntityIfExists(id, albumRepository);
         } else {
             Iterator<Album> allAlben = albumRepository.findAll().iterator();
             alben = new ArrayList<>();
             allAlben.forEachRemaining(alben::add);
         }
         return alben;
+    }
+
+    private <T> List<T> getEntityIfExists(Long id, CrudRepository<T, Long> repository) {
+        Optional<T> entity = repository.findById(id);
+        return entity.map(Collections::singletonList).orElse(Collections.emptyList());
     }
 }

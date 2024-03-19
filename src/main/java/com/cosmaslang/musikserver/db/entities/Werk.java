@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-//@Table(name = "work")
 public class Werk extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id

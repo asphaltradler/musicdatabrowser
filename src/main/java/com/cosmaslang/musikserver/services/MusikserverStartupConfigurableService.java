@@ -94,18 +94,12 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
             Album album = createEntity(Album.class, albumRepository, tagField.toString());
             track.setAlbum(album);
         }
-        //TODO many2many
-        tagField = tag.getFirstField(FieldKey.GENRE);
-        if (tagField != null) {
-            Genre genre = createEntity(Genre.class, genreRepository, tagField.toString());
-            track.setGenre(genre);
-        }
         tagField = tag.getFirstField(FieldKey.COMPOSER);
         if (tagField != null) {
             Komponist komponist = createEntity(Komponist.class, komponistRepository, tagField.toString());
             track.setKomponist(komponist);
         }
-        tagField = tag.getFirstField("WORK");
+        tagField = tag.getFirstField(Track.FIELDKEY_WORK);
         if (tagField != null) {
             Werk werk = createEntity(Werk.class, werkRepository, tagField.toString());
             track.setWerk(werk);
@@ -118,16 +112,26 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
                 track.addInterpret(interpret);
             }
         }
+        //ManyToMany Zuordnung
+        tagFields = tag.getFields(FieldKey.GENRE);
+        if (tagFields != null) {
+            for (TagField field : tagFields) {
+                Genre genre = createEntity(Genre.class, genreRepository, field.toString());
+                track.addGenre(genre);
+            }
+        }
 
         track.setComment(tag.getFirst(FieldKey.COMMENT));
-        track.setPublisher(tag.getFirst("ORGANIZATION"));
+        track.setPublisher(tag.getFirst(Track.FIELDKEY_ORGANIZATION));
 
         AudioHeader header = audioFile.getAudioHeader();
         track.setBitsPerSample(header.getBitsPerSample());
         track.setSamplerate(header.getSampleRateAsNumber());
         track.setEncoding(header.getEncodingType());
         track.setLengthInSeconds(header.getTrackLength());
-
+        //Long samples = header.getNoOfSamples();
+        //Long length = header.getAudioDataLength();
+        track.setSize(audioFile.getFile().length());
         return track;
     }
 
@@ -152,11 +156,6 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
         allTracks.forEach(System.out::println);
         System.out.printf("MusikRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres\n",
                 trackRepository.count(), albumRepository.count(), komponistRepository.count(), werkRepository.count(), genreRepository.count());
-    }
-
-    @Override
-    public String getRootDir() {
-        return rootDirFile.getName();
     }
 
     /**
