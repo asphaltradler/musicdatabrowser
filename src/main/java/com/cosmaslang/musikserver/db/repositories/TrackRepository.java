@@ -22,7 +22,7 @@ public interface TrackRepository extends CrudRepository<Track, Long> {
     @Query("SELECT t FROM Track t WHERE t.komponist.name = :komponist")
     List<Track> findByKomponist(String komponist);
 
-    @Query("select t from Track t join fetch t.genres g where g.name like %:genre%")
+    @Query("select t from Track t join fetch t.genres g where g.name ilike %:genre%")
     List<Track> findByGenreLike(String genre);
     //@Query("SELECT t FROM Track t JOIN genre_tracks gt ON t.genres  WHERE g IN (SELECT g FROM Genre where g.name = :genre)")
     List<Track> findByGenres(Genre genre);
@@ -31,11 +31,11 @@ public interface TrackRepository extends CrudRepository<Track, Long> {
 //    @Query("select t from Track t where t.id in" +
 //            " (select it.track_id from interpreten_tracks it where it.interpret_id in" +
 //            " (select i.id from Interpret i where i.name like %:interpret%))")
-    @Query("select t from Track t join fetch t.interpreten i where i.name like %:interpret%")
+    @Query("select t from Track t join fetch t.interpreten i where i.name ilike %:interpret%")
     List<Track> findByInterpretenLike(String interpret);
     List<Track> findByInterpreten(Interpret interpret);
     List<Track> findByInterpretenIsIn(Set<Interpret> interpreten);
 
-    @Query("SELECT t FROM Track t WHERE t.werk.name LIKE %:werk%")
+    @Query("SELECT t FROM Track t WHERE t.werk.name ILIKE %:werk%")
     List<Track> findByWerkLike(String werk);
 }

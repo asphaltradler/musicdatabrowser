@@ -32,6 +32,6 @@ public interface AlbumRepository extends NamedEntityRepository<Album> {
             "FROM Album a " +
             "JOIN Track t " +
             "ON a.id = t.album.id " +
-            "WHERE t.werk.name like %:werk%")
+            "WHERE t.werk.name ilike %:werk%")
     List<Album> findByWerkLike(String werk);
 }
