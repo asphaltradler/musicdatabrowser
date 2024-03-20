@@ -48,11 +48,12 @@ public class MusikserverRestController {
         } else if (werk != null) {
             tracks = trackRepository.findByWerkLike(werk);
         } else if (genre != null) {
-            List<Genre> genres = genreRepository.findByNameContaining(genre);
-            tracks = trackRepository.findByGenresIsIn(new HashSet<>(genres));
+            //List<Genre> genres = genreRepository.findByNameContaining(genre);
+            tracks = trackRepository.findByGenreLike(genre); //.findByGenresIsIn(new HashSet<>(genres));
         } else if (interpret != null) {
-            List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
-            tracks = trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
+            //List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
+            //tracks = trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
+            tracks = trackRepository.findByInterpretenLike(interpret);
          } else if (id != null) {
             tracks = getEntityIfExists(id, trackRepository);
         } else {
@@ -93,6 +94,7 @@ public class MusikserverRestController {
     @DeleteMapping("/track/remove")
     public String removeTrack(@RequestParam() Long id) {
         Optional<Track> track = trackRepository.findById(id);
+        //TODO was passiert mit Referenzen in interpreten_tracks usw.?
         if (track.isPresent()) {
             trackRepository.delete(track.get());
             return track + " removed";
@@ -115,13 +117,15 @@ public class MusikserverRestController {
         } else if (werk != null) {
             alben = albumRepository.findByWerkLike(werk);
         } else if (genre != null) {
-            List<Genre> genres = genreRepository.findByNameContaining(genre);
-            List<Track> tracks = trackRepository.findByGenresIsIn(new HashSet<>(genres));
+//            List<Genre> genres = genreRepository.findByNameContaining(genre);
+//            List<Track> tracks = trackRepository.findByGenresIsIn(new HashSet<>(genres));
+            List<Track> tracks = trackRepository.findByGenreLike(genre);
             alben = tracks.stream().map(Track::getAlbum).distinct().toList();
-            //alben = albumRepository.findByGenre(new HashSet<>(genres));
+            //alben = albumRepository.findByGenreLike(genre);
         } else if (interpret != null) {
-            List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
-            List<Track> tracks = trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
+            //List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
+            //List<Track> tracks = trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
+            List<Track> tracks = trackRepository.findByInterpretenLike(interpret);
             alben = tracks.stream().map(Track::getAlbum).distinct().toList();
         } else if (id != null) {
             alben = getEntityIfExists(id, albumRepository);
@@ -131,6 +135,17 @@ public class MusikserverRestController {
             allAlben.forEachRemaining(alben::add);
         }
         return alben;
+    }
+
+    @DeleteMapping("/album/remove")
+    public String removeAlbum(@RequestParam() Long id) {
+        //TODO zugehörige Tracks entfernen
+        Optional<Album> album = albumRepository.findById(id);
+        if (album.isPresent()) {
+            albumRepository.delete(album.get());
+            return album + " removed";
+        }
+        return "album " + id + " not found!";
     }
 
     private <T> List<T> getEntityIfExists(Long id, CrudRepository<T, Long> repository) {

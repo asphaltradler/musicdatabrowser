@@ -1,8 +1,6 @@
 package com.cosmaslang.musikserver.db.repositories;
 
 import com.cosmaslang.musikserver.db.entities.Album;
-import com.cosmaslang.musikserver.db.entities.Genre;
-import com.cosmaslang.musikserver.db.entities.Interpret;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -13,17 +11,15 @@ public interface AlbumRepository extends NamedEntityRepository<Album> {
     @Query("SELECT a " +
             "FROM Album a " +
             "JOIN Track t " +
-            "ON a.name = t.album.name " +
+            "ON a.id = t.album.id " +
             "WHERE t.komponist.name = :komponist")
     List<Album> findByKomponist(String komponist);
 
     /*
-    @Query("SELECT a " +
-            "FROM Album a " +
-            "JOIN Track t " +
-            "ON a.name = t.album.name " +
-            "WHERE :genre IN t.genres")
-    List<Album> findByGenre(Genre genre);
+    @Query("select a from Album a join Track t on t.album.id = a.id " +
+            "where t.id in " +
+            "(select t.id from Track t join fetch t.genres g where g.name like %:genre%)")
+    List<Album> findByGenreLike(String genre);
 
     @Query("SELECT a " +
             "FROM Album a " +
@@ -35,7 +31,7 @@ public interface AlbumRepository extends NamedEntityRepository<Album> {
     @Query("SELECT a " +
             "FROM Album a " +
             "JOIN Track t " +
-            "ON a.name = t.album.name " +
+            "ON a.id = t.album.id " +
             "WHERE t.werk.name like %:werk%")
     List<Album> findByWerkLike(String werk);
 }
