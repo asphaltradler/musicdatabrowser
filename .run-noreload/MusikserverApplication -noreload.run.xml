@@ -3,6 +3,8 @@
     <option name="ACTIVE_PROFILES" value="dev" />
     <module name="musikserver" />
     <option name="PROGRAM_PARAMETERS" value="-noreload" />
+    <projectPathOnTarget name="projectPathOnTarget" value="{exitCode=0, timeout=false, cancelled=false, stdout=/mnt/c/Users/CosmasLang/AppData/Local/Programs/IntelliJ IDEA Ultimate/jbr/bin , stderr=}/musikserver" />
+    <target name="@@@LOCAL@@@" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.cosmaslang.musikserver.MusikserverApplication" />
     <extension name="coverage">
       <pattern>

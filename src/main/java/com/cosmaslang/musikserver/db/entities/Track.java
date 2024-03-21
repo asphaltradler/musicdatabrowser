@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-//@Table(name = "track")
+@Table(indexes = @Index(columnList = "path", unique = true))
 public class Track {
 
     public static final String FIELDKEY_ORGANIZATION = "ORGANIZATION";
@@ -17,7 +17,7 @@ public class Track {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    private String path;
+    //tag data
     private Integer tracknumber;
     private String title;
     @ManyToOne(cascade = {CascadeType.MERGE})
@@ -45,29 +45,17 @@ public class Track {
     private String publisher;
     private String comment;
 
-    public Werk getWerk() {
-        return werk;
-    }
-
-    public void setWerk(Werk werk) {
-        this.werk = werk;
-    }
-
-    public Integer getLengthInSeconds() {
-        return lengthInSeconds;
-    }
-
-    public void setLengthInSeconds(Integer lengthInSeconds) {
-        this.lengthInSeconds = lengthInSeconds;
-    }
-
-    private Integer lengthInSeconds;
+    //technical data
+    private String path;
     private Long size;
+    private Integer lengthInSeconds;
     private String encoding;
     private Integer samplerate;
+    private Long noOfSamples;
     private Integer bitsPerSample;
+    private String hash;
 
-    public String getPath() {
+	public String getPath() {
         return path;
     }
 
@@ -131,6 +119,14 @@ public class Track {
         this.genres.add(genre);
     }
 
+    public Werk getWerk() {
+        return werk;
+    }
+
+    public void setWerk(Werk werk) {
+        this.werk = werk;
+    }
+
     public String getPublisher() {
         return publisher;
     }
@@ -145,6 +141,14 @@ public class Track {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Integer getLengthInSeconds() {
+        return lengthInSeconds;
+    }
+
+    public void setLengthInSeconds(Integer lengthInSeconds) {
+        this.lengthInSeconds = lengthInSeconds;
     }
 
     public String getEncoding() {
@@ -171,7 +175,15 @@ public class Track {
         this.bitsPerSample = bitrate;
     }
 
-    public Long getSize() {
+    public Long getNoOfSamples() {
+		return noOfSamples;
+	}
+
+	public void setNoOfSamples(Long noOfSamples) {
+		this.noOfSamples = noOfSamples;
+	}
+
+	public Long getSize() {
         return size;
     }
 
@@ -179,10 +191,17 @@ public class Track {
         this.size = length;
     }
 
+    public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
 
     @Override
     public String toString() {
-        return "Track [path=" + path + ", title=" + title + ", album=" + album.getName()
+        return "Track [path=" + path + ", title=" + title + ", album=" + (album == null ? "NULL" : album.getName())
                 + ", interpreten=" + interpreten.stream().map(Interpret::toString).collect(Collectors.joining(","))
                 + "]";
     }

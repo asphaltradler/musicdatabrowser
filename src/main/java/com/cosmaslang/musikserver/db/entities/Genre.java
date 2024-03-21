@@ -3,6 +3,7 @@ package com.cosmaslang.musikserver.db.entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table(indexes = @Index(columnList = "name", unique = true))
 public class Genre extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
