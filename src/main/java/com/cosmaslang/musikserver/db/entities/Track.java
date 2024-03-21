@@ -51,6 +51,7 @@ public class Track {
     private Integer lengthInSeconds;
     private String encoding;
     private Integer samplerate;
+    private Long bitrate;
     private Long noOfSamples;
     private Integer bitsPerSample;
     private String hash;
@@ -165,6 +166,14 @@ public class Track {
 
     public void setSamplerate(Integer samplerate) {
         this.samplerate = samplerate;
+    }
+
+    public Long getBitrate() {
+        return bitrate;
+    }
+
+    public void setBitrate(Long bitrate) {
+        this.bitrate = bitrate;
     }
 
     public Integer getBitsPerSample() {

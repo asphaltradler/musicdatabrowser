@@ -4,6 +4,7 @@ import com.cosmaslang.musikserver.MusikScanner;
 import com.cosmaslang.musikserver.db.entities.*;
 import com.cosmaslang.musikserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikserver.db.repositories.TrackRepository;
+import io.micrometer.common.util.StringUtils;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.flac.FlacAudioHeader;
@@ -65,7 +66,7 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
         logger.info("processed " + audioFile.getFile().getName());
     }
 
-    private Track createTrack(AudioFile audioFile) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    private Track createTrack(AudioFile audioFile) {
     	File file = audioFile.getFile();
         Path filepath = file.toPath();
         //path unabhängig von Filesystem notieren, ausgehend von rootDir
@@ -79,21 +80,22 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
             logger.info("-   update track " + path);
         }
 
+        Tag tag = null;
         try {
-	        Tag tag = audioFile.getTag();
+	        tag = audioFile.getTag();
 	        if (tag == null) {
 	        	track.setTitle(file.getName());
 	        } else {
 		        String title;
 		        String str = tag.getFirst(FieldKey.TITLE);
-		        if (tagValueIsValid(str)) {
+		        if (StringUtils.isNotBlank(str)) {
 		            title = str;
 		        } else {
 		            title = file.getName();
 		        }
 		        track.setTitle(title);
 		        str = tag.getFirst(FieldKey.TRACK);
-		        if (tagValueIsValid(str)) {
+		        if (StringUtils.isNotBlank(str)) {
 		            try {
 						track.setTracknumber(Integer.valueOf(str));
 					} catch (NumberFormatException e) {
@@ -101,17 +103,17 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
 					}
 		        }
 		        str = tag.getFirst(FieldKey.ALBUM);
-		        if (tagValueIsValid(str)) {
+		        if (StringUtils.isNotBlank(str)) {
 		            Album album = createEntity(Album.class, albumRepository, str);
 		            track.setAlbum(album);
 		        }
 		        str = tag.getFirst(FieldKey.COMPOSER);
-		        if (tagValueIsValid(str)) {
+		        if (StringUtils.isNotBlank(str)) {
 		            Komponist komponist = createEntity(Komponist.class, komponistRepository, str);
 		            track.setKomponist(komponist);
 		        }
 		        str = tag.getFirst(Track.FIELDKEY_WORK);
-		        if (tagValueIsValid(str)) {
+		        if (StringUtils.isNotBlank(str)) {
 		            Werk werk = createEntity(Werk.class, werkRepository, str);
 		            track.setWerk(werk);
 		        }
@@ -120,7 +122,7 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
 		        if (tagFields != null) {
 		            for (TagField field : tagFields) {
 		            	str = field.toString();
-		            	if (tagValueIsValid(str)) {
+		            	if (StringUtils.isNotBlank(str)) {
 			                Interpret interpret = createEntity(Interpret.class, interpretRepository, str);
 			                track.addInterpret(interpret);
 		            	}
@@ -131,7 +133,7 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
 		        if (tagFields != null) {
 		            for (TagField field : tagFields) {
 		            	str = field.toString();
-		            	if (tagValueIsValid(str)) {
+		            	if (StringUtils.isNotBlank(str)) {
 			                Genre genre = createEntity(Genre.class, genreRepository, str);
 			                track.addGenre(genre);
 		            	}
@@ -143,50 +145,77 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
 		        track.setComment(comment.substring(0, Math.min(255, comment.length())));
 		        track.setPublisher(tag.getFirst(Track.FIELDKEY_ORGANIZATION));
 	        }
-	
+        } catch (Throwable t) {
+            logger.log(Level.WARNING, "error when processing track " + path
+                + " with tag " + (tag == null ? "NULL" : tag), t);
+        }
+
+        track.setSize(file.length());
+        AudioHeader header = null;
+        try {
 	        //technical data
-	        track.setSize(file.length());
-	        AudioHeader header = audioFile.getAudioHeader();
+	        header = audioFile.getAudioHeader();
 	        if (header != null) {
 		        track.setBitsPerSample(header.getBitsPerSample());
+                track.setBitrate(header.getBitRateAsNumber());
 		        track.setSamplerate(header.getSampleRateAsNumber());
 		        track.setEncoding(header.getFormat());
 		        track.setLengthInSeconds(header.getTrackLength());
 		        //ist null bei Ogg, WMA, manchen WAV, etc.
-		        track.setNoOfSamples(header.getNoOfSamples());
+                Long noOfSamples = header.getNoOfSamples();
+                if (noOfSamples == null) {
+                    //dann selbst berechnen (wieso macht das jaudiotagger nicht schon?)
+                    noOfSamples = ((long) track.getLengthInSeconds() * track.getSamplerate());
+                }
+		        track.setNoOfSamples(noOfSamples);
 		        //Long length = header.getAudioDataLength();
-		        String hash;
-		        //nur Flac hat einen korrekten Audio-MD5, der unabhängig von Tags ist
-		        if (header instanceof FlacAudioHeader) {
-		        	hash = ((FlacAudioHeader)header).getMd5();
-		        	//TODO wenn 0000... (md5 fehlt in flac)
-		        	//char[] hexChars = new char[32]
-		        } else {
-		        	//beim Rest muss filepath-hash plus Länge in samples reichen, um Änderungen anzuzeigen 
-					hash = Long.toHexString(path.hashCode())
-							+ '-' + header.getNoOfSamples();
-					//Leider viel zu langsam...
-					/*
-		        	try {
-		    			HashCode md5 = Files.asByteSource(file).hash(Hashing.md5());
-		    			hash = md5.toString();
-		    		} catch (IOException e) {
-		    			logger.log(Level.WARNING, "Can't hash " + path, e);
-		    			hash = Long.toHexString(path.hashCode())
-		    					+ '-' + header.getNoOfSamples().toString();
-		    		}
-		    		*/
-		        }
-		    	track.setHash(hash);
+                track.setHash(getHash(header, path, track));
 	        }
         } catch (Throwable t) {
-        	logger.log(Level.WARNING, "error when processing track " + path);
+        	logger.log(Level.WARNING, "error when processing track " + path
+                + " with header " +  (header == null ? "NULL" : header));
         }
         return track;
     }
-    
-    private boolean tagValueIsValid(String str) {
-    	return str != null && str.length() > 0;
+
+    private static String getHash(AudioHeader header, String path, Track track) {
+        //nur Flac hat (meistens) einen korrekten Audio-MD5, der unabhängig von Tags ist
+        if (header instanceof FlacAudioHeader) {
+            String hash = ((FlacAudioHeader) header).getMd5();
+            //fehlerhafte Flacs haben 0-MD5
+            if (!containsOnlyZero(hash)) {
+                 return hash;
+            }
+        }
+        //beim Rest muss filepath-hash plus Länge in samples reichen, um Änderungen anzuzeigen
+        return getFileHash(path, track);
+        //Leider viel zu langsam...
+        /*
+        try {
+            HashCode md5 = Files.asByteSource(file).hash(Hashing.md5());
+            hash = md5.toString();
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Can't hash " + path, e);
+            hash = Long.toHexString(path.hashCode())
+                    + '-' + header.getNoOfSamples().toString();
+        }
+        */
+    }
+
+    private static boolean containsOnlyZero(String hash) {
+        if (hash != null) {
+            for (int i = 0; i < hash.length(); i++) {
+                if (hash.charAt(i) != '0') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static String getFileHash(String path, Track track) {
+        return Long.toHexString(path.hashCode())
+                + '-' + Long.toHexString(track.getNoOfSamples());
     }
 
     /**
