@@ -3,7 +3,6 @@ package com.cosmaslang.musikserver.controller;
 import com.cosmaslang.musikserver.db.entities.Genre;
 import com.cosmaslang.musikserver.db.entities.Interpret;
 import com.cosmaslang.musikserver.db.entities.Komponist;
-import com.cosmaslang.musikserver.db.entities.Track;
 import com.cosmaslang.musikserver.db.repositories.AlbumRepository;
 import com.cosmaslang.musikserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikserver.db.repositories.TrackRepository;
@@ -58,11 +57,9 @@ public abstract class AbstractMusikRestController<T> {
 
 
     protected List<T> getAll(CrudRepository<T, Long> repository) {
-        List<T> entities;
         Iterator<T> entityIt = repository.findAll().iterator();
-        entities = new ArrayList<>();
+        List<T> entities = new ArrayList<>();
         entityIt.forEachRemaining(entities::add);
         return entities;
     }
-
 }

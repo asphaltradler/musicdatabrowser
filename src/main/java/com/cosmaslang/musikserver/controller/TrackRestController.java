@@ -1,11 +1,8 @@
 package com.cosmaslang.musikserver.controller;
 
 import com.cosmaslang.musikserver.db.entities.Track;
-import com.cosmaslang.musikserver.db.repositories.TrackRepository;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 

@@ -1,11 +1,6 @@
 package com.cosmaslang.musikserver.db.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(indexes = @Index(columnList = "name", unique = true))
