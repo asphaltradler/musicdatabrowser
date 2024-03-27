@@ -7,7 +7,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(indexes = @Index(columnList = "path", unique = true))
+@Table(indexes = {@Index(columnList = "path", unique = true),
+        @Index(columnList = "hash", unique = true)})
 public class Track {
 
     public static final String FIELDKEY_ORGANIZATION = "ORGANIZATION";
@@ -86,18 +87,16 @@ public class Track {
 
     public void setAlbum(Album album) {
         this.album = album;
+        //album.addTrack(this);
     }
 
     public Set<Interpret> getInterpreten() {
         return interpreten;
     }
 
-    public void setInterpreten(Set<Interpret> interpret) {
-        this.interpreten = interpret;
-    }
-
     public void addInterpret(Interpret interpret) {
         this.interpreten.add(interpret);
+        interpret.addTrack(this);
     }
 
     public Komponist getKomponist() {
@@ -112,12 +111,9 @@ public class Track {
         return genres;
     }
 
-    public void setGenres(Set<Genre> genres) {
-        this.genres = genres;
-    }
-
     public void addGenre(Genre genre) {
         this.genres.add(genre);
+        genre.addTrack(this);
     }
 
     public Werk getWerk() {
@@ -126,6 +122,7 @@ public class Track {
 
     public void setWerk(Werk werk) {
         this.werk = werk;
+        //werk.addTrack(this);
     }
 
     public String getPublisher() {

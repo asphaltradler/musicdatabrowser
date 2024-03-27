@@ -15,19 +15,14 @@ public interface AlbumRepository extends NamedEntityRepository<Album> {
             "WHERE t.komponist.name = :komponist")
     List<Album> findByKomponist(String komponist);
 
-    /*
-    @Query("select a from Album a join Track t on t.album.id = a.id " +
-            "where t.id in " +
-            "(select t.id from Track t join fetch t.genres g where g.name like %:genre%)")
+     @Query("select a from Album a join Track t on a.id = t.album.id where t in " +
+             "(select g.tracks from Genre g where g.name ilike %:genre%)")
     List<Album> findByGenreLike(String genre);
 
-    @Query("SELECT a " +
-            "FROM Album a " +
-            "JOIN Track t " +
-            "ON a.name = t.album.name " +
-            "WHERE :interpret IN t.interpreten")
-    List<Album> findByInterpret(Interpret interpret);
-*/
+    @Query("select a from Album a join Track t on a.id = t.album.id where t in " +
+                "(select i.tracks from Interpret i where i.name ilike %:interpret%)")
+    List<Album> findByInterpretLike(String interpret);
+
     @Query("SELECT a " +
             "FROM Album a " +
             "JOIN Track t " +

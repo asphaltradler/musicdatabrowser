@@ -18,22 +18,17 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
     public List<Album> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
         List<Album> alben;
         if (album != null) {
-            alben = Collections.singletonList(albumRepository.findByName(album));
+            alben = albumRepository.findByNameContaining(album);
         } else if (komponist != null) {
             alben = albumRepository.findByKomponist(komponist);
         } else if (werk != null) {
             alben = albumRepository.findByWerkLike(werk);
         } else if (genre != null) {
-//            List<Genre> genres = genreRepository.findByNameContaining(genre);
-//            List<Track> tracks = trackRepository.findByGenresIsIn(new HashSet<>(genres));
-            List<Track> tracks = trackRepository.findByGenreLike(genre);
-            alben = tracks.stream().map(Track::getAlbum).distinct().toList();
-            //alben = albumRepository.findByGenreLike(genre);
+            alben = albumRepository.findByGenreLike(genre);
         } else if (interpret != null) {
-            //List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
-            //List<Track> tracks = trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
-            List<Track> tracks = trackRepository.findByInterpretenLike(interpret);
-            alben = tracks.stream().map(Track::getAlbum).distinct().toList();
+            //List<Track> tracks = trackRepository.findByInterpretenLike(interpret);
+            //alben = tracks.stream().map(Track::getAlbum).distinct().toList();
+            alben = albumRepository.findByInterpretLike(interpret);
         } else if (id != null) {
             alben = getEntitiesIfExists(id, albumRepository);
         } else {

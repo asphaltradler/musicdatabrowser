@@ -16,8 +16,9 @@ public class MusikserverApplication {
         ApplicationContext context = SpringApplication.run(MusikserverApplication.class);
         MusikserverStartupService service = context.getBean(MusikserverStartupService.class);
         if (args.length <= 0 || !args[0].equals("-noreload")) {
-            service.start();
+            service.init();
         }
+        service.start();
     }
 
 }

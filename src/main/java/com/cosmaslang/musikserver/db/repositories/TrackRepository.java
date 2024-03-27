@@ -16,7 +16,9 @@ public interface TrackRepository extends CrudRepository<Track, Long> {
 
     Track findByPath(String path);
 
-    @Query("SELECT t FROM Track t WHERE t.album.name like %:album%")
+    @Query("SELECT t FROM Track t WHERE t.album.name ilike %:album%")
+    //identisch im Verhalten mit:
+    //@Query("SELECT a.tracks FROM Album a WHERE a.name like %:album%")
     List<Track> findByAlbumLike(String album);
 
     @Query("SELECT t FROM Track t WHERE t.komponist.name = :komponist")
@@ -24,13 +26,9 @@ public interface TrackRepository extends CrudRepository<Track, Long> {
 
     @Query("select t from Track t join fetch t.genres g where g.name ilike %:genre%")
     List<Track> findByGenreLike(String genre);
-    //@Query("SELECT t FROM Track t JOIN genre_tracks gt ON t.genres  WHERE g IN (SELECT g FROM Genre where g.name = :genre)")
     List<Track> findByGenres(Genre genre);
     List<Track> findByGenresIsIn(Set<Genre> genres);
 
-//    @Query("select t from Track t where t.id in" +
-//            " (select it.track_id from interpreten_tracks it where it.interpret_id in" +
-//            " (select i.id from Interpret i where i.name like %:interpret%))")
     @Query("select t from Track t join fetch t.interpreten i where i.name ilike %:interpret%")
     List<Track> findByInterpretenLike(String interpret);
     List<Track> findByInterpreten(Interpret interpret);
