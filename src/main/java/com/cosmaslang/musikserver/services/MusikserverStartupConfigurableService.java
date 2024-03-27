@@ -5,6 +5,8 @@ import com.cosmaslang.musikserver.db.entities.*;
 import com.cosmaslang.musikserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikserver.db.repositories.TrackRepository;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.flac.FlacAudioHeader;
@@ -28,6 +30,9 @@ import java.util.logging.Logger;
 @Qualifier("musikserverStartup")
 public class MusikserverStartupConfigurableService implements MusikserverStartupService, MusikScanner.AudioFileProcessor {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     ConfigurableApplicationContext context;
@@ -264,13 +269,27 @@ public class MusikserverStartupConfigurableService implements MusikserverStartup
     }
 
     @Override
-    public void start() {
+    public void init() {
         try {
             scanMusikdirectory();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        listAllTracks();
+    }
+
+    @Override
+    public void start() {
+        //listAllTracks();
+        findAlbumWithInterpret("John");
+    }
+
+    public void findAlbumWithInterpret(String name) {
+        System.out.println("Albums with interpret " + name);
+        List<?> albums = entityManager.createQuery(
+                "select a from Album a join Track t on t.album = a where t in (select i.tracks from Interpret i where i.name ilike '%'||:name||'%')")
+                .setParameter("name", name)
+                .getResultList();
+        albums.forEach(System.out::println);
     }
 
 }

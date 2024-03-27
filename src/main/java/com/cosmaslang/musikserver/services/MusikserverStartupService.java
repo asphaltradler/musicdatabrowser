@@ -4,5 +4,7 @@ public interface MusikserverStartupService {
 
     void setRootDir(String rootDir);
 
+    void init();
     void start();
+
 }
