@@ -1,5 +1,6 @@
 package com.cosmaslang.musikdataserver.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -14,7 +15,8 @@ public class Interpret extends NamedEntity {
     //muss man leider hier drin definieren, sonst wird es nicht gefunden
     private String name;
 
-    @ManyToMany(mappedBy = "interpreten", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "interpreten", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Set<Track> tracks = new HashSet<>();
 
     @Override
