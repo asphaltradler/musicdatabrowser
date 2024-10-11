@@ -8,7 +8,7 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  mediasync:
+  mediadatabase:
     build:
       context: .
     ports:
@@ -26,7 +26,7 @@ services:
       #      POSTGRES_USER: postgres
       POSTGRES_PASSWORD_FILE: /run/secrets/database-password
       #benutze lokale Datenbank mit IP aus ipconfig
-      #SPRING_DATASOURCE_URL: jdbc:postgresql://192.168.0.86:5432/musik
+      #SPRING_DATASOURCE_URL: jdbc:postgresql://192.168.0.60:5432/musik
       #benutze Datenbank im Container
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/musik
       #SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/musik

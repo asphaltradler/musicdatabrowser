@@ -1,1 +1,1 @@
-Spielwiesen-Projekt für Musikserver
+Spielwiesen-Projekt für MusikDataServer

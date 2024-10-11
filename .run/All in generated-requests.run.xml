@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" environment="&lt;No Environment&gt;" path="$PROJECT_DIR$/generated-requests.http" requestIdentifier="#1">
+  <configuration default="false" name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" path="$PROJECT_DIR$/generated-requests.http" requestIdentifier="#1">
     <method v="2" />
   </configuration>
 </component>

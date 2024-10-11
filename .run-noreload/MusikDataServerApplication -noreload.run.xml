@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MusikDataServerApplication -noreload" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="dev" />
+    <option name="ALTERNATIVE_JRE_PATH" value="$PROJECT_DIR$/../../SEU/jdk-17" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <module name="musikserver" />
+    <option name="PROGRAM_PARAMETERS" value="-noreload" />
+    <projectPathOnTarget name="projectPathOnTarget" value="{exitCode=0, timeout=false, cancelled=false, stdout=/mnt/c/Users/CosmasLang/AppData/Local/Programs/IntelliJ IDEA Ultimate/jbr/bin , stderr=}/musikdataserver" />
+    <target name="@@@LOCAL@@@" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.cosmaslang.musikdataserver.MusikDataServerApplication" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.cosmaslang.musikdataserver.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
