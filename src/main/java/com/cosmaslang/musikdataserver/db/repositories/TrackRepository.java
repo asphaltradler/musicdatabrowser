@@ -11,9 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface TrackRepository extends CrudRepository<Track, Long> {
-    List<Track> findByTitle(String title);
-
+public interface TrackRepository extends NamedEntityRepository<Track> {
     Track findByPath(String path);
 
     @Query("SELECT t FROM Track t WHERE t.album.name ilike %:album%")

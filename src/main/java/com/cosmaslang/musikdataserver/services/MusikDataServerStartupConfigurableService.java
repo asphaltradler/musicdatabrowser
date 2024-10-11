@@ -90,7 +90,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
         try {
 	        tag = audioFile.getTag();
 	        if (tag == null) {
-	        	track.setTitle(file.getName());
+	        	track.setName(file.getName());
 	        } else {
 		        String title;
 		        String str = tag.getFirst(FieldKey.TITLE);
@@ -99,7 +99,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 		        } else {
 		            title = file.getName();
 		        }
-		        track.setTitle(title);
+		        track.setName(title);
 		        str = tag.getFirst(FieldKey.TRACK);
 		        if (StringUtils.isNotBlank(str)) {
 		            try {
@@ -229,7 +229,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
      * Leider nicht möglich, das Repository direkt aus der Klasse herzuleiten.
      * Behebt gleichzeitig einige Ungereimtheiten in den Formaten der tags.
      */
-    private <T extends NamedEntity> T createEntity(Class<T> clazz, NamedEntityRepository<T> repo,
+    private <ENTITY extends NamedEntity> ENTITY createEntity(Class<ENTITY> clazz, NamedEntityRepository<ENTITY> repo,
                                                    String name) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (name.toLowerCase().startsWith("text=\"")) {
         	name = name.substring(6, name.length() -1).trim();
@@ -244,7 +244,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
         if (pos > 0) {
         	name = name.substring(0, pos);
         }
-    	T entity = repo.findByName(name);
+    	ENTITY entity = repo.findByName(name);
         if (entity == null) {
             entity = clazz.getDeclaredConstructor().newInstance();
             entity.setName(name);

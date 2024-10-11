@@ -9,10 +9,10 @@ import java.util.List;
 /**
  * Gemeinsames Interface für Repositories zu Datenbank-Tables,
  * die (nur) eine Column name haben.
- * @param <T> eine NamedEntity
+ * @param <ENTITY> eine NamedEntity
  */
 @NoRepositoryBean
-public interface NamedEntityRepository<T extends NamedEntity> extends CrudRepository<T, Long> {
-    T findByName(String name);
-    List<T> findByNameContaining(String name);
+public interface NamedEntityRepository<ENTITY extends NamedEntity> extends CrudRepository<ENTITY, Long> {
+    ENTITY findByName(String name);
+    List<ENTITY> findByNameContaining(String name);
  }

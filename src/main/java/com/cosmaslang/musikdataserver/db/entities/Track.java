@@ -1,15 +1,17 @@
 package com.cosmaslang.musikdataserver.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(indexes = {@Index(columnList = "path", unique = true),
         @Index(columnList = "hash", unique = true)})
-public class Track {
+public class Track extends NamedEntity {
 
     public static final String FIELDKEY_ORGANIZATION = "ORGANIZATION";
     public static final String FIELDKEY_WORK = "WORK";
@@ -20,7 +22,7 @@ public class Track {
 
     //tag data
     private Integer tracknumber;
-    private String title;
+    private String name;
     @ManyToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "album_id")
     private Album album;
@@ -32,6 +34,7 @@ public class Track {
     private Werk werk;
     //EAGER ist hier wichtig!
     @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+    //@JsonManagedReference
     @JoinTable(
             name = "interpreten_tracks",
             joinColumns = @JoinColumn(name = "track_id"),
@@ -73,12 +76,12 @@ public class Track {
         this.tracknumber = tracknumber;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Album getAlbum() {
@@ -207,9 +210,22 @@ public class Track {
 
     @Override
     public String toString() {
-        return "Track [path=" + path + ", title=" + title + ", album=" + (album == null ? "NULL" : album.getName())
+        return "Track [path=" + path + ", name=" + name + ", album=" + (album == null ? "NULL" : album.getName())
                 + ", interpreten=" + interpreten.stream().map(Interpret::toString).collect(Collectors.joining(","))
                 + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Track entity = (Track) o;
+        return Objects.equals(getHash(), entity.getHash());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getHash());
     }
 
 }

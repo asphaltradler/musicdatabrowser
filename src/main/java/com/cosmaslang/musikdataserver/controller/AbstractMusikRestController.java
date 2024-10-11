@@ -3,6 +3,7 @@ package com.cosmaslang.musikdataserver.controller;
 import com.cosmaslang.musikdataserver.db.entities.Genre;
 import com.cosmaslang.musikdataserver.db.entities.Interpret;
 import com.cosmaslang.musikdataserver.db.entities.Komponist;
+import com.cosmaslang.musikdataserver.db.entities.NamedEntity;
 import com.cosmaslang.musikdataserver.db.repositories.AlbumRepository;
 import com.cosmaslang.musikdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikdataserver.db.repositories.TrackRepository;
@@ -15,7 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 import java.util.logging.Logger;
 
-public abstract class AbstractMusikRestController<T> {
+public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     protected Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Autowired
@@ -29,12 +30,14 @@ public abstract class AbstractMusikRestController<T> {
     @Autowired
     NamedEntityRepository<Interpret> interpretRepository;
 
+    //NamedEntityRepository<ENTITY> repository;
+
     @GetMapping("/id/{id}")
-    protected abstract T findById(@PathVariable Long id);
+    protected abstract ENTITY findById(@PathVariable Long id);
     @DeleteMapping("/remove")
     protected abstract String remove(@RequestParam() Long id);
     @RequestMapping(value = "/get", method = {RequestMethod.GET, RequestMethod.POST})
-    protected abstract List<T> get(@RequestParam(required = false) String track,
+    protected abstract List<ENTITY> get(@RequestParam(required = false) String track,
                            @RequestParam(required = false) String album,
                            @RequestParam(required = false) String komponist,
                            @RequestParam(required = false) String werk,
@@ -42,13 +45,13 @@ public abstract class AbstractMusikRestController<T> {
                            @RequestParam(required = false) String interpret,
                            @RequestParam(required = false) Long id);
 
-    protected List<T> getEntitiesIfExists(Long id, CrudRepository<T, Long> repository) {
-        Optional<T> entity = repository.findById(id);
+    protected List<ENTITY> getEntitiesIfExists(Long id, NamedEntityRepository<ENTITY> repository) {
+        Optional<ENTITY> entity = repository.findById(id);
         return entity.map(Collections::singletonList).orElse(Collections.emptyList());
     }
 
-    protected T getEntityIfExists(Long id, CrudRepository<T, Long> repository) {
-        Optional<T> entity = repository.findById(id);
+    protected ENTITY getEntityIfExists(Long id, NamedEntityRepository<ENTITY> repository) {
+        Optional<ENTITY> entity = repository.findById(id);
         if (entity.isPresent()) {
             return entity.get();
         }
@@ -56,9 +59,9 @@ public abstract class AbstractMusikRestController<T> {
     }
 
 
-    protected List<T> getAll(CrudRepository<T, Long> repository) {
-        Iterator<T> entityIt = repository.findAll().iterator();
-        List<T> entities = new ArrayList<>();
+    protected List<ENTITY> getAll(NamedEntityRepository<ENTITY> repository) {
+        Iterator<ENTITY> entityIt = repository.findAll().iterator();
+        List<ENTITY> entities = new ArrayList<>();
         entityIt.forEachRemaining(entities::add);
         return entities;
     }
