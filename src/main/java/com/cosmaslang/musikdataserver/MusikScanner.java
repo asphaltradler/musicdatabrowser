@@ -1,13 +1,17 @@
 package com.cosmaslang.musikdataserver;
 
 import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileFilter;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.SupportedFileFormat;
+import org.jaudiotagger.audio.generic.Utils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 public class MusikScanner {
 
@@ -18,40 +22,44 @@ public class MusikScanner {
     private final AudioFileProcessor processor;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
+    private final static List<String> audioFileExtensions = Stream.of(SupportedFileFormat.values()).map(SupportedFileFormat::getFilesuffix).toList();
+
     private long count = 0;
     private long failed = 0;
 
-    private final AudioFileFilter audioFileFilter = new AudioFileFilter(false);
-
-    public MusikScanner(AudioFileProcessor processor, File rootDirectory) throws FileNotFoundException {
+    public MusikScanner(AudioFileProcessor processor, Path rootPath) throws IOException {
         super();
         this.processor = processor;
-        System.out.println("Scanning " + rootDirectory);
-        scanDirectory(rootDirectory);
+        System.out.println("Scanning " + rootPath);
+        scanDirectory(rootPath);
     }
 
-    public void scanDirectory(final File dir) throws FileNotFoundException {
-        final File[] files = dir.listFiles(audioFileFilter);
-        if (files == null) {
-            throw new FileNotFoundException("File not found: " + dir);
-        }
-        for (File file : files) {
-            count++;
-            try {
-                AudioFile audioFile = AudioFileIO.read(file);
-                //logger.info("processed " + file.getName());
-                processor.processAudioFile(audioFile);
-            } catch (Throwable t) {
-                failed++;
-                logger.log(Level.WARNING, "Unable to read record:" + count + ":" + file.getPath(), t);
-            }
-        }
+    public void scanDirectory(final Path dir) throws IOException {
+        try (Stream<Path> audioPaths = Files.list(dir)) {
+            audioPaths.parallel().forEach(path -> {
+                try {
+                    if (Files.isDirectory(path)) {
+                        scanDirectory(path);
+                    }
+                    else {
+                        String ext = Utils.getExtension(path.toFile()).toLowerCase();
+                        if (audioFileExtensions.contains(ext)) {
+                            count++;
+                            try {
+                                AudioFile audioFile = AudioFileIO.read(path.toFile());
+                                //logger.info("processed " + file.getName());
+                                processor.processAudioFile(audioFile);
+                            } catch (Throwable t) {
+                                failed++;
+                                logger.log(Level.WARNING, "Unable to read record:" + count + ":" + path, t);
+                            }
 
-        final File[] audioFileDirs = dir.listFiles(new DirFilter());
-        if (audioFileDirs != null) {
-            for (File audioFileDir : audioFileDirs) {
-                scanDirectory(audioFileDir);
-            }
+                        }
+                    }
+                } catch (IOException e) {
+                    logger.log(Level.WARNING, "Unable to read: " + path);
+                }
+            });
         }
     }
 
@@ -61,12 +69,6 @@ public class MusikScanner {
 
     public long getFailed() {
         return failed;
-    }
-
-    public static final class DirFilter implements java.io.FileFilter {
-        public boolean accept(final java.io.File file) {
-            return file.isDirectory();
-        }
     }
 
 }

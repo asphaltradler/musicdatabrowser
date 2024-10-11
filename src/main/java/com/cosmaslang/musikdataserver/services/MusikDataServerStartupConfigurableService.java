@@ -20,7 +20,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.List;
@@ -50,12 +50,12 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
     @Autowired
     NamedEntityRepository<Komponist> komponistRepository;
 
-    private File rootDirFile;
+    private Path rootDirPath;
     private int rootPathSteps;
 
-    public void scanMusikdirectory() throws FileNotFoundException {
-        rootPathSteps = rootDirFile.toPath().getNameCount();
-        MusikScanner scanner = new MusikScanner(this, rootDirFile);
+    public void scanMusikdirectory() throws IOException {
+        rootPathSteps = rootDirPath.getNameCount();
+        MusikScanner scanner = new MusikScanner(this, rootDirPath);
 
         logger.info("Scanner found " + scanner.getCount() + " tracks");
         logger.info("              " + scanner.getFailed() + " failed");
@@ -266,14 +266,14 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
      */
     @Override
     public void setRootDir(String filename) {
-        rootDirFile = new File(filename);
+        rootDirPath = new File(filename).toPath();
     }
 
     @Override
     public void init() {
         try {
             scanMusikdirectory();
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
