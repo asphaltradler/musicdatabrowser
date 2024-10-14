@@ -3,7 +3,6 @@ package com.cosmaslang.musikdataserver.db.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,7 +16,7 @@ public class Genre extends NamedEntity {
 
     @ManyToMany(mappedBy = "genres", fetch = FetchType.LAZY)
     @JsonBackReference
-    private Set<Track> tracks = new HashSet<>();
+    private Set<Track> tracks; // = new HashSet<>();
 
     @Override
     public String getName() {
@@ -28,10 +27,4 @@ public class Genre extends NamedEntity {
     public void setName(String name) {
         this.name = name;
     }
-
-    public void addTrack(Track track) {
-        tracks.add(track);
-        //track.getGenres().add(this);
-    }
-
 }

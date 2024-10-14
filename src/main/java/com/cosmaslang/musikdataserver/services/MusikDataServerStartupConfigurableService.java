@@ -126,13 +126,17 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 		        //ManyToMany Zuordnung
 		        List<TagField> tagFields = tag.getFields(FieldKey.ARTIST);
 		        if (tagFields != null) {
+                    //alle als Liste setzen => dann ist kein update eines vorhandenen tracks möglich
+                    //Set<Interpret> interpreten = new HashSet<>();
 		            for (TagField field : tagFields) {
 		            	str = field.toString();
 		            	if (StringUtils.isNotBlank(str)) {
 			                Interpret interpret = createEntity(Interpret.class, interpretRepository, str);
 			                track.addInterpret(interpret);
+                            //interpreten.add(interpret);
 		            	}
 		            }
+                    //track.setInterpreten(interpreten);
 		        }
 		        //ManyToMany Zuordnung
 		        tagFields = tag.getFields(FieldKey.GENRE);

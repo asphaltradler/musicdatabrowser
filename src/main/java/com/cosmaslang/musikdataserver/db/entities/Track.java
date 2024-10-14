@@ -1,6 +1,5 @@
 package com.cosmaslang.musikdataserver.db.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -34,7 +33,6 @@ public class Track extends NamedEntity {
     private Werk werk;
     //EAGER ist hier wichtig!
     @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
-    //@JsonManagedReference
     @JoinTable(
             name = "interpreten_tracks",
             joinColumns = @JoinColumn(name = "track_id"),
@@ -99,7 +97,15 @@ public class Track extends NamedEntity {
 
     public void addInterpret(Interpret interpret) {
         this.interpreten.add(interpret);
+        //nicht: sonst Endlosschleife
         //interpret.addTrack(this);
+    }
+
+    /**
+     * Alle Interpreten als Liste setzen
+     */
+    public void setInterpreten(Set<Interpret> interpreten) {
+        this.interpreten = interpreten;
     }
 
     public Komponist getKomponist() {
