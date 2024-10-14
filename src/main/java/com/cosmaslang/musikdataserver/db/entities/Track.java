@@ -58,7 +58,7 @@ public class Track extends NamedEntity {
     private Integer bitsPerSample;
     private String hash;
 
-	public String getPath() {
+    public String getPath() {
         return path;
     }
 
@@ -191,14 +191,14 @@ public class Track extends NamedEntity {
     }
 
     public Long getNoOfSamples() {
-		return noOfSamples;
-	}
+        return noOfSamples;
+    }
 
-	public void setNoOfSamples(Long noOfSamples) {
-		this.noOfSamples = noOfSamples;
-	}
+    public void setNoOfSamples(Long noOfSamples) {
+        this.noOfSamples = noOfSamples;
+    }
 
-	public Long getSize() {
+    public Long getSize() {
         return size;
     }
 
@@ -207,12 +207,12 @@ public class Track extends NamedEntity {
     }
 
     public String getHash() {
-		return hash;
-	}
+        return hash;
+    }
 
-	public void setHash(String hash) {
-		this.hash = hash;
-	}
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
 
     @Override
     public String toString() {

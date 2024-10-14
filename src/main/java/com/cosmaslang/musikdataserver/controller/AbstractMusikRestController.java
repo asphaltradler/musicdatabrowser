@@ -8,7 +8,6 @@ import com.cosmaslang.musikdataserver.db.repositories.AlbumRepository;
 import com.cosmaslang.musikdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikdataserver.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,16 +33,18 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
 
     @GetMapping("/id/{id}")
     protected abstract ENTITY findById(@PathVariable Long id);
+
     @DeleteMapping("/remove")
     protected abstract String remove(@RequestParam() Long id);
+
     @RequestMapping(value = "/get", method = {RequestMethod.GET, RequestMethod.POST})
     protected abstract List<ENTITY> get(@RequestParam(required = false) String track,
-                           @RequestParam(required = false) String album,
-                           @RequestParam(required = false) String komponist,
-                           @RequestParam(required = false) String werk,
-                           @RequestParam(required = false) String genre,
-                           @RequestParam(required = false) String interpret,
-                           @RequestParam(required = false) Long id);
+                                        @RequestParam(required = false) String album,
+                                        @RequestParam(required = false) String komponist,
+                                        @RequestParam(required = false) String werk,
+                                        @RequestParam(required = false) String genre,
+                                        @RequestParam(required = false) String interpret,
+                                        @RequestParam(required = false) Long id);
 
     protected List<ENTITY> getEntitiesIfExists(Long id, NamedEntityRepository<ENTITY> repository) {
         Optional<ENTITY> entity = repository.findById(id);

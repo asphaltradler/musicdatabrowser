@@ -1,7 +1,6 @@
 package com.cosmaslang.musikdataserver.controller;
 
 import com.cosmaslang.musikdataserver.db.entities.Interpret;
-import com.cosmaslang.musikdataserver.db.entities.Komponist;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

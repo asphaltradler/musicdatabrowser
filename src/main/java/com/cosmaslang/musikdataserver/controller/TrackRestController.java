@@ -34,6 +34,7 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
         }
         return tracks;
     }
+
     @Override
     public Track findById(@PathVariable Long id) {
         return getEntityIfExists(id, trackRepository);

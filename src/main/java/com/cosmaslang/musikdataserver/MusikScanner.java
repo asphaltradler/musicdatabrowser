@@ -40,8 +40,7 @@ public class MusikScanner {
                 try {
                     if (Files.isDirectory(path)) {
                         scanDirectory(path);
-                    }
-                    else {
+                    } else {
                         String ext = Utils.getExtension(path.toFile()).toLowerCase();
                         if (audioFileExtensions.contains(ext)) {
                             count++;
