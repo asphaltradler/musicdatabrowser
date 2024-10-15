@@ -13,7 +13,7 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
     public List<Track> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
         List<Track> tracks;
         if (track != null) {
-            tracks = trackRepository.findByNameContaining(track);
+            tracks = trackRepository.findByNameContainingIgnoreCase(track);
         } else if (album != null) {
             tracks = trackRepository.findByAlbumLike(album);
         } else if (komponist != null) {
@@ -47,7 +47,7 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
 
     private String add(Track track) {
         String name = track.getName();
-        List<Track> tracks = trackRepository.findByNameContaining(name);
+        List<Track> tracks = trackRepository.findByNameContainingIgnoreCase(name);
         if (!tracks.isEmpty()) {
             track = tracks.get(0);
             return "track " + track + " already exists";

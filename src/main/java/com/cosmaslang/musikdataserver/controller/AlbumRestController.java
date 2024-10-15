@@ -16,7 +16,7 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
     public List<Album> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
         List<Album> alben;
         if (album != null) {
-            alben = albumRepository.findByNameContaining(album);
+            alben = albumRepository.findByNameContainingIgnoreCase(album);
         } else if (komponist != null) {
             alben = albumRepository.findByKomponist(komponist);
         } else if (werk != null) {
@@ -42,7 +42,7 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
 
     @Override
     public String remove(@RequestParam() Long id) {
-        //TODO zugehörige Tracks entfernen
+        //zugehörige Tracks entfernen erledigt Cascadierung
         Optional<Album> album = albumRepository.findById(id);
         if (album.isPresent()) {
             albumRepository.delete(album.get());

@@ -11,12 +11,13 @@ public class Interpret extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     long id;
+
     //muss man leider hier drin definieren, sonst wird es nicht gefunden
     private String name;
 
     @ManyToMany(mappedBy = "interpreten", fetch = FetchType.LAZY)
     @JsonBackReference
-    private Set<Track> tracks; // = new HashSet<>();
+    private Set<Track> tracks;
 
     @Override
     public String getName() {

@@ -8,6 +8,7 @@ public class Komponist extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     long id;
+
     //muss man leider hier drin definieren, sonst wird es nicht gefunden
     private String name;
 

@@ -16,5 +16,5 @@ import java.util.List;
 public interface NamedEntityRepository<ENTITY extends NamedEntity> extends CrudRepository<ENTITY, Long> {
     ENTITY findByName(String name);
 
-    List<ENTITY> findByNameContaining(String name);
+    List<ENTITY> findByNameContainingIgnoreCase(String name);
 }

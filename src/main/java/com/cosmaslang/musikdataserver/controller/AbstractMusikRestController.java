@@ -8,6 +8,7 @@ import com.cosmaslang.musikdataserver.db.repositories.AlbumRepository;
 import com.cosmaslang.musikdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikdataserver.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 import java.util.logging.Logger;
 
+@NoRepositoryBean
 public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     protected Logger logger = Logger.getLogger(this.getClass().getName());
 

@@ -25,7 +25,7 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
         if (id != null) {
             return getEntitiesIfExists(id, interpretRepository);
         } else if (interpret != null) {
-            return interpretRepository.findByNameContaining(interpret);
+            return interpretRepository.findByNameContainingIgnoreCase(interpret);
         }
         return getAll(interpretRepository);
     }

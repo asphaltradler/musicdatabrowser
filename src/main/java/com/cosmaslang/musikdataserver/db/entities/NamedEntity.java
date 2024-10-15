@@ -1,7 +1,10 @@
 package com.cosmaslang.musikdataserver.db.entities;
 
+import org.springframework.data.repository.NoRepositoryBean;
+
 import java.util.Objects;
 
+@NoRepositoryBean
 public abstract class NamedEntity {
     public abstract String getName();
 

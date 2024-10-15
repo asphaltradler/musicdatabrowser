@@ -230,6 +230,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 
     /**
      * Generische Erzeugung einer Entity der richtigen Klasse, falls in der zugeordneten Repository nicht gefunden.
+     * Ansonsten Wiederverwendung aus der {@link org.springframework.stereotype.Repository}
      * Leider nicht möglich, das Repository direkt aus der Klasse herzuleiten.
      * Behebt gleichzeitig einige Ungereimtheiten in den Formaten der tags.
      */
