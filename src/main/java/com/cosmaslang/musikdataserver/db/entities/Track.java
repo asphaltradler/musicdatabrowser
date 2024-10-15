@@ -15,8 +15,8 @@ public class Track extends NamedEntity {
     public static final String FIELDKEY_ORGANIZATION = "ORGANIZATION";
     public static final String FIELDKEY_WORK = "WORK";
 
-    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     long id;
 
     //tag data
@@ -88,7 +88,6 @@ public class Track extends NamedEntity {
 
     public void setAlbum(Album album) {
         this.album = album;
-        //album.addTrack(this);
     }
 
     public Set<Interpret> getInterpreten() {
