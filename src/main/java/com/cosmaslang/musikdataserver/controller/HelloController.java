@@ -30,7 +30,7 @@ public class HelloController {
             return String.format("MusikRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Interpreten, %d Werke, %d Genres",
                     trackRepository.count(), albumRepository.count(), komponistRepository.count(), interpretRepository.count(), werkRepository.count(), genreRepository.count());
         } else {
-            return "Service started but database empty";
+            return "Service gestartet aber noch leer.";
         }
     }
 }
