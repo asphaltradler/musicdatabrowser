@@ -1,3 +1,6 @@
+### Hello
+GET http://localhost:{{server.port}}/musik
+
 ### Tracks
 GET http://localhost:{{server.port}}/musik/track/id/2
 
