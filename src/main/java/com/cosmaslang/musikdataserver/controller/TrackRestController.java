@@ -52,7 +52,7 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
             track = tracks.get(0);
             return "track " + track + " already exists";
         } else {
-            trackRepository.save(track);
+            track = trackRepository.save(track);
             logger.info("added track " + track);
             return "added track " + track;
         }
