@@ -2,7 +2,6 @@ package com.cosmaslang.musikdataserver.db.entities;
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,19 +30,19 @@ public class Track extends NamedEntity {
     @ManyToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "werk_id")
     private Werk werk;
-    //EAGER ist hier wichtig!
-    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+    //statt EAGER laden wir lazy und definieren startup-Service als @Transactional
+    @ManyToMany(cascade = {CascadeType.MERGE}) //, fetch = FetchType.EAGER)
     @JoinTable(
             name = "interpreten_tracks",
             joinColumns = @JoinColumn(name = "track_id"),
             inverseJoinColumns = @JoinColumn(name = "interpret_id"))
-    private Set<Interpret> interpreten = new HashSet<>();
-    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+    private Set<Interpret> interpreten; // = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.MERGE}) //, fetch = FetchType.EAGER)
     @JoinTable(
             name = "genre_tracks",
             joinColumns = @JoinColumn(name = "track_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id"))
-    private Set<Genre> genres = new HashSet<>();
+    private Set<Genre> genres; // = new HashSet<>();
     private String publisher;
     private String comment;
 

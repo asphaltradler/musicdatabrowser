@@ -1,5 +1,6 @@
 package com.cosmaslang.musikdataserver;
 
+import jakarta.persistence.PersistenceException;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.SupportedFileFormat;
@@ -27,9 +28,12 @@ public class MusikScanner {
     private long count = 0;
     private long failed = 0;
 
-    public MusikScanner(AudioFileProcessor processor, Path rootPath) throws IOException {
+    public MusikScanner(AudioFileProcessor processor) {
         super();
         this.processor = processor;
+    }
+
+    public void start(Path rootPath)  throws IOException {
         System.out.println("Scanning " + rootPath);
         scanDirectory(rootPath);
     }
@@ -48,6 +52,8 @@ public class MusikScanner {
                                 AudioFile audioFile = AudioFileIO.read(path.toFile());
                                 //logger.info("processed " + file.getName());
                                 processor.processAudioFile(audioFile);
+                            } catch (PersistenceException e) {
+                                throw e;
                             } catch (Throwable t) {
                                 failed++;
                                 logger.log(Level.WARNING, "Unable to read record:" + count + ":" + path, t);

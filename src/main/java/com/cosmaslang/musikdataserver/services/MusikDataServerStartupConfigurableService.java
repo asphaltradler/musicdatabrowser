@@ -8,6 +8,7 @@ import com.cosmaslang.musikdataserver.db.repositories.TrackRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceException;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.flac.FlacAudioHeader;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +31,7 @@ import java.util.logging.Logger;
 
 @Component
 @Qualifier("musikdataserverStartup")
+@Transactional
 public class MusikDataServerStartupConfigurableService implements MusikDataServerStartupService, MusikScanner.AudioFileProcessor {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -55,7 +58,8 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 
     public void scanMusikdirectory() throws IOException {
         rootPathSteps = rootDirPath.getNameCount();
-        MusikScanner scanner = new MusikScanner(this, rootDirPath);
+        MusikScanner scanner = new MusikScanner(this);
+        scanner.start(rootDirPath);
 
         logger.info("Scanner found " + scanner.getCount() + " tracks");
         logger.info("              " + scanner.getFailed() + " failed");
@@ -66,6 +70,9 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
         try {
             Track track = createTrack(audioFile);
             trackRepository.save(track);
+        } catch (PersistenceException e) {
+            logger.log(Level.SEVERE, "when scanning " + audioFile.getFile().getName(), e);
+            throw e;
         } catch (Exception e) {
             logger.log(Level.WARNING, "when scanning " + audioFile.getFile().getName(), e);
         }
@@ -112,6 +119,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
                 if (StringUtils.isNotBlank(str)) {
                     Album album = createEntity(Album.class, albumRepository, str);
                     track.setAlbum(album);
+                    //album.getTracks().add(track);
                 }
                 str = tag.getFirst(FieldKey.COMPOSER);
                 if (StringUtils.isNotBlank(str)) {
@@ -155,6 +163,8 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
                 track.setComment(comment.substring(0, Math.min(255, comment.length())));
                 track.setPublisher(tag.getFirst(Track.FIELDKEY_ORGANIZATION));
             }
+        } catch (PersistenceException e) {
+            throw e;
         } catch (Throwable t) {
             logger.log(Level.WARNING, "error when processing track " + path
                     + " with tag " + (tag == null ? "NULL" : tag), t);
@@ -181,6 +191,8 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
                 //Long length = header.getAudioDataLength();
                 track.setHash(getHash(header, path, track));
             }
+        } catch (PersistenceException e) {
+            throw e;
         } catch (Throwable t) {
             logger.log(Level.WARNING, "error when processing track " + path
                     + " with header " + (header == null ? "NULL" : header));
@@ -253,7 +265,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
         if (entity == null) {
             entity = clazz.getDeclaredConstructor().newInstance();
             entity.setName(name);
-            repo.save(entity);
+            entity = repo.save(entity);
         }
         return entity;
     }
@@ -276,6 +288,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 
     @Override
     public void init() {
+        logger.info("init");
         try {
             scanMusikdirectory();
         } catch (IOException e) {
@@ -285,12 +298,13 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 
     @Override
     public void start() {
+        logger.info("start");
         //listAllTracks();
         findAlbumWithInterpret("John");
     }
 
     public void findAlbumWithInterpret(String name) {
-        System.out.println("Albums with interpret " + name);
+        logger.info(String.format("Albums with interpret %s", name));
         List<?> albums = entityManager.createQuery(
                         "select a from Album a join Track t on t.album = a where t in (select i.tracks from Interpret i where i.name ilike '%'||:name||'%')")
                 .setParameter("name", name)
