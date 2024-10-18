@@ -31,8 +31,6 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     @Autowired
     NamedEntityRepository<Interpret> interpretRepository;
 
-    //NamedEntityRepository<ENTITY> repository;
-
     @GetMapping("/id/{id}")
     protected abstract ENTITY findById(@PathVariable Long id);
 

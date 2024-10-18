@@ -22,6 +22,10 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
         } else if (werk != null) {
             alben = albumRepository.findByWerkLike(werk);
         } else if (genre != null) {
+            //"von Hand" wäre:
+            //List<Track> tracks = trackRepository.findByGenreLike(genre);
+            //alben = tracks.stream().map(Track::getAlbum).distinct().toList();
+            //über spezielle Query:
             alben = albumRepository.findByGenreLike(genre);
         } else if (interpret != null) {
             //List<Track> tracks = trackRepository.findByInterpretenLike(interpret);
