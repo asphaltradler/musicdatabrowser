@@ -45,16 +45,12 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 
     private Path rootDirPath;
 
-    public void listAllTracks() {
-        Iterable<Track> allTracks = trackRepository.findAll();
-        allTracks.forEach(System.out::println);
-    }
-
     /**
      * Wird von der {@link MusikDataServerConfiguration} gesetzt
      */
     @Override
     public void setRootDir(String filename) {
+        logger.info("Setting root directory: " + filename);
         rootDirPath = new File(filename).toPath();
     }
 
@@ -70,10 +66,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 
     private void scanMusikdirectory() throws IOException {
         MusikScanner scanner = new MusikScanner(this);
-        scanner.start(rootDirPath);
-
-        logger.info(String.format("Scanner found %d tracks", scanner.getCount()));
-        logger.info(String.format("        created/updated/failed tracks: %d/%d/%d", scanner.getCreated(), scanner.getUpdated(), scanner.getFailed()));
+        scanner.scan(rootDirPath);
     }
 
     @Override
@@ -82,7 +75,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
         logger.info(String.format("MusikRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres\n",
                 trackRepository.count(), albumRepository.count(), komponistRepository.count(), werkRepository.count(), genreRepository.count()));
         //listAllTracks();
-        findAlbumWithInterpret("John");
+        //findAlbumWithInterpret("John");
     }
 
     @Override

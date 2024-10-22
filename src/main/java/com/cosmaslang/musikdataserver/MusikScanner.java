@@ -14,6 +14,7 @@ import org.jaudiotagger.audio.generic.Utils;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
+import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class MusikScanner {
 
     private final static List<String> audioFileExtensions = Stream.of(SupportedFileFormat.values()).map(SupportedFileFormat::getFilesuffix).toList();
 
-    private MusikDataServerStartupService musikDataServerStartupService;
+    private final MusikDataServerStartupService musikDataServerStartupService;
 
     private int rootPathSteps;
     private long count = 0;
@@ -44,10 +45,13 @@ public class MusikScanner {
         this.musikDataServerStartupService = service;
     }
 
-    public void start(Path rootPath)  throws IOException {
+    public void scan(Path rootPath) throws IOException {
         rootPathSteps = rootPath.getNameCount();
         logger.info("Scanning " + rootPath);
         scanDirectory(rootPath);
+
+        logger.info(String.format("Found %d tracks", count));
+        logger.info(String.format("  created/updated/failed tracks: %d/%d/%d", created, updated, failed));
     }
 
     private void scanDirectory(final Path dir) throws IOException {
@@ -83,7 +87,7 @@ public class MusikScanner {
         }
     }
 
-    public void processAudioFile(AudioFile audioFile) {
+    private void processAudioFile(AudioFile audioFile) {
         try {
             Track track = createTrack(audioFile);
             musikDataServerStartupService.getTrackRepository().save(track);
@@ -264,7 +268,7 @@ public class MusikScanner {
 
     /**
      * Generische Erzeugung einer Entity der richtigen Klasse, falls in der zugeordneten Repository nicht gefunden.
-     * Ansonsten Wiederverwendung aus der {@link org.springframework.stereotype.Repository}
+     * Ansonsten Wiederverwendung aus der {@link Repository}
      * Leider nicht möglich, das Repository direkt aus der Klasse herzuleiten.
      * Behebt gleichzeitig einige Ungereimtheiten in den Formaten der tags.
      */
