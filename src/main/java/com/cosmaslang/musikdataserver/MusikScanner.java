@@ -40,7 +40,8 @@ public class MusikScanner {
 
     public void scanDirectory(final Path dir) throws IOException {
         try (Stream<Path> audioPaths = Files.list(dir)) {
-            audioPaths.parallel().forEach(path -> {
+            //Parallelisierung führt zu Problemen bei lazy initialization
+            audioPaths./*parallel().*/forEach(path -> {
                 try {
                     if (Files.isDirectory(path)) {
                         scanDirectory(path);
@@ -53,6 +54,7 @@ public class MusikScanner {
                                 //logger.info("processed " + file.getName());
                                 processor.processAudioFile(audioFile);
                             } catch (PersistenceException e) {
+                                failed++;
                                 throw e;
                             } catch (Throwable t) {
                                 failed++;
@@ -62,6 +64,7 @@ public class MusikScanner {
                         }
                     }
                 } catch (IOException e) {
+                    failed++;
                     logger.log(Level.WARNING, "Unable to read: " + path);
                 }
             });
