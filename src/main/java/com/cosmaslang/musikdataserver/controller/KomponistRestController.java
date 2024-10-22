@@ -27,7 +27,7 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
         if (id != null) {
             return getEntitiesIfExists(id, komponistRepository);
         } else if (komponist != null) {
-            return komponistRepository.findByNameContainingIgnoreCase(komponist);
+            return komponistRepository.findByNameContainingIgnoreCase(komponist).stream().sorted().toList();
         } else if (album != null) {
             //Hier können mehrere Komponisten erscheinen, da die Zuordnung track-weise ist.
             //Außerdem können durch "like" ja mehrere Alben gefunden werden.
@@ -35,10 +35,10 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
             //eigene Queries mit JOIN machen
             List<Track> tracks = trackRepository.findByAlbumLike(album);
             Stream<Komponist> komponistStream = tracks.stream().map(Track::getKomponist);
-            return komponistStream.distinct().toList();
+            return komponistStream.distinct().sorted().toList();
         } else if (genre != null) {
             List<Track> tracks = trackRepository.findByGenreLike(genre);
-            return tracks.stream().map(Track::getKomponist).distinct().toList();
+            return tracks.stream().map(Track::getKomponist).distinct().sorted().toList();
         }
         return getAll(komponistRepository);
     }

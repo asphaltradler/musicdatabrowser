@@ -14,29 +14,26 @@ import java.util.Optional;
 public class AlbumRestController extends AbstractMusikRestController<Album> {
     @Override
     public List<Album> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        List<Album> alben;
         if (album != null) {
-            alben = albumRepository.findByNameContainingIgnoreCase(album);
+            return albumRepository.findByNameContainingIgnoreCase(album).stream().sorted().toList();
         } else if (komponist != null) {
-            alben = albumRepository.findByKomponist(komponist);
+            return albumRepository.findByKomponist(komponist).stream().sorted().toList();
         } else if (werk != null) {
-            alben = albumRepository.findByWerkLike(werk);
+            return albumRepository.findByWerkLike(werk).stream().sorted().toList();
         } else if (genre != null) {
             //"von Hand" wäre:
             //List<Track> tracks = trackRepository.findByGenreLike(genre);
-            //alben = tracks.stream().map(Track::getAlbum).distinct().toList();
+            //return tracks.stream().map(Track::getAlbum).distinct().toList();
             //über spezielle Query:
-            alben = albumRepository.findByGenreLike(genre);
+            return albumRepository.findByGenreLike(genre).stream().sorted().toList();
         } else if (interpret != null) {
             //List<Track> tracks = trackRepository.findByInterpretenLike(interpret);
-            //alben = tracks.stream().map(Track::getAlbum).distinct().toList();
-            alben = albumRepository.findByInterpretLike(interpret);
+            //return tracks.stream().map(Track::getAlbum).distinct().toList();
+            return albumRepository.findByInterpretLike(interpret).stream().sorted().toList();
         } else if (id != null) {
-            alben = getEntitiesIfExists(id, albumRepository);
-        } else {
-            alben = getAll(albumRepository);
+            return getEntitiesIfExists(id, albumRepository);
         }
-        return alben;
+        return getAll(albumRepository);
     }
 
     @Override

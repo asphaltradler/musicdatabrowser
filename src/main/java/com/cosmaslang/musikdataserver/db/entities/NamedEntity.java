@@ -5,7 +5,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import java.util.Objects;
 
 @NoRepositoryBean
-public abstract class NamedEntity {
+public abstract class NamedEntity implements Comparable<NamedEntity> {
     public abstract String getName();
 
     public abstract void setName(String name);
@@ -29,5 +29,11 @@ public abstract class NamedEntity {
     @Override
     public String toString() {
         return getName();
+    }
+
+
+    @Override
+    public int compareTo(NamedEntity o) {
+        return getName().compareTo(o.getName());
     }
 }

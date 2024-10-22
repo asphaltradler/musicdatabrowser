@@ -11,28 +11,25 @@ import java.util.Optional;
 public class TrackRestController extends AbstractMusikRestController<Track> {
     @Override
     public List<Track> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        List<Track> tracks;
         if (track != null) {
-            tracks = trackRepository.findByNameContainingIgnoreCase(track);
+            return trackRepository.findByNameContainingIgnoreCase(track).stream().sorted().toList();
         } else if (album != null) {
-            tracks = trackRepository.findByAlbumLike(album);
+            return trackRepository.findByAlbumLike(album).stream().sorted().toList();
         } else if (komponist != null) {
-            tracks = trackRepository.findByKomponist(komponist);
+            return trackRepository.findByKomponist(komponist).stream().sorted().toList();
         } else if (werk != null) {
-            tracks = trackRepository.findByWerkLike(werk);
+            return trackRepository.findByWerkLike(werk).stream().sorted().toList();
         } else if (genre != null) {
             //List<Genre> genres = genreRepository.findByNameContaining(genre);
-            tracks = trackRepository.findByGenreLike(genre); //.findByGenresIsIn(new HashSet<>(genres));
+            return trackRepository.findByGenreLike(genre).stream().sorted().toList(); //.findByGenresIsIn(new HashSet<>(genres));
         } else if (interpret != null) {
             //List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
-            //tracks = trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
-            tracks = trackRepository.findByInterpretenLike(interpret);
+            //return trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
+            return trackRepository.findByInterpretenLike(interpret).stream().sorted().toList();
         } else if (id != null) {
-            tracks = getEntitiesIfExists(id, trackRepository);
-        } else {
-            tracks = getAll(trackRepository);
+            return getEntitiesIfExists(id, trackRepository);
         }
-        return tracks;
+        return getAll(trackRepository);
     }
 
     @Override

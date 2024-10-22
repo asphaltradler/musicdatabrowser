@@ -93,6 +93,9 @@ public class Track extends NamedEntity {
         return interpreten;
     }
 
+    /**
+     * @param interpret fügt einen einzelnen Interpreten hinzu
+     */
     public void addInterpret(Interpret interpret) {
         this.interpreten.add(interpret);
         //nicht: sonst Endlosschleife
@@ -118,9 +121,19 @@ public class Track extends NamedEntity {
         return genres;
     }
 
+    /**
+     * @param genre fügt ein einzelnes Genre hinzu
+     */
     public void addGenre(Genre genre) {
         this.genres.add(genre);
         //genre.addTrack(this);
+    }
+
+    /**
+     * Alle Genres als Liste setzen
+     */
+    public void setGenres(Set<Genre> genres) {
+        this.genres = genres;
     }
 
     public Werk getWerk() {

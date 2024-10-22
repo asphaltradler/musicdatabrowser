@@ -27,10 +27,13 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
         if (id != null) {
             return getEntitiesIfExists(id, genreRepository);
         } else if (genre != null) {
-            return genreRepository.findByNameContainingIgnoreCase(genre);
+            return genreRepository.findByNameContainingIgnoreCase(genre).stream().sorted().toList();
+        } else if (album != null) {
+            List<Track> tracks = trackRepository.findByAlbumLike(album);
+            return tracks.stream().map(Track::getGenres).flatMap(Collection::stream).distinct().sorted().toList();
         } else if (komponist != null) {
             List<Track> tracks = trackRepository.findByKomponist(komponist);
-            return tracks.stream().map(Track::getGenres).flatMap(Collection::stream).distinct().toList();
+            return tracks.stream().map(Track::getGenres).flatMap(Collection::stream).distinct().sorted().toList();
         }
         return getAll(genreRepository);
     }

@@ -25,7 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -135,27 +137,30 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
                 List<TagField> tagFields = tag.getFields(FieldKey.ARTIST);
                 if (tagFields != null) {
                     //alle als Liste setzen => dann ist kein update eines vorhandenen tracks möglich
-                    //Set<Interpret> interpreten = new HashSet<>();
+                    Set<Interpret> interpreten = new HashSet<>();
                     for (TagField field : tagFields) {
                         str = field.toString();
                         if (StringUtils.isNotBlank(str)) {
                             Interpret interpret = createEntity(Interpret.class, interpretRepository, str);
-                            track.addInterpret(interpret);
-                            //interpreten.add(interpret);
+                            //track.addInterpret(interpret);
+                            interpreten.add(interpret);
                         }
                     }
-                    //track.setInterpreten(interpreten);
+                    track.setInterpreten(interpreten);
                 }
                 //ManyToMany Zuordnung
                 tagFields = tag.getFields(FieldKey.GENRE);
                 if (tagFields != null) {
+                    Set<Genre> genres = new HashSet<>();
                     for (TagField field : tagFields) {
                         str = field.toString();
                         if (StringUtils.isNotBlank(str)) {
                             Genre genre = createEntity(Genre.class, genreRepository, str);
-                            track.addGenre(genre);
+                            //track.addGenre(genre);
+                            genres.add(genre);
                         }
                     }
+                    track.setGenres(genres);
                 }
 
                 //TODO comment länger als 255?
@@ -274,8 +279,6 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
         TrackRepository trackRepository = context.getBean(TrackRepository.class);
         Iterable<Track> allTracks = trackRepository.findAll();
         allTracks.forEach(System.out::println);
-        System.out.printf("MusikRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres\n",
-                trackRepository.count(), albumRepository.count(), komponistRepository.count(), werkRepository.count(), genreRepository.count());
     }
 
     /**
@@ -299,6 +302,8 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
     @Override
     public void start() {
         logger.info("start");
+        System.out.printf("MusikRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres\n",
+                trackRepository.count(), albumRepository.count(), komponistRepository.count(), werkRepository.count(), genreRepository.count());
         //listAllTracks();
         findAlbumWithInterpret("John");
     }

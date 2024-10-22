@@ -64,6 +64,6 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
         Iterator<ENTITY> entityIt = repository.findAll().iterator();
         List<ENTITY> entities = new ArrayList<>();
         entityIt.forEachRemaining(entities::add);
-        return entities;
+        return entities.stream().sorted().toList();
     }
 }
