@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 @NoRepositoryBean
+@CrossOrigin(origins = "http://localhost:4200")
 public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     protected Logger logger = Logger.getLogger(this.getClass().getName());
 
