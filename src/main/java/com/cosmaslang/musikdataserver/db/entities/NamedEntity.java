@@ -8,6 +8,7 @@ import java.util.Objects;
 public abstract class NamedEntity implements Comparable<NamedEntity> {
     public abstract String getName();
 
+    public abstract long getId();
     public abstract void setName(String name);
 
     public NamedEntity() {

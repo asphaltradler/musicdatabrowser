@@ -77,6 +77,11 @@ public class Track extends NamedEntity {
         return name;
     }
 
+    @Override
+    public long getId() {
+        return id;
+    }
+
     public void setName(String name) {
         this.name = name;
     }

@@ -25,6 +25,11 @@ public class Album extends NamedEntity {
     }
 
     @Override
+    public long getId() {
+        return id;
+    }
+
+    @Override
     public void setName(String name) {
         this.name = name;
     }
