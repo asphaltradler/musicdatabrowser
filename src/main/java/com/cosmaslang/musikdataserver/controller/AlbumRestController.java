@@ -1,7 +1,10 @@
 package com.cosmaslang.musikdataserver.controller;
 
 import com.cosmaslang.musikdataserver.db.entities.Album;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +12,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/musik/album")
 public class AlbumRestController extends AbstractMusikRestController<Album> {
+
     @Override
     public List<Album> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
         if (album != null) {
@@ -27,10 +31,8 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
             //List<Track> tracks = trackRepository.findByInterpretenLike(interpret);
             //return tracks.stream().map(Track::getAlbum).distinct().toList();
             return albumRepository.findByInterpretLike(interpret).stream().sorted().toList();
-        } else if (id != null) {
-            return getEntitiesIfExists(id, albumRepository);
         }
-        return getAll(albumRepository);
+        return get(id, albumRepository);
     }
 
     @Override

@@ -24,9 +24,7 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
 
     @Override
     protected List<Komponist> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        if (id != null) {
-            return getEntitiesIfExists(id, komponistRepository);
-        } else if (komponist != null) {
+        if (komponist != null) {
             return komponistRepository.findByNameContainingIgnoreCase(komponist).stream().sorted().toList();
         } else if (album != null) {
             //Hier können mehrere Komponisten erscheinen, da die Zuordnung track-weise ist.
@@ -40,6 +38,6 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
             List<Track> tracks = trackRepository.findByGenreLike(genre);
             return tracks.stream().map(Track::getKomponist).distinct().sorted().toList();
         }
-        return getAll(komponistRepository);
+        return get(id, komponistRepository);
     }
 }

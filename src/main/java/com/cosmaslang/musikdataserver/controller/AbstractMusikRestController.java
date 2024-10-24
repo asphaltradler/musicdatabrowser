@@ -47,6 +47,17 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
                                         @RequestParam(required = false) String interpret,
                                         @RequestParam(required = false) Long id);
 
+    /**
+     * Default getter nach id
+     * @param id ID der Entity. Falls fehlende => alle suchen
+     */
+    protected List<ENTITY> get(Long id, NamedEntityRepository<ENTITY> entityRepository) {
+        if (id != null) {
+            return getEntitiesIfExists(id, entityRepository);
+        }
+        return getAll(entityRepository);
+    }
+
     protected List<ENTITY> getEntitiesIfExists(Long id, NamedEntityRepository<ENTITY> repository) {
         Optional<ENTITY> entity = repository.findById(id);
         return entity.map(Collections::singletonList).orElse(Collections.emptyList());

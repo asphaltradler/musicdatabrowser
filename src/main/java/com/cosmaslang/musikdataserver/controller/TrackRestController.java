@@ -26,10 +26,8 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
             //List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
             //return trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
             return trackRepository.findByInterpretenLike(interpret).stream().sorted().toList();
-        } else if (id != null) {
-            return getEntitiesIfExists(id, trackRepository);
         }
-        return getAll(trackRepository);
+        return get(id, trackRepository);
     }
 
     @Override

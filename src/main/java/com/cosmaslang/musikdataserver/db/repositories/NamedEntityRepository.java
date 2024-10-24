@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Gemeinsames Interface für Repositories zu Datenbank-Tables,
- * die (nur) eine Column name haben.
+ * die mindestens eine Column name haben.
  *
  * @param <ENTITY> eine NamedEntity
  */

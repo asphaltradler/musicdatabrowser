@@ -24,9 +24,7 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
 
     @Override
     protected List<Genre> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        if (id != null) {
-            return getEntitiesIfExists(id, genreRepository);
-        } else if (genre != null) {
+        if (genre != null) {
             return genreRepository.findByNameContainingIgnoreCase(genre).stream().sorted().toList();
         } else if (album != null) {
             List<Track> tracks = trackRepository.findByAlbumLike(album);
@@ -35,6 +33,6 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
             List<Track> tracks = trackRepository.findByKomponist(komponist);
             return tracks.stream().map(Track::getGenres).flatMap(Collection::stream).distinct().sorted().toList();
         }
-        return getAll(genreRepository);
+        return get(id, genreRepository);
     }
 }
