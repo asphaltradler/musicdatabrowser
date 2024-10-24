@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { KomponistListComponent } from './komponist-list.component';
+import {KomponistListComponent} from './komponist-list.component';
+import {provideHttpClient} from '@angular/common/http';
+import {KomponistService} from '../services/komponist.service';
 
 describe('KomponistListComponent', () => {
   let component: KomponistListComponent;
@@ -8,7 +10,11 @@ describe('KomponistListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [KomponistListComponent]
+      imports: [KomponistListComponent],
+      providers: [
+        KomponistService,
+        provideHttpClient()
+      ],
     })
     .compileComponents();
 

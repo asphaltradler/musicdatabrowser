@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {RouterLink, RouterOutlet} from '@angular/router';
 
 @Component({
@@ -8,7 +8,6 @@ import {RouterLink, RouterOutlet} from '@angular/router';
   templateUrl: './app.component.html',
   styleUrls: [
     './app.component.css'
-    //'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'
     ]
 })
 export class AppComponent {

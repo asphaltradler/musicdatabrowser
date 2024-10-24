@@ -1,4 +1,4 @@
-import { Album } from './album';
+import {Album} from './album';
 
 describe('Album', () => {
   it('should create an instance', () => {

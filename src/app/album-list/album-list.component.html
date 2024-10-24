@@ -1,5 +1,16 @@
 <div class="card my-5">
+  <div class="card-header">
+    <form [formGroup]="searchForm" (ngSubmit)="handleSubmit()">
+      <label for="searchtext">
+        Suchtext:
+        <input id="searchtext" formControlName="searchText"
+               type="text"/>
+      </label>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
   <div class="card-body">
+    <h3>{{getTitle()}}</h3>
     <table class="table table-bordered table-striped">
       <thead class="thead-dark">
       <tr>
@@ -9,11 +20,11 @@
       </tr>
       </thead>
       <tbody>
-      @for (album of alben; track album.name) {
+      @for (album of alben; track album.id) {
         <tr>
           <td>{{ album.id }}</td>
           <td>{{ album.name }}</td>
-          <td><link >{{ album.track_url }}</td>
+          <td><a href="{{ album.track_url }}">&lt;TRACK&gt;</a></td>
         </tr>
       }
       </tbody>

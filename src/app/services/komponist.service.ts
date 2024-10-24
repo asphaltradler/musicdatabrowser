@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Komponist} from '../entities/komponist';
 
@@ -15,7 +15,8 @@ export class KomponistService {
     this.url = 'http://localhost:8080/musik/komponist/get';
   }
 
-  public findAll(): Observable<Komponist[]> {
-    return this.http.get<Komponist[]>(this.url);
+  public find(searchString: string = ''): Observable<Komponist[]> {
+    const params = new HttpParams().set("komponist", searchString);
+    return this.http.get<Komponist[]>(this.url, {params});
   }
 }
