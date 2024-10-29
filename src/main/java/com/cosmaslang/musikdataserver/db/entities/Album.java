@@ -17,6 +17,7 @@ public class Album extends NamedEntity {
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
+    //@JsonManagedReference
     private Set<Track> tracks;
 
     @Override
