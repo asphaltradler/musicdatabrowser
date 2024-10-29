@@ -6,7 +6,6 @@ import {Komponist} from '../entities/komponist';
 @Injectable({
   providedIn: 'root'
 })
-@Injectable()
 export class KomponistService {
 
   private url: string;

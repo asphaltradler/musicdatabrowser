@@ -6,7 +6,6 @@ import {Album} from '../entities/album';
 @Injectable({
   providedIn: 'root'
 })
-@Injectable()
 export class AlbumService {
 
   private url: string;
