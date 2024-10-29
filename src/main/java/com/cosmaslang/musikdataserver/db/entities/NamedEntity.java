@@ -6,13 +6,9 @@ import java.util.Objects;
 
 @NoRepositoryBean
 public abstract class NamedEntity implements Comparable<NamedEntity> {
-    public abstract String getName();
-
     public abstract long getId();
+    public abstract String getName();
     public abstract void setName(String name);
-
-    public NamedEntity() {
-    }
 
     @Override
     public boolean equals(Object o) {
