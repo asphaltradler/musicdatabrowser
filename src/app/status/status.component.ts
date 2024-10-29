@@ -12,7 +12,7 @@ import {HttpClient} from '@angular/common/http';
   templateUrl: './status.component.html',
   styleUrl: './status.component.css'
 })
-export class StatusComponent  implements OnInit {
+export class StatusComponent implements OnInit {
 
   private url: string;
   private status: string | undefined

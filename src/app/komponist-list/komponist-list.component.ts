@@ -1,14 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {Komponist} from '../entities/komponist';
 import {KomponistService} from '../services/komponist.service';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {SearchlistComponent} from '../searchlist/searchlist.component';
 
 @Component({
   selector: 'app-komponist-list',
   standalone: true,
   imports: [
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SearchlistComponent
   ],
   templateUrl: './komponist-list.component.html',
   styleUrl: './komponist-list.component.css'
@@ -16,32 +18,23 @@ import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular
 export class KomponistListComponent implements OnInit {
 
   komponisten: Komponist[] = [];
-  filter: string = '';
 
-  constructor(private komponistService: KomponistService) {
+  constructor(private komponistService: KomponistService, private searchListComponent: SearchlistComponent) {
   }
 
-  ngOnInit() {
-    this.filter = '';
-    this.search();
-  }
-
-  private search() {
-    this.komponistService.find(this.filter).subscribe(data => {
+  public search(searchText: string) {
+    console.log("Suche KOMPONIST nach " + searchText);
+    this.komponistService.find(searchText).subscribe(data => {
       this.komponisten = data;
     });
   }
 
-  searchForm = new FormGroup({
-    searchText: new FormControl('')
-  });
-
   getTitle() {
-    return "Alle Komponisten" + (this.filter ? " mit Name enthält " + this.filter : "");
+    const searchText = this.searchListComponent.searchForm.value.searchText;
+    return "Alle Komponisten" + (searchText ? " mit Name enthält " + searchText : "");
   }
 
-  handleSubmit() {
-    this.filter = this.searchForm.value.searchText || '';
-    this.search();
+  ngOnInit(): void {
+    this.search('');
   }
 }

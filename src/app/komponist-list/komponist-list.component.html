@@ -1,13 +1,6 @@
 <div class="card my-5">
   <div class="card-header">
-    <form [formGroup]="searchForm" (ngSubmit)="handleSubmit()">
-      <label for="searchtext">
-        Suchtext:
-        <input id="searchtext" formControlName="searchText"
-               type="text" value="{{searchForm.value.searchText}}"/>
-      </label>
-      <button type="submit">Submit</button>
-    </form>
+    <app-searchlist (searchText)="search($event)"></app-searchlist>
   </div>
   <div class="card-body">
     <h3>{{getTitle()}}</h3>
