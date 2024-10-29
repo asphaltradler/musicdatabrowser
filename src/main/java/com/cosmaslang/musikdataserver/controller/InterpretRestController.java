@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/musik/interpret")
@@ -28,10 +29,13 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
             return interpretRepository.findByNameContainingIgnoreCase(interpret).stream().sorted().toList();
         } else if (album != null) {
             List<Track> tracks = trackRepository.findByAlbumLike(album);
-            return tracks.stream().map(Track::getInterpreten).flatMap(Collection::stream).distinct().sorted().toList();
+            return tracks.stream().map(Track::getInterpreten).flatMap(Collection::stream).filter(Objects::nonNull).distinct().sorted().toList();
+        } else if (genre != null) {
+            List<Track> tracks = trackRepository.findByGenreLike(genre);
+            return tracks.stream().map(Track::getInterpreten).flatMap(Collection::stream).filter(Objects::nonNull).distinct().sorted().toList();
         } else if (komponist != null) {
             List<Track> tracks = trackRepository.findByKomponist(komponist);
-            return tracks.stream().map(Track::getInterpreten).flatMap(Collection::stream).distinct().sorted().toList();
+            return tracks.stream().map(Track::getInterpreten).flatMap(Collection::stream).filter(Objects::nonNull).distinct().sorted().toList();
         }
         return get(id, interpretRepository);
     }

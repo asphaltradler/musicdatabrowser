@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @RestController
@@ -32,11 +33,14 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
             //Das ganze könnte man alternativ auch wie in AlbumRepository/Controller über
             //eigene Queries mit JOIN machen
             List<Track> tracks = trackRepository.findByAlbumLike(album);
-            Stream<Komponist> komponistStream = tracks.stream().map(Track::getKomponist);
+            Stream<Komponist> komponistStream = tracks.stream().map(Track::getKomponist).filter(Objects::nonNull);
             return komponistStream.distinct().sorted().toList();
         } else if (genre != null) {
             List<Track> tracks = trackRepository.findByGenreLike(genre);
-            return tracks.stream().map(Track::getKomponist).distinct().sorted().toList();
+            return tracks.stream().map(Track::getKomponist).filter(Objects::nonNull).distinct().sorted().toList();
+        } else if (interpret != null) {
+            List<Track> tracks = trackRepository.findByInterpretenLike(interpret);
+            return tracks.stream().map(Track::getKomponist).filter(Objects::nonNull).distinct().sorted().toList();
         }
         return get(id, komponistRepository);
     }
