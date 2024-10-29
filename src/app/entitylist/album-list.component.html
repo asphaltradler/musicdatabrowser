@@ -9,14 +9,16 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Name</th>
+        <th scope="col">Tracks</th>
       </tr>
       </thead>
       <tbody>
-      @for (komponist of komponisten; track komponist.name) {
-      <tr>
-        <td>{{ komponist.id }}</td>
-        <td>{{ komponist.name }}</td>
-      </tr>
+      @for (album of entities; track album.id) {
+        <tr>
+          <td>{{ album.id }}</td>
+          <td>{{ album.name }}</td>
+          <td><a href="{{ album.track_url }}">&lt;Tracks&gt;</a></td>
+        </tr>
       }
       </tbody>
     </table>

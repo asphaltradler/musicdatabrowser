@@ -1,4 +1,4 @@
-export class Komponist {
-  id: number | undefined;
-  name: string | undefined;
+import {AbstractEntity} from './abstractEntity';
+
+export class Komponist extends AbstractEntity {
 }

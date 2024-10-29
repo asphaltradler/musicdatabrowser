@@ -1,5 +1,5 @@
-export class Album {
-  id: number | undefined;
-  name: string | undefined;
+import {AbstractEntity} from './abstractEntity';
+
+export class Album extends AbstractEntity {
   track_url: string | undefined;
 }
