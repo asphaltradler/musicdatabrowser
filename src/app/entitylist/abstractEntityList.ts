@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {AbstractEntityService} from '../services/abstractEntityService';
-import {Observable, Subscription} from 'rxjs';
+import {Observable} from 'rxjs';
 
 @Component({
   template: '',
@@ -27,10 +27,10 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   }
 
   public search(searchText: string): Observable<E[]> {
-    console.log("Suche " + this._namePlural + " nach " + searchText);
+    console.log(`Suche ${this._namePlural} nach ${searchText}`);
     const obs = this.service.find(searchText);
     obs.subscribe(data => {
-      this.title = "Alle " + this._namePlural + (searchText ? " für " + searchText : "");
+      this.title = `${data.length} ${this._namePlural}${searchText ? " für " + searchText : ""}`;
       this._entities = data;
     });
     return obs;

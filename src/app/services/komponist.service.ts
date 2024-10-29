@@ -3,7 +3,6 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Komponist} from '../entities/komponist';
 import {AbstractEntityService} from './abstractEntityService';
-import {Album} from '../entities/album';
 
 @Injectable({
   providedIn: 'root'

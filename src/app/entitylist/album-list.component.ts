@@ -4,7 +4,7 @@ import {AlbumService} from '../services/album.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SearchlistComponent} from '../searchlist/searchlist.component';
 import {EntityListComponent} from './abstractEntityList';
-import {Observable, Subscription} from 'rxjs';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-album-list',
