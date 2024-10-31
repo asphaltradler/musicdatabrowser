@@ -8,6 +8,6 @@ import {Album} from '../entities/album';
 })
 export class AlbumService extends AbstractEntityService<Album> {
   constructor(http: HttpClient) {
-    super(http, 'http://localhost:8080/musik/album/get', 'album');
+    super(http, 'album');
   }
 }

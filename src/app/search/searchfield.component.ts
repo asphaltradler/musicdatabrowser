@@ -8,9 +8,9 @@ import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular
     FormsModule,
     ReactiveFormsModule
   ],
-  templateUrl: './searchlist.component.html',
+  templateUrl: './searchfield.component.html',
 })
-export class SearchlistComponent {
+export class SearchfieldComponent {
   searchText = output<string>();
 
   searchForm = new FormGroup({

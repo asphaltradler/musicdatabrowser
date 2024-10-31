@@ -12,12 +12,12 @@
       </tr>
       </thead>
       <tbody>
-      @for (komponist of entities; track komponist.name) {
-      <tr>
-        <td>{{ komponist.id }}</td>
-        <td>{{ komponist.name }}</td>
-      </tr>
-      }
+        @for (ent of entities; track ent.name) {
+          <tr>
+            <td>{{ ent.id }}</td>
+            <td>{{ ent.name }}</td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>

@@ -30,6 +30,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     console.log(`Suche ${this._namePlural} nach ${searchText}`);
     const obs = this.service.find(searchText);
     obs.subscribe(data => {
+      console.log("Setting data");
       this.title = `${data.length} ${this._namePlural}${searchText ? " für " + searchText : ""}`;
       this._entities = data;
     });

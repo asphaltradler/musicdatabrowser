@@ -4,12 +4,12 @@ import {provideRouter} from '@angular/router';
 import {provideHttpClient} from "@angular/common/http";
 
 import {routes} from './app.routes';
-import {SearchlistComponent} from './searchlist/searchlist.component';
+import {SearchfieldComponent} from './search/searchfield.component';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({eventCoalescing: true}),
     provideHttpClient(),
     provideRouter(routes),
-    SearchlistComponent
+    SearchfieldComponent
   ],
 };
