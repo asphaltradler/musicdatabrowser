@@ -21,7 +21,7 @@ export class KomponistListComponent extends EntityListComponent<Komponist> {
   constructor(service: KomponistService) {
     super(service);
     this.name = Komponist.name;
-    this.namePlural = "Komponisten";
+    this.namePlural = 'Komponisten';
   }
 
   public override search(searchText: string): Observable<Komponist[]> {

@@ -21,15 +21,15 @@ export class AlbumListComponent extends EntityListComponent<Album> {
   constructor(albumService: AlbumService) {
     super(albumService);
     this.name = Album.name;
-    this.namePlural = "Alben";
+    this.namePlural = 'Alben';
   }
 
   public override search(searchText: string): Observable<Album[]> {
     const obs = super.search(searchText);
     obs.subscribe(() => {
-      console.log("Create URLs for data");
+      console.log('Create URLs for data');
       for (const alb of this.entities) {
-        alb.track_url = "http://localhost:8080/musik/track/get?album-id=" + alb.id;
+        alb.track_url = 'http://localhost:8080/musik/track/get?album-id=' + alb.id;
       }
     });
     return obs;

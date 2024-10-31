@@ -1,6 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {provideHttpClient} from '@angular/common/http';
 import {InterpretListComponent} from './interpret-list.component';
+import {InterpretService} from '../services/interpret.service';
 
 describe('InterpretListComponent', () => {
   let component: InterpretListComponent;
@@ -8,7 +9,11 @@ describe('InterpretListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InterpretListComponent]
+      imports: [InterpretListComponent],
+      providers: [
+        InterpretService,
+        provideHttpClient()
+      ],
     })
     .compileComponents();
 

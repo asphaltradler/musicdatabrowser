@@ -17,6 +17,6 @@ export class InterpretListComponent extends EntityListComponent<Interpret> {
   constructor(interpretService: InterpretService) {
     super(interpretService);
     this.name = Interpret.name;
-    this.namePlural = "Interpreten";
+    this.namePlural = 'Interpreten';
   }
 }

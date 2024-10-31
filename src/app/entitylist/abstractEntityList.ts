@@ -7,10 +7,10 @@ import {Observable} from 'rxjs';
   template: '',
 })
 export abstract class EntityListComponent<E extends AbstractEntity> implements OnInit {
-  private title: string = "";
+  private title: string = '';
   private _entities: E[] = [];
-  private _name: string = "";
-  private _namePlural: string = "";
+  private _name: string = '';
+  private _namePlural: string = '';
 
   constructor(private service: AbstractEntityService<E>) {}
 
@@ -30,8 +30,8 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     console.log(`Suche ${this._namePlural} nach ${searchText}`);
     const obs = this.service.find(searchText);
     obs.subscribe(data => {
-      console.log("Setting data");
-      this.title = `${data.length} ${this._namePlural}${searchText ? " für " + searchText : ""}`;
+      console.log('Setting data');
+      this.title = `${data.length} ${this._namePlural}${searchText ? ' für ' + searchText : ''}`;
       this._entities = data;
     });
     return obs;
