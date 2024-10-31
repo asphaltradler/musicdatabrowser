@@ -12,10 +12,9 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   private _name: string = '';
   private _namePlural: string = '';
 
-  constructor(private service: AbstractEntityService<E>) {}
-
-  set name(value: string) {
-    this._name = value;
+  constructor(private service: AbstractEntityService<E>) {
+    this._name = service.entityName;
+    console.log(`ListComponent for ${this._name} created`);
   }
 
   set namePlural(value: string) {

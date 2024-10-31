@@ -20,7 +20,6 @@ import {Observable} from 'rxjs';
 export class KomponistListComponent extends EntityListComponent<Komponist> {
   constructor(service: KomponistService) {
     super(service);
-    this.name = Komponist.name;
     this.namePlural = 'Komponisten';
   }
 

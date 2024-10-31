@@ -18,9 +18,8 @@ import {Observable} from 'rxjs';
   styleUrl: './album-list.component.css'
 })
 export class AlbumListComponent extends EntityListComponent<Album> {
-  constructor(albumService: AlbumService) {
-    super(albumService);
-    this.name = Album.name;
+  constructor(service: AlbumService) {
+    super(service);
     this.namePlural = 'Alben';
   }
 

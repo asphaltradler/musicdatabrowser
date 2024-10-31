@@ -16,7 +16,6 @@ import {SearchfieldComponent} from '../search/searchfield.component';
 export class InterpretListComponent extends EntityListComponent<Interpret> {
   constructor(interpretService: InterpretService) {
     super(interpretService);
-    this.name = Interpret.name;
     this.namePlural = 'Interpreten';
   }
 }

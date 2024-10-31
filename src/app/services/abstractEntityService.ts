@@ -7,7 +7,7 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
   url: string;
 
   constructor(protected http: HttpClient,
-              protected entityName: string) {
+              public entityName: string) {
     this.url = this.baseUrl + entityName + '/get';
   }
 
