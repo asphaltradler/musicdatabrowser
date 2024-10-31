@@ -25,6 +25,7 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
 
     @Override
     protected List<Genre> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
+        super.get(track, album, komponist, werk, genre, interpret, id);
         if (genre != null) {
             return genreRepository.findByNameContainingIgnoreCase(genre).stream().sorted().toList();
         } else if (album != null) {

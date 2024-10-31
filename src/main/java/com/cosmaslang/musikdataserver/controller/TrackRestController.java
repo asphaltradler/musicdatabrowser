@@ -3,6 +3,7 @@ package com.cosmaslang.musikdataserver.controller;
 import com.cosmaslang.musikdataserver.db.entities.Track;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import java.util.Optional;
 public class TrackRestController extends AbstractMusikRestController<Track> {
     @Override
     public List<Track> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
+        super.get(track, album, komponist, werk, genre, interpret, id);
         if (track != null) {
             return trackRepository.findByNameContainingIgnoreCase(track).stream().sorted().toList();
         } else if (album != null) {

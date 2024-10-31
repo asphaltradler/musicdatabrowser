@@ -13,11 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
 @NoRepositoryBean
-@CrossOrigin(origins = "http://localhost:4200")
+//CORS
+@CrossOrigin(originPatterns = "http://localhost:42*")
 public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     protected Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -39,13 +41,17 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     protected abstract String remove(@RequestParam() Long id);
 
     @RequestMapping(value = "/get", method = {RequestMethod.GET, RequestMethod.POST})
-    protected abstract List<ENTITY> get(@RequestParam(required = false) String track,
+    protected List<ENTITY> get(@RequestParam(required = false) String track,
                                         @RequestParam(required = false) String album,
                                         @RequestParam(required = false) String komponist,
                                         @RequestParam(required = false) String werk,
                                         @RequestParam(required = false) String genre,
                                         @RequestParam(required = false) String interpret,
-                                        @RequestParam(required = false) Long id);
+                                        @RequestParam(required = false) Long id) {
+        logger.info(MessageFormat.format("{0} get track={1}, album={2}, komponist={3}, werk={4}, genre={5}, interpret={6}, id={7}", this.getClass().getName(),
+                track, album, komponist, werk, genre, interpret, id));
+        return null;
+    }
 
     /**
      * Default getter nach id

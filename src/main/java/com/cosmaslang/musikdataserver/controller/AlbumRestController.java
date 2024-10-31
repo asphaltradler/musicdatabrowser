@@ -14,6 +14,7 @@ import java.util.Optional;
 public class AlbumRestController extends AbstractMusikRestController<Album> {
     @Override
     public List<Album> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
+        super.get(track, album, komponist, werk, genre, interpret, id);
         if (album != null) {
             return albumRepository.findByNameContainingIgnoreCase(album).stream().sorted().toList();
         } else if (komponist != null) {

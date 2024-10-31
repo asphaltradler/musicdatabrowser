@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+//CORS
+@CrossOrigin(originPatterns = "http://localhost:42*")
 @RequestMapping({"/", "/musik"})
 public class HelloController {
     @Autowired

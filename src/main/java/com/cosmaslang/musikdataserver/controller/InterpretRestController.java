@@ -25,6 +25,7 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
 
     @Override
     protected List<Interpret> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
+        super.get(track, album, komponist, werk, genre, interpret, id);
         if (interpret != null) {
             return interpretRepository.findByNameContainingIgnoreCase(interpret).stream().sorted().toList();
         } else if (album != null) {
