@@ -1,5 +1,5 @@
 FROM node:slim AS deps
-#LABEL authors="CosmasLang"
+LABEL authors="CosmasLang"
 #WORKDIR /usr/src/app
 WORKDIR /build
 #COPY . /usr/src/app
