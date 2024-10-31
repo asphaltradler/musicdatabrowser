@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {AbstractEntityService} from '../services/abstractEntityService';
-import {Observable} from 'rxjs';
+import {Subscription} from 'rxjs';
 
 @Component({
   template: '',
 })
-export abstract class EntityListComponent<E extends AbstractEntity> implements OnInit {
+export abstract class AbstractEntityList<E extends AbstractEntity> implements OnInit {
   private title: string = '';
   private _entities: E[] = [];
   private _name: string = '';
@@ -25,15 +25,15 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     return this._entities;
   }
 
-  public search(searchText: string): Observable<E[]> {
+  public search(searchText: string): Subscription {
     console.log(`Suche ${this._namePlural} nach ${searchText}`);
     const obs = this.service.find(searchText);
-    obs.subscribe(data => {
+    const subscription = obs.subscribe(data => {
       console.log('Setting data');
       this.title = `${data.length} ${this._namePlural}${searchText ? ' für ' + searchText : ''}`;
       this._entities = data;
     });
-    return obs;
+    return subscription;
   }
 
   getTitle() {

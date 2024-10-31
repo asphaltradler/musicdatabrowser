@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {EntityListComponent} from './abstractEntityList';
+import {AbstractEntityList} from './abstractEntityList';
 import {Interpret} from '../entities/interpret';
 import {InterpretService} from '../services/interpret.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
@@ -13,7 +13,7 @@ import {SearchfieldComponent} from '../search/searchfield.component';
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'
 })
-export class InterpretListComponent extends EntityListComponent<Interpret> {
+export class InterpretListComponent extends AbstractEntityList<Interpret> {
   constructor(interpretService: InterpretService) {
     super(interpretService);
     this.namePlural = 'Interpreten';

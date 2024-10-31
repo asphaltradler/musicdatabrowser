@@ -3,8 +3,7 @@ import {Komponist} from '../entities/komponist';
 import {KomponistService} from '../services/komponist.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SearchfieldComponent} from '../search/searchfield.component';
-import {EntityListComponent} from './abstractEntityList';
-import {Observable} from 'rxjs';
+import {AbstractEntityList} from './abstractEntityList';
 
 @Component({
   selector: 'app-komponist-list',
@@ -17,13 +16,13 @@ import {Observable} from 'rxjs';
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'
 })
-export class KomponistListComponent extends EntityListComponent<Komponist> {
+export class KomponistListComponent extends AbstractEntityList<Komponist> {
   constructor(service: KomponistService) {
     super(service);
     this.namePlural = 'Komponisten';
   }
 
-  public override search(searchText: string): Observable<Komponist[]> {
+  public override search(searchText: string) {
     return super.search(searchText);
   }
 }
