@@ -1,9 +1,6 @@
 package com.cosmaslang.musikdataserver.controller;
 
-import com.cosmaslang.musikdataserver.db.entities.Genre;
-import com.cosmaslang.musikdataserver.db.entities.Interpret;
-import com.cosmaslang.musikdataserver.db.entities.Komponist;
-import com.cosmaslang.musikdataserver.db.entities.NamedEntity;
+import com.cosmaslang.musikdataserver.db.entities.*;
 import com.cosmaslang.musikdataserver.db.repositories.AlbumRepository;
 import com.cosmaslang.musikdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikdataserver.db.repositories.TrackRepository;
@@ -29,6 +26,8 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     AlbumRepository albumRepository;
     @Autowired
     NamedEntityRepository<Komponist> komponistRepository;
+    @Autowired
+    NamedEntityRepository<Werk> werkRepository;
     @Autowired
     NamedEntityRepository<Genre> genreRepository;
     @Autowired
