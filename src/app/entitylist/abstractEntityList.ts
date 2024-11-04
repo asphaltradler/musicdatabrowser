@@ -28,12 +28,14 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   public search(searchText: string): Subscription {
     console.log(`Suche ${this._namePlural} nach ${searchText}`);
     const obs = this.service.find(searchText);
-    const subscription = obs.subscribe(data => {
+    return obs.subscribe(data => {
       console.log('Setting data');
       this.title = `${data.length} ${this._namePlural}${searchText ? ' für ' + searchText : ''}`;
       this._entities = data;
+      for (const ent of this._entities) {
+        ent.alben = `http://localhost:8080/musik/album/get?${this._name}Id=${ent.id}`;
+      }
     });
-    return subscription;
   }
 
   getTitle() {

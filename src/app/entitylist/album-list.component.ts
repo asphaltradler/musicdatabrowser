@@ -27,7 +27,7 @@ export class AlbumListComponent extends AbstractEntityList<Album> {
     subscription.add(() => {
       console.log('Create URLs for data');
       for (const alb of this.entities) {
-        alb.track_url = 'http://localhost:8080/musik/track/get?album-id=' + alb.id;
+        alb.track_url = 'http://localhost:8080/musik/track/get?albumId=' + alb.id;
       }
     });
     return subscription;

@@ -9,6 +9,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Name</th>
+        <th scope="col">Album</th>
       </tr>
       </thead>
       <tbody>
@@ -16,6 +17,7 @@
           <tr>
             <td>{{ ent.id }}</td>
             <td>{{ ent.name }}</td>
+            <td><a href="{{ ent.alben }}">&lt;Alben&gt;</a></td>
           </tr>
         }
       </tbody>

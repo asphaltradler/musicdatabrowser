@@ -8,7 +8,7 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
 
   constructor(protected http: HttpClient,
               public entityName: string) {
-    this.url = this.baseUrl + entityName + '/get';
+    this.url = this.baseUrl + entityName + '/find';
   }
 
   public find(searchString: string = ''): Observable<E[]> {
