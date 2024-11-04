@@ -14,7 +14,7 @@ import java.util.Objects;
 @RequestMapping("/musik/genre")
 public class GenreRestController extends AbstractMusikRestController<Genre> {
     @Override
-    public Genre findById(@PathVariable Long id) {
+    public Genre getById(@PathVariable Long id) {
         return getEntityIfExists(id, genreRepository);
     }
 
@@ -24,8 +24,8 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
     }
 
     @Override
-    protected List<Genre> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        super.get(track, album, komponist, werk, genre, interpret, id);
+    protected List<Genre> find(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
+        super.find(track, album, komponist, werk, genre, interpret, id);
         if (genre != null) {
             return genreRepository.findByNameContainingIgnoreCase(genre).stream().sorted().toList();
         } else if (album != null) {

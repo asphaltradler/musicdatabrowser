@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 @RequestMapping("/musik/werk")
 public class WerkRestController extends AbstractMusikRestController<Werk> {
     @Override
-    public Werk findById(@PathVariable Long id) {
+    public Werk getById(@PathVariable Long id) {
         return getEntityIfExists(id, werkRepository);
     }
 
@@ -24,17 +24,12 @@ public class WerkRestController extends AbstractMusikRestController<Werk> {
     }
 
     @Override
-    protected List<Werk> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        super.get(track, album, komponist, werk, genre, interpret, id);
+    protected List<Werk> find(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
+        super.find(track, album, komponist, werk, genre, interpret, id);
         if (werk != null) {
             return werkRepository.findByNameContainingIgnoreCase(werk).stream().sorted().toList();
         } else if (album != null) {
-            //Hier können mehrere Komponisten erscheinen, da die Zuordnung track-weise ist.
-            //Außerdem können durch "like" ja mehrere Alben gefunden werden.
-            //Das ganze könnte man alternativ auch wie in AlbumRepository/Controller über
-            //eigene Queries mit JOIN machen
-            List<Track> tracks = trackRepository.findByAlbumLike(album);
-            Stream<Werk> werkStream = tracks.stream().map(Track::getWerk).filter(Objects::nonNull);
+            Stream<Werk> werkStream = trackRepository.findByAlbumLike(album).stream().map(Track::getWerk).filter(Objects::nonNull);
             return werkStream.distinct().sorted().toList();
         } else if (genre != null) {
             List<Track> tracks = trackRepository.findByGenreLike(genre);

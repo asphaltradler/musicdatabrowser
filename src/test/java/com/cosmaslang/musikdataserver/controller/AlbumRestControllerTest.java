@@ -70,7 +70,7 @@ class AlbumRestControllerTest {
     }
 
     @Test
-    void getAllAlbumsFromController() {
+    void findAllAlbumsFromController() {
         List<Album> allAlbums = albumRestController.getAll(albumRepository);
         assertTrue(allAlbums.contains(album));
         assertEquals(albumRepository.count(), allAlbums.size());
@@ -84,7 +84,7 @@ class AlbumRestControllerTest {
     }
 
     @Test
-    void getAllTracksFromController() {
+    void findAllTracksFromController() {
         List<Track> allTracks = trackRestController.getAll(trackRepository);
         assertEquals(trackRepository.count(), allTracks.size());
         assertTrue(allTracks.contains(track1));
@@ -100,7 +100,7 @@ class AlbumRestControllerTest {
     }
 
     @Test
-    void getTracksInAlbum() {
+    void findTracksInAlbum() {
         Album album = albumRepository.findByName(ALBUM_1);
         assertNotNull(album);
 
@@ -110,7 +110,7 @@ class AlbumRestControllerTest {
     }
 
     @Test
-    void getTracksForAlbum() {
+    void findTracksForAlbum() {
         List<Track> albumTracks = trackRepository.findByAlbumLike(ALBUM_1);
         assertEquals(2, albumTracks.size());
         assertTrue(albumTracks.contains(trackRepository.findByName(TRACK_1)));
@@ -119,8 +119,8 @@ class AlbumRestControllerTest {
 
     @Test
     @Disabled("Verdrahtung zu Controller und seinem Repository funktioniert nicht")
-    void getTracksForAlbumFromController() {
-        List<Track> albumTracks = trackRestController.get(null, ALBUM_1, null, null, null, null, null);
+    void findTracksForAlbumFromController() {
+        List<Track> albumTracks = trackRestController.find(null, ALBUM_1, null, null, null, null, null);
         assertEquals(2, albumTracks.size());
         assertTrue(albumTracks.contains(track1));
         assertTrue(albumTracks.contains(track2));

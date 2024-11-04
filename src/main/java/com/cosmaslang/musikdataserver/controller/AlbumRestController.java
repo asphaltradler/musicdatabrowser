@@ -13,8 +13,8 @@ import java.util.Optional;
 @RequestMapping("/musik/album")
 public class AlbumRestController extends AbstractMusikRestController<Album> {
     @Override
-    public List<Album> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        super.get(track, album, komponist, werk, genre, interpret, id);
+    public List<Album> find(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
+        super.find(track, album, komponist, werk, genre, interpret, id);
         if (album != null) {
             return albumRepository.findByNameContainingIgnoreCase(album).stream().sorted().toList();
         } else if (komponist != null) {
@@ -36,7 +36,30 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
     }
 
     @Override
-    public Album findById(@PathVariable Long id) {
+    public List<Album> get(@RequestParam(required = false) Long trackId,
+                              @RequestParam(required = false) Long albumId,
+                              @RequestParam(required = false) Long komponistId,
+                              @RequestParam(required = false) Long werkId,
+                              @RequestParam(required = false) Long genreId,
+                              @RequestParam(required = false) Long interpretId) {
+        super.get(trackId, albumId, komponistId, werkId, genreId, interpretId);
+        if (albumId != null) {
+            return getEntitiesIfExists(albumId, albumRepository);
+        } else if (komponistId != null) {
+            return albumRepository.findByKomponistId(komponistId);
+        } else if (werkId != null) {
+            return albumRepository.findByWerkId(werkId);
+        } else if (genreId != null) {
+            return albumRepository.findByGenreId(genreId);
+        } else if (interpretId != null) {
+            return albumRepository.findByInterpretId(interpretId);
+        }
+
+        return getAll(albumRepository);
+    }
+
+    @Override
+    public Album getById(@PathVariable Long id) {
         return getEntityIfExists(id, albumRepository);
     }
 

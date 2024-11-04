@@ -3,7 +3,6 @@ package com.cosmaslang.musikdataserver.controller;
 import com.cosmaslang.musikdataserver.db.entities.Track;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,8 +10,8 @@ import java.util.Optional;
 @RequestMapping("/musik/track")
 public class TrackRestController extends AbstractMusikRestController<Track> {
     @Override
-    public List<Track> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        super.get(track, album, komponist, werk, genre, interpret, id);
+    public List<Track> find(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
+        super.find(track, album, komponist, werk, genre, interpret, id);
         if (track != null) {
             return trackRepository.findByNameContainingIgnoreCase(track).stream().sorted().toList();
         } else if (album != null) {
@@ -33,7 +32,32 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
     }
 
     @Override
-    public Track findById(@PathVariable Long id) {
+    public List<Track> get(@RequestParam(required = false) Long trackId,
+                                  @RequestParam(required = false) Long albumId,
+                                  @RequestParam(required = false) Long komponistId,
+                                  @RequestParam(required = false) Long werkId,
+                                  @RequestParam(required = false) Long genreId,
+                                  @RequestParam(required = false) Long interpretId) {
+        super.get(trackId, albumId, komponistId, werkId, genreId, interpretId);
+        if (trackId != null) {
+            return getEntitiesIfExists(trackId, trackRepository);
+        } else if (albumId != null) {
+            return trackRepository.findByAlbumId(albumId);
+        } else if (komponistId != null) {
+            return trackRepository.findByKomponistId(komponistId);
+        } else if (werkId != null) {
+            return trackRepository.findByWerkId(werkId);
+        } else if (genreId != null) {
+            return trackRepository.findByGenreId(genreId);
+        } else if (interpretId != null) {
+            return trackRepository.findByInterpretId(interpretId);
+        }
+
+        return getAll(trackRepository);
+    }
+
+    @Override
+    public Track getById(@PathVariable Long id) {
         return getEntityIfExists(id, trackRepository);
     }
 

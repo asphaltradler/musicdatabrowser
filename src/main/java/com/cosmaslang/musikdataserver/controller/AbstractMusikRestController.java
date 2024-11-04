@@ -34,21 +34,33 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     NamedEntityRepository<Interpret> interpretRepository;
 
     @GetMapping("/id/{id}")
-    protected abstract ENTITY findById(@PathVariable Long id);
+    protected abstract ENTITY getById(@PathVariable Long id);
 
     @DeleteMapping("/remove")
     protected abstract String remove(@RequestParam() Long id);
 
-    @RequestMapping(value = "/get", method = {RequestMethod.GET, RequestMethod.POST})
-    protected List<ENTITY> get(@RequestParam(required = false) String track,
-                                        @RequestParam(required = false) String album,
-                                        @RequestParam(required = false) String komponist,
-                                        @RequestParam(required = false) String werk,
-                                        @RequestParam(required = false) String genre,
-                                        @RequestParam(required = false) String interpret,
-                                        @RequestParam(required = false) Long id) {
-        logger.info(MessageFormat.format("{0} get track={1}, album={2}, komponist={3}, werk={4}, genre={5}, interpret={6}, id={7}", this.getClass().getName(),
+    @RequestMapping(value = "/find", method = {RequestMethod.GET, RequestMethod.POST})
+    protected List<ENTITY> find(@RequestParam(required = false) String track,
+                                @RequestParam(required = false) String album,
+                                @RequestParam(required = false) String komponist,
+                                @RequestParam(required = false) String werk,
+                                @RequestParam(required = false) String genre,
+                                @RequestParam(required = false) String interpret,
+                                @RequestParam(required = false) Long id) {
+        logger.info(MessageFormat.format("{0} find track={1}, album={2}, komponist={3}, werk={4}, genre={5}, interpret={6}, id={7}", this.getClass().getName(),
                 track, album, komponist, werk, genre, interpret, id));
+        return null;
+    }
+
+    @RequestMapping(value = "/get", method = {RequestMethod.GET, RequestMethod.POST})
+    protected List<ENTITY> get(@RequestParam(required = false) Long trackId,
+                                @RequestParam(required = false) Long albumId,
+                                @RequestParam(required = false) Long komponistId,
+                                @RequestParam(required = false) Long werkId,
+                                @RequestParam(required = false) Long genreId,
+                                @RequestParam(required = false) Long interpretId) {
+        logger.info(MessageFormat.format("{0} get trackId={1}, albumId={2}, komponistId={3}, werkId={4}, genreId={5}, interpretId={6}", this.getClass().getName(),
+                trackId, albumId, komponistId, werkId, genreId, interpretId));
         return null;
     }
 
@@ -75,7 +87,6 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);
     }
-
 
     protected List<ENTITY> getAll(NamedEntityRepository<ENTITY> repository) {
         Iterator<ENTITY> entityIt = repository.findAll().iterator();

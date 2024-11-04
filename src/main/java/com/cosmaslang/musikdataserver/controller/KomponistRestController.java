@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -15,7 +14,7 @@ import java.util.stream.Stream;
 @RequestMapping("/musik/komponist")
 public class KomponistRestController extends AbstractMusikRestController<Komponist> {
     @Override
-    public Komponist findById(@PathVariable Long id) {
+    public Komponist getById(@PathVariable Long id) {
         return getEntityIfExists(id, komponistRepository);
     }
 
@@ -25,8 +24,8 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
     }
 
     @Override
-    protected List<Komponist> get(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        super.get(track, album, komponist, werk, genre, interpret, id);
+    protected List<Komponist> find(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
+        super.find(track, album, komponist, werk, genre, interpret, id);
         if (komponist != null) {
             return komponistRepository.findByNameContainingIgnoreCase(komponist).stream().sorted().toList();
         } else if (album != null) {
