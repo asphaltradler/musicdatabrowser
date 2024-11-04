@@ -4,6 +4,7 @@ import {Werk} from '../entities/werk';
 import {WerkService} from '../services/werk.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SearchfieldComponent} from '../search/searchfield.component';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-werk-list',
@@ -17,8 +18,8 @@ import {SearchfieldComponent} from '../search/searchfield.component';
   styleUrl: './entity-list.component.css'
 })
 export class WerkListComponent extends AbstractEntityList<Werk> {
-  constructor(service: WerkService) {
-    super(service);
+  constructor(service: WerkService, route: ActivatedRoute) {
+    super(service, route);
     this.namePlural = 'Werke';
   }
 

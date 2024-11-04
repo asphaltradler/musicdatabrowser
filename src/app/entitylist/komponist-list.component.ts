@@ -4,6 +4,7 @@ import {KomponistService} from '../services/komponist.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SearchfieldComponent} from '../search/searchfield.component';
 import {AbstractEntityList} from './abstractEntityList';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-komponist-list',
@@ -17,9 +18,10 @@ import {AbstractEntityList} from './abstractEntityList';
   styleUrl: './entity-list.component.css'
 })
 export class KomponistListComponent extends AbstractEntityList<Komponist> {
-  constructor(service: KomponistService) {
-    super(service);
+  constructor(service: KomponistService, route: ActivatedRoute) {
+    super(service, route);
     this.namePlural = 'Komponisten';
+
   }
 
   public override search(searchText: string) {

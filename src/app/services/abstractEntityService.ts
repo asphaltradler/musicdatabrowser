@@ -4,15 +4,31 @@ import {AbstractEntity} from '../entities/abstractEntity';
 
 export abstract class AbstractEntityService<E extends AbstractEntity> {
   baseUrl = 'http://localhost:8080/musik/';
-  url: string;
+  findUrl: string;
+  getUrl: string;
 
   constructor(protected http: HttpClient,
               public entityName: string) {
-    this.url = this.baseUrl + entityName + '/find';
+    this.findUrl = this.baseUrl + entityName.toLowerCase() + '/find';
+    this.getUrl = this.baseUrl + entityName.toLowerCase() + '/get';
   }
 
   public find(searchString: string = ''): Observable<E[]> {
-    const params = new HttpParams().set(this.entityName, searchString);
-    return this.http.get<E[]>(this.url, {params});
+    const params = new HttpParams().set(this.entityName.toLowerCase(), searchString);
+    return this.http.get<E[]>(this.findUrl, {params});
   }
+
+  public findBy(otherEntityName: string, id: string): Observable<E[]> {
+    const params = new HttpParams().set(otherEntityName, id);
+    return this.http.get<E[]>(this.getUrl, {params});
+  }
+
+  public get(id?: string): Observable<E[]> {
+    if (id) {
+      const params = new HttpParams().set(this.entityName.toLowerCase() + 'Id', id);
+      return this.http.get<E[]>(this.getUrl, {params});
+    } else {
+      return this.http.get<E[]>(this.getUrl);
+    }
+   }
 }

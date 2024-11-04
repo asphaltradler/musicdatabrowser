@@ -2,17 +2,21 @@ import {Component, OnInit} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {AbstractEntityService} from '../services/abstractEntityService';
 import {Subscription} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
+import {Album} from '../entities/album';
 
 @Component({
   template: '',
 })
 export abstract class AbstractEntityList<E extends AbstractEntity> implements OnInit {
-  private title: string = '';
-  private _entities: E[] = [];
-  private _name: string = '';
-  private _namePlural: string = '';
+  protected routeUrl = location.origin;
+  protected title: string = '';
+  protected _entities: E[] = [];
+  protected _name: string = '';
+  protected _namePlural: string = '';
 
-  constructor(private service: AbstractEntityService<E>) {
+  constructor(protected service: AbstractEntityService<E>,
+              protected route: ActivatedRoute) {
     this._name = service.entityName;
     console.log(`ListComponent for ${this._name} created`);
   }
@@ -25,17 +29,22 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
     return this._entities;
   }
 
-  public search(searchText: string): Subscription {
+  public search(searchText?: string): Subscription {
     console.log(`Suche ${this._namePlural} nach ${searchText}`);
     const obs = this.service.find(searchText);
     return obs.subscribe(data => {
       console.log('Setting data');
       this.title = `${data.length} ${this._namePlural}${searchText ? ' für ' + searchText : ''}`;
       this._entities = data;
-      for (const ent of this._entities) {
-        ent.alben = `http://localhost:8080/musik/album/get?${this._name}Id=${ent.id}`;
-      }
+      this.fillData();
     });
+  }
+
+  protected fillData() {
+    for (const ent of this._entities) {
+      //TODO über Router erstellen
+      ent.alben = `${this.routeUrl}/${Album.name}?${this._name.toLowerCase()}Id=${ent.id}`;
+    }
   }
 
   getTitle() {
@@ -43,6 +52,18 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   }
 
   ngOnInit(): void {
-    this.search('');
-  }
+    const id = this.route.snapshot.queryParamMap.get('id');
+    if (id) {
+      console.log(`Suche ${this._namePlural} nach Id=${id}`);
+      const obs = this.service.get(id);
+      obs.subscribe(data => {
+        console.log('Setting data');
+        this.title = `${data.length} ${this._namePlural}${id ? ' für Id=' + id : ''}`;
+        this._entities = data;
+        this.fillData();
+      });
+    } else {
+      this.search();
+    }
+   }
 }
