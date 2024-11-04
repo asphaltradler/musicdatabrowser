@@ -3,7 +3,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
 
 @Component({
-  selector: 'app-search-album',
+  //selector: 'app-status',
   standalone: true,
   imports: [
     FormsModule,
@@ -14,7 +14,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class StatusComponent implements OnInit {
 
-  private url: string;
+  private readonly url: string;
   private status: string | undefined
 
   constructor(private http: HttpClient) {

@@ -3,7 +3,7 @@ import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular
 
 @Component({
   standalone: true,
-  selector: 'app-searchlist',
+  selector: 'app-searchfield',
   imports: [
     FormsModule,
     ReactiveFormsModule

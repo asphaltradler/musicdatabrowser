@@ -1,10 +1,10 @@
-<div class="card-header">
-  <form [formGroup]="searchForm" (ngSubmit)="handleSubmit()">
-    <label for="searchtext">
-      Suchtext:
-      <input id="searchtext" formControlName="searchText"
-             type="text" (input)="handleSubmit()"/>
-    </label>
-    <button type="submit">Submit</button>
-  </form>
-</div>
+<form [formGroup]="searchForm" (ngSubmit)="handleSubmit()">
+  <label for="searchtext" class="col-form-label">
+    Suchtext:
+    &nbsp;
+    <input id="searchtext" formControlName="searchText"
+           type="text" (input)="handleSubmit()"/>
+  </label>
+  &nbsp;
+  <button type="submit">Submit</button>
+</form>
