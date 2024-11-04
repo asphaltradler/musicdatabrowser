@@ -38,7 +38,6 @@ export class AlbumListComponent extends AbstractEntityList<Album> {
   }
 
   override ngOnInit() {
-    super.ngOnInit();
     const map = this.route.snapshot.queryParamMap;
     const allowedNames = [ Komponist.name, Werk.name, Interpret.name ];
     for (const name of allowedNames) {
@@ -53,8 +52,9 @@ export class AlbumListComponent extends AbstractEntityList<Album> {
           this._entities = data;
           this.fillData();
         });
-        break;
+        return;
       }
     }
+    super.ngOnInit();
   }
 }
