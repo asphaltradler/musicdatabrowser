@@ -20,11 +20,5 @@ import {ActivatedRoute} from '@angular/router';
 export class KomponistListComponent extends AbstractEntityList<Komponist> {
   constructor(service: KomponistService, route: ActivatedRoute) {
     super(service, route);
-    this.namePlural = 'Komponisten';
-
-  }
-
-  public override search(searchText: string) {
-    return super.search(searchText);
   }
 }

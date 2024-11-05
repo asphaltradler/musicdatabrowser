@@ -20,10 +20,5 @@ import {ActivatedRoute} from '@angular/router';
 export class WerkListComponent extends AbstractEntityList<Werk> {
   constructor(service: WerkService, route: ActivatedRoute) {
     super(service, route);
-    this.namePlural = 'Werke';
-  }
-
-  public override search(searchText: string) {
-    return super.search(searchText);
   }
 }

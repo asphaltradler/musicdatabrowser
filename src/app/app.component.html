@@ -5,21 +5,13 @@
         <div class="card-body">
           <h2 class="card-title text-center text-white py-3">{{ title }}</h2>
           <ul class="text-center list-inline py-3">
+            @for (r of routes; track r.path) {
+              @if (r.path) {
             <li class="list-inline-item">
-              <a routerLink="{{ Album.name}}" class="btn btn-info">Liste aller Alben</a>
+              <a routerLink="{{ r.path }}" class="btn btn-outline-light" routerLinkActive="active" title="{{ r.title }}">{{ r.title }}</a>
             </li>
-            <li class="list-inline-item">
-              <a routerLink="{{ Komponist.name }}" class="btn btn-info">Liste aller Komponisten</a>
-            </li>
-            <li class="list-inline-item">
-              <a routerLink="{{ Werk.name}}" class="btn btn-info">Liste aller Werke</a>
-            </li>
-            <li class="list-inline-item">
-              <a routerLink="{{ Interpret.name }}" class="btn btn-info">Liste aller Interpreten</a>
-            </li>
-            <li class="list-inline-item">
-              <a routerLink="status" class="btn btn-info">Status</a>
-            </li>
+              }
+            }
           </ul>
         </div>
       </div>

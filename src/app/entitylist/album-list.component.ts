@@ -23,7 +23,6 @@ import {Werk} from '../entities/werk';
 export class AlbumListComponent extends AbstractEntityList<Album> {
   constructor(service: AlbumService, route: ActivatedRoute) {
     super(service, route);
-    this.namePlural = 'Alben';
   }
 
   public override search(searchText: string) {
@@ -37,21 +36,20 @@ export class AlbumListComponent extends AbstractEntityList<Album> {
     return subscription;
   }
 
-  override ngOnInit() {
-    const map = this.route.snapshot.queryParamMap;
+  public override ngOnInit() {
+    const queryParamMap = this.route.snapshot.queryParamMap;
+    const entityName = queryParamMap.get(AlbumListComponent.urlParamEntityName) || undefined;
     const allowedNames = [ Komponist.name, Werk.name, Interpret.name ];
     for (const name of allowedNames) {
       const key = name.toLowerCase() + 'Id';
-      if (map.has(key)) {
-        const id = map.get(key);
-        console.log(`Suche ${this._namePlural} nach ${key}=${id}`);
+      if (queryParamMap.has(key)) {
+        const id = queryParamMap.get(key) || undefined;
+        console.log(`Suche ${this._entityNamePlural} nach ${key}=${id}`);
         const obs = this.service.findBy(key, <string>id);
         obs.subscribe(data => {
-          console.log('Setting data');
-          this.title = `${data.length} ${this._namePlural}${id ? ' für ' + key + '=' + id : ''}`;
-          this._entities = data;
-          this.fillData();
+          this.extractData(data, entityName, id);
         });
+        //nicht weitersuchen
         return;
       }
     }

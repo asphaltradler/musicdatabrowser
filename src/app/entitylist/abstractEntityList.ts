@@ -4,66 +4,74 @@ import {AbstractEntityService} from '../services/abstractEntityService';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {Album} from '../entities/album';
+import {HttpParams} from '@angular/common/http';
 
 @Component({
   template: '',
 })
 export abstract class AbstractEntityList<E extends AbstractEntity> implements OnInit {
-  protected routeUrl = location.origin;
-  protected title: string = '';
+  public static urlParamEntityName = 'entityName';
+
+  protected albumUrl: string;
+  protected _title!: string;
   protected _entities: E[] = [];
-  protected _name: string = '';
-  protected _namePlural: string = '';
+  protected _entityName: string;
+  protected _entityNamePlural!: string;
 
-  constructor(protected service: AbstractEntityService<E>,
+  protected constructor(protected service: AbstractEntityService<E>,
               protected route: ActivatedRoute) {
-    this._name = service.entityName;
-    console.log(`ListComponent for ${this._name} created`);
+    this._entityName = service.entityName;
+    this.albumUrl = location.origin + '/' + Album.name + '?';
+    route.title.subscribe(title => this._entityNamePlural = title || '');
+
+    console.log(`${this._entityName} created`);
   }
 
-  set namePlural(value: string) {
-    this._namePlural = value;
-  }
-
-  get entities(): E[] {
-    return this._entities;
-  }
-
-  public search(searchText?: string): Subscription {
-    console.log(`Suche ${this._namePlural} nach ${searchText}`);
-    const obs = this.service.find(searchText);
-    return obs.subscribe(data => {
-      console.log('Setting data');
-      this.title = `${data.length} ${this._namePlural}${searchText ? ' für ' + searchText : ''}`;
-      this._entities = data;
-      this.fillData();
-    });
-  }
-
-  protected fillData() {
-    for (const ent of this._entities) {
-      //TODO über Router erstellen
-      ent.alben = `${this.routeUrl}/${Album.name}?${this._name.toLowerCase()}Id=${ent.id}`;
-    }
-  }
-
-  getTitle() {
-    return this.title;
-  }
-
-  ngOnInit(): void {
-    const id = this.route.snapshot.queryParamMap.get('id');
+  public ngOnInit(): void {
+    const queryParamMap = this.route.snapshot.queryParamMap;
+    const id = queryParamMap.get('id');
+    const entityName = queryParamMap.get(AbstractEntityList.urlParamEntityName) || undefined;
     if (id) {
-      console.log(`Suche ${this._namePlural} nach Id=${id}`);
+      console.log(`Suche ${this._entityNamePlural} nach Id=${id}`);
       const obs = this.service.get(id);
       obs.subscribe(data => {
-        console.log('Setting data');
-        this.title = `${data.length} ${this._namePlural}${id ? ' für Id=' + id : ''}`;
-        this._entities = data;
-        this.fillData();
+        this.extractData(data, entityName, id);
       });
     } else {
       this.search();
     }
-   }
+  }
+
+  protected extractData(data: E[], entityName?: string, id?: string) {
+    console.log('Setting data');
+    this._title = `${data.length} ${this._entityNamePlural}${entityName ? ' für ' + entityName : id ? ' für Id=' + id : ''}`;
+    this._entities = data;
+    this.createLinks();
+  }
+
+  public search(searchText?: string): Subscription {
+    console.log(`Suche ${this._entityNamePlural} nach ${searchText}`);
+    const obs = this.service.find(searchText);
+    return obs.subscribe(data => {
+      this.extractData(data, searchText);
+    });
+  }
+
+  protected createLinks() {
+    for (const ent of this._entities) {
+      //TODO über Router erstellen?
+      const params = new HttpParams()
+        .set(this._entityName.toLowerCase() + 'Id', ent.id)
+        .set(AbstractEntityList.urlParamEntityName, ent.name);
+      ent.linkToAlben = this.albumUrl + params.toString();
+    }
+  }
+
+  public get title() {
+    return this._title;
+  }
+
+  public get entities(): E[] {
+    return this._entities;
+  }
 }

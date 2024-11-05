@@ -5,13 +5,13 @@
     ></app-searchfield>
   </div>
   <div class="card-body small">
-    <h3>{{getTitle()}}</h3>
+    <h3>{{title}}</h3>
     <table class="table table-bordered table-striped table-responsive-md">
       <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
         <th scope="col">Name</th>
-        <th scope="col">Album</th>
+        <th scope="col" class="text-center">Album</th>
       </tr>
       </thead>
       <tbody>
@@ -19,7 +19,7 @@
           <tr>
             <td>{{ ent.id }}</td>
             <td>{{ ent.name }}</td>
-            <td><a href="{{ ent.alben }}">&lt;Alben&gt;</a></td>
+            <td class="text-center"><a href="{{ ent.linkToAlben }}">Alben</a></td>
           </tr>
         }
       </tbody>

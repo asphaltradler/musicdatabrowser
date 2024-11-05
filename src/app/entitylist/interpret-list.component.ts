@@ -17,6 +17,5 @@ import {ActivatedRoute} from '@angular/router';
 export class InterpretListComponent extends AbstractEntityList<Interpret> {
   constructor(interpretService: InterpretService, route: ActivatedRoute) {
     super(interpretService, route);
-    this.namePlural = 'Interpreten';
   }
 }
