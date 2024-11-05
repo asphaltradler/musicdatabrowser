@@ -3,6 +3,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {KomponistListComponent} from './komponist-list.component';
 import {provideHttpClient} from '@angular/common/http';
 import {KomponistService} from '../services/komponist.service';
+import {provideRouter} from '@angular/router';
 
 describe('KomponistListComponent', () => {
   let component: KomponistListComponent;
@@ -13,7 +14,8 @@ describe('KomponistListComponent', () => {
       imports: [KomponistListComponent],
       providers: [
         KomponistService,
-        provideHttpClient()
+        provideHttpClient(),
+        provideRouter([])
       ],
     })
     .compileComponents();
