@@ -1,12 +1,10 @@
+<app-searchfield
+  (searchText)="search($event)"
+></app-searchfield>
 <div class="card my-3">
-  <div class="card-header">
-    <app-searchfield
-      (searchText)="search($event)"
-    ></app-searchfield>
-  </div>
   <div class="card-body small">
-    <h3>{{title}}</h3>
-    <table class="table table-bordered table-striped table-responsive-md">
+    <h3 class="card-title">{{title}}</h3>
+    <table class="table table-bordered table-striped table-hover table-responsive-sm">
       <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>

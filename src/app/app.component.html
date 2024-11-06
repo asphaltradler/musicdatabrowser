@@ -1,10 +1,10 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      <div class="card bg-dark my-3">
+      <div class="card bg-dark py-1 my-1">
         <div class="card-body">
-          <h2 class="card-title text-center text-white py-3">{{ title }}</h2>
-          <ul class="text-center list-inline py-3">
+          <h2 class="card-title text-center text-white py-1">{{ title }}</h2>
+          <ul class="text-center list-inline">
             @for (r of routes; track r.path) {
               @if (r.path) {
             <li class="list-inline-item">

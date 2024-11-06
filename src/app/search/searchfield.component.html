@@ -1,10 +1,9 @@
 <form [formGroup]="searchForm" (ngSubmit)="handleSubmit()">
-  <label for="searchtext" class="col-form-label">
-    Suchtext:
-    &nbsp;
-    <input id="searchtext" formControlName="searchText"
-           type="text" (input)="handleSubmit()"/>
-  </label>
-  &nbsp;
-  <button type="submit">Submit</button>
+  <div class="input-group my-3">
+    <span id="searchDesc" class="input-group-text">Suche nach:</span>
+    <input class="form-control" formControlName="searchField"
+           type="text" (input)="handleSubmit()"
+           placeholder="Suchtext" aria-label="Suchtext" aria-describedby="searchDesc"/>
+    <button class="btn btn-secondary" type="submit">Submit</button>
+  </div>
 </form>

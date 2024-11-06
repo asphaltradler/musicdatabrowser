@@ -14,10 +14,10 @@ export class SearchfieldComponent {
   searchText = output<string>();
 
   searchForm = new FormGroup({
-    searchText: new FormControl('')
+    searchField: new FormControl('')
   });
 
   handleSubmit() {
-    this.searchText.emit(this.searchForm.value.searchText || '');
+    this.searchText.emit(this.searchForm.value.searchField || '');
   }
 }
