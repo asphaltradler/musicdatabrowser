@@ -8,6 +8,7 @@ import {AbstractEntityService} from '../services/abstractEntityService';
 import {Komponist} from '../entities/komponist';
 import {Werk} from '../entities/werk';
 import {Interpret} from '../entities/interpret';
+import {Genre} from '../entities/genre';
 
 @Component({
   template: ''
@@ -20,7 +21,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   protected _entityName: string;
   protected _entityNamePlural!: string;
 
-  private static searchEntities = [Album, Komponist, Werk, Interpret];
+  private static searchEntities = [Album, Komponist, Werk, Genre, Interpret];
   private _searchableEntities;
 
   constructor(protected service: AbstractEntityService<E>,

@@ -8,11 +8,14 @@ import {Album} from './entities/album';
 import {Komponist} from './entities/komponist';
 import {Werk} from './entities/werk';
 import {Interpret} from './entities/interpret';
+import {GenreListComponent} from './entitylist/genre-list.component';
+import {Genre} from './entities/genre';
 
 export const routes: Routes = [
   { path: Album.name, component: AlbumListComponent, title: 'Liste der Alben' },
   { path: Komponist.name, component: KomponistListComponent, title: 'Liste der Komponisten' },
   { path: Werk.name, component: WerkListComponent, title: 'Liste der Werke' },
+  { path: Genre.name, component: GenreListComponent, title: 'Liste der Genres' },
   { path: Interpret.name, component: InterpretListComponent, title: 'Liste der Interpreten' },
   { path: 'status', component: StatusComponent, title: 'Statusanzeige' },
   { path: '', redirectTo: Album.name, pathMatch: 'full'}
