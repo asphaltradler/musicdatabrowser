@@ -22,13 +22,4 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
     const params = new HttpParams().set(otherEntityName, id);
     return this.http.get<E[]>(this.getUrl, {params});
   }
-
-  public get(id?: string): Observable<E[]> {
-    if (id) {
-      const params = new HttpParams().set(this.entityName.toLowerCase() + 'Id', id);
-      return this.http.get<E[]>(this.getUrl, {params});
-    } else {
-      return this.http.get<E[]>(this.getUrl);
-    }
-   }
 }

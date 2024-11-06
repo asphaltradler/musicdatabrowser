@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {Album} from '../entities/album';
 import {AlbumService} from '../services/album.service';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SearchfieldComponent} from '../search/searchfield.component';
 import {AbstractEntityList} from './abstractEntityList';
 import {ActivatedRoute} from '@angular/router';
@@ -13,20 +12,20 @@ import {Werk} from '../entities/werk';
   selector: 'app-album-list',
   standalone: true,
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
     SearchfieldComponent
   ],
   templateUrl: './album-list.component.html',
   styleUrl: './album-list.component.css'
 })
 export class AlbumListComponent extends AbstractEntityList<Album> {
+  public static searchEntityNames = [ Komponist.name, Werk.name, Interpret.name ];
+
   constructor(service: AlbumService, route: ActivatedRoute) {
     super(service, route);
   }
 
-  public override search(searchText: string) {
-    const subscription = super.search(searchText);
+  public override searchForName(searchText: string) {
+    const subscription = super.searchForName(searchText);
     subscription.add(() => {
       console.log('Create track URLs for data');
       for (const alb of this.entities) {
@@ -38,17 +37,10 @@ export class AlbumListComponent extends AbstractEntityList<Album> {
 
   public override ngOnInit() {
     const queryParamMap = this.route.snapshot.queryParamMap;
-    const entityName = queryParamMap.get(AlbumListComponent.urlParamEntityName) || undefined;
-    const allowedNames = [ Komponist.name, Werk.name, Interpret.name ];
-    for (const name of allowedNames) {
+    for (const name of AlbumListComponent.searchEntityNames) {
       const key = name.toLowerCase() + 'Id';
       if (queryParamMap.has(key)) {
-        const id = queryParamMap.get(key) || undefined;
-        console.log(`Suche ${this._entityNamePlural} nach ${key}=${id}`);
-        const obs = this.service.findBy(key, <string>id);
-        obs.subscribe(data => {
-          this.extractData(data, entityName, id);
-        });
+        this.searchForId(key);
         //nicht weitersuchen
         return;
       }
