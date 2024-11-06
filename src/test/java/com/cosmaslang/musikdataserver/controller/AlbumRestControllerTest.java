@@ -120,7 +120,7 @@ class AlbumRestControllerTest {
     @Test
     @Disabled("Verdrahtung zu Controller und seinem Repository funktioniert nicht")
     void findTracksForAlbumFromController() {
-        List<Track> albumTracks = trackRestController.find(null, ALBUM_1, null, null, null, null, null);
+        List<Track> albumTracks = trackRestController.find(null, ALBUM_1, null, null, null, null);
         assertEquals(2, albumTracks.size());
         assertTrue(albumTracks.contains(track1));
         assertTrue(albumTracks.contains(track2));

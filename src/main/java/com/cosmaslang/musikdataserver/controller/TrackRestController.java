@@ -10,8 +10,8 @@ import java.util.Optional;
 @RequestMapping("/musik/track")
 public class TrackRestController extends AbstractMusikRestController<Track> {
     @Override
-    public List<Track> find(String track, String album, String komponist, String werk, String genre, String interpret, Long id) {
-        super.find(track, album, komponist, werk, genre, interpret, id);
+    public List<Track> find(String track, String album, String komponist, String werk, String genre, String interpret) {
+        super.find(track, album, komponist, werk, genre, interpret);
         if (track != null) {
             return trackRepository.findByNameContainingIgnoreCase(track).stream().sorted().toList();
         } else if (album != null) {
@@ -28,7 +28,7 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
             //return trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
             return trackRepository.findByInterpretenLike(interpret).stream().sorted().toList();
         }
-        return get(id, trackRepository);
+        return getAll(trackRepository);
     }
 
     @Override

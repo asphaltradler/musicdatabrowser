@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 @NoRepositoryBean
@@ -45,20 +46,19 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
                                 @RequestParam(required = false) String komponist,
                                 @RequestParam(required = false) String werk,
                                 @RequestParam(required = false) String genre,
-                                @RequestParam(required = false) String interpret,
-                                @RequestParam(required = false) Long id) {
-        logger.info(MessageFormat.format("{0} find track={1}, album={2}, komponist={3}, werk={4}, genre={5}, interpret={6}, id={7}", this.getClass().getName(),
-                track, album, komponist, werk, genre, interpret, id));
+                                @RequestParam(required = false) String interpret) {
+        logger.info(MessageFormat.format("{0} find track={1}, album={2}, komponist={3}, werk={4}, genre={5}, interpret={6}", this.getClass().getName(),
+                track, album, komponist, werk, genre, interpret));
         return null;
     }
 
     @RequestMapping(value = "/get", method = {RequestMethod.GET, RequestMethod.POST})
     protected List<ENTITY> get(@RequestParam(required = false) Long trackId,
-                                @RequestParam(required = false) Long albumId,
-                                @RequestParam(required = false) Long komponistId,
-                                @RequestParam(required = false) Long werkId,
-                                @RequestParam(required = false) Long genreId,
-                                @RequestParam(required = false) Long interpretId) {
+                               @RequestParam(required = false) Long albumId,
+                               @RequestParam(required = false) Long komponistId,
+                               @RequestParam(required = false) Long werkId,
+                               @RequestParam(required = false) Long genreId,
+                               @RequestParam(required = false) Long interpretId) {
         logger.info(MessageFormat.format("{0} get trackId={1}, albumId={2}, komponistId={3}, werkId={4}, genreId={5}, interpretId={6}", this.getClass().getName(),
                 trackId, albumId, komponistId, werkId, genreId, interpretId));
         return null;
@@ -66,6 +66,7 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
 
     /**
      * Default getter nach id
+     *
      * @param id ID der Entity. Falls fehlende => alle suchen
      */
     protected List<ENTITY> get(Long id, NamedEntityRepository<ENTITY> entityRepository) {
@@ -93,5 +94,15 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
         List<ENTITY> entities = new ArrayList<>();
         entityIt.forEachRemaining(entities::add);
         return entities.stream().sorted().toList();
+    }
+
+    protected List<ENTITY> getFilteredByEntitySet(List<Track> tracks,
+                                                  Function<Track, Set<ENTITY>> mapFunction) {
+        return tracks.stream().map(mapFunction).flatMap(Collection::stream).filter(Objects::nonNull).distinct().sorted().toList();
+    }
+
+    protected List<ENTITY> getFilteredByEntity(List<Track> tracks,
+                                               Function<Track, ENTITY> mapFunction) {
+        return tracks.stream().map(mapFunction).filter(Objects::nonNull).distinct().sorted().toList();
     }
 }
