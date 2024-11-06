@@ -9,15 +9,24 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Name</th>
-        <th scope="col" class="text-center">Album</th>
+        @for (ent of searchableEntities; track ent.name) {
+        <th scope="col" class="text-center">{{ ent.namePlural }}</th>
+        }
       </tr>
       </thead>
       <tbody>
         @for (ent of entities; track ent.name) {
-          <tr>
+          <tr class="align-middle">
             <td>{{ ent.id }}</td>
             <td>{{ ent.name }}</td>
-            <td class="text-center"><a href="{{ ent.linkToAlben }}">Alben</a></td>
+            @for (s of searchableEntities; track s.name) {
+            <td class="text-center">
+              <button class="btn btn-link"
+                      (click)="searchOtherEntityByThis(s.name, ent.name, ent.id)">
+                {{ s.namePlural }}
+              </button>
+            </td>
+            }
           </tr>
         }
       </tbody>

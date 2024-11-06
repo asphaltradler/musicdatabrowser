@@ -3,7 +3,7 @@ import {AbstractEntityList} from './abstractEntityList';
 import {Interpret} from '../entities/interpret';
 import {InterpretService} from '../services/interpret.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-interpret-list',
@@ -15,7 +15,7 @@ import {ActivatedRoute} from '@angular/router';
   styleUrl: './entity-list.component.css'
 })
 export class InterpretListComponent extends AbstractEntityList<Interpret> {
-  constructor(interpretService: InterpretService, route: ActivatedRoute) {
-    super(interpretService, route);
+  constructor(interpretService: InterpretService, route: ActivatedRoute, router: Router) {
+    super(interpretService, route, router);
   }
 }

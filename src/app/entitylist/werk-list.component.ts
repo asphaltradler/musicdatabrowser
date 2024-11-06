@@ -3,7 +3,7 @@ import {AbstractEntityList} from './abstractEntityList';
 import {Werk} from '../entities/werk';
 import {WerkService} from '../services/werk.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-werk-list',
@@ -15,7 +15,7 @@ import {ActivatedRoute} from '@angular/router';
   styleUrl: './entity-list.component.css'
 })
 export class WerkListComponent extends AbstractEntityList<Werk> {
-  constructor(service: WerkService, route: ActivatedRoute) {
-    super(service, route);
+  constructor(service: WerkService, route: ActivatedRoute, router: Router) {
+    super(service, route, router);
   }
 }

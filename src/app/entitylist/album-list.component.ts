@@ -3,10 +3,7 @@ import {Album} from '../entities/album';
 import {AlbumService} from '../services/album.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
 import {AbstractEntityList} from './abstractEntityList';
-import {ActivatedRoute} from '@angular/router';
-import {Komponist} from '../entities/komponist';
-import {Interpret} from '../entities/interpret';
-import {Werk} from '../entities/werk';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-album-list',
@@ -18,10 +15,9 @@ import {Werk} from '../entities/werk';
   styleUrl: './album-list.component.css'
 })
 export class AlbumListComponent extends AbstractEntityList<Album> {
-  public static searchEntityNames = [ Komponist.name, Werk.name, Interpret.name ];
 
-  constructor(service: AlbumService, route: ActivatedRoute) {
-    super(service, route);
+  constructor(service: AlbumService, route: ActivatedRoute, router: Router) {
+    super(service, route, router);
   }
 
   public override searchForName(searchText: string) {
@@ -35,16 +31,4 @@ export class AlbumListComponent extends AbstractEntityList<Album> {
     return subscription;
   }
 
-  public override ngOnInit() {
-    const queryParamMap = this.route.snapshot.queryParamMap;
-    for (const name of AlbumListComponent.searchEntityNames) {
-      const key = name.toLowerCase() + 'Id';
-      if (queryParamMap.has(key)) {
-        this.searchForId(key);
-        //nicht weitersuchen
-        return;
-      }
-    }
-    super.ngOnInit();
-  }
 }

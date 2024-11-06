@@ -9,6 +9,6 @@ import {HttpClient} from '@angular/common/http';
 export class WerkService extends AbstractEntityService<Werk>{
 
   constructor(http: HttpClient) {
-    super(http, Werk.name);
+    super(http, Werk.name, Werk.namePlural);
   }
 }

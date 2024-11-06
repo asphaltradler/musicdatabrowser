@@ -8,7 +8,7 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
   getUrl: string;
 
   constructor(protected http: HttpClient,
-              public entityName: string) {
+              public entityName: string, public entityNamePlural: string) {
     this.findUrl = this.baseUrl + entityName.toLowerCase() + '/find';
     this.getUrl = this.baseUrl + entityName.toLowerCase() + '/get';
   }

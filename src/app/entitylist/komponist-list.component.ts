@@ -3,7 +3,7 @@ import {Komponist} from '../entities/komponist';
 import {KomponistService} from '../services/komponist.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
 import {AbstractEntityList} from './abstractEntityList';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-komponist-list',
@@ -15,7 +15,7 @@ import {ActivatedRoute} from '@angular/router';
   styleUrl: './entity-list.component.css'
 })
 export class KomponistListComponent extends AbstractEntityList<Komponist> {
-  constructor(service: KomponistService, route: ActivatedRoute) {
-    super(service, route);
+  constructor(service: KomponistService, route: ActivatedRoute, router: Router) {
+    super(service, route, router);
   }
 }

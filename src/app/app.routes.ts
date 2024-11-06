@@ -10,10 +10,10 @@ import {Werk} from './entities/werk';
 import {Interpret} from './entities/interpret';
 
 export const routes: Routes = [
-  { path: Album.name, component: AlbumListComponent, title: 'Alben' },
-  { path: Komponist.name, component: KomponistListComponent, title: 'Komponisten' },
-  { path: Werk.name, component: WerkListComponent, title: 'Werke' },
-  { path: Interpret.name, component: InterpretListComponent, title: 'Interpreten' },
-  { path: 'status', component: StatusComponent, title: 'Status' },
+  { path: Album.name, component: AlbumListComponent, title: 'Liste der Alben' },
+  { path: Komponist.name, component: KomponistListComponent, title: 'Liste der Komponisten' },
+  { path: Werk.name, component: WerkListComponent, title: 'Liste der Werke' },
+  { path: Interpret.name, component: InterpretListComponent, title: 'Liste der Interpreten' },
+  { path: 'status', component: StatusComponent, title: 'Statusanzeige' },
   { path: '', redirectTo: Album.name, pathMatch: 'full'}
 ];

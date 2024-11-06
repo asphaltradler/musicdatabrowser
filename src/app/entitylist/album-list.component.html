@@ -1,21 +1,32 @@
 <app-searchfield (searchText)="searchForName($event)"></app-searchfield>
 <div class="card my-3">
   <div class="card-body small">
-    <h3>{{title}}</h3>
-    <table class="table table-bordered table-striped table-responsive-md">
+    <h3 class="card-title">{{title}}</h3>
+    <table class="table table-bordered table-striped table-hover table-responsive-sm">
       <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
         <th scope="col">Name</th>
+        @for (ent of searchableEntities; track ent.name) {
+          <th scope="col" class="text-center">{{ ent.namePlural }}</th>
+        }
         <th scope="col" class="text-center">Tracks</th>
       </tr>
       </thead>
       <tbody>
       @for (album of entities; track album.id) {
-        <tr>
+        <tr class="align-middle">
           <td>{{ album.id }}</td>
           <td>{{ album.name }}</td>
-          <td class="text-center"><a href="{{ album.track_url }}">&lt;Tracks&gt;</a></td>
+          @for (s of searchableEntities; track s.name) {
+            <td class="text-center">
+              <button class="btn btn-link"
+                      (click)="searchOtherEntityByThis(s.name, album.name, album.id)">
+                {{ s.namePlural }}
+              </button>
+            </td>
+          }
+          <td class="text-center"><a class="btn-link" href="{{ album.track_url }}">&lt;Tracks&gt;</a></td>
         </tr>
       }
       </tbody>
