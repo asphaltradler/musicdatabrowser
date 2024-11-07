@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
 
 @NoRepositoryBean
 //CORS
-@CrossOrigin(originPatterns = "http://localhost:42*")
+@CrossOrigin(originPatterns = "*:42*")
 public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     protected Logger logger = Logger.getLogger(this.getClass().getName());
 

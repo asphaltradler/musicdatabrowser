@@ -2,20 +2,21 @@ package com.cosmaslang.musikdataserver.controller;
 
 import com.cosmaslang.musikdataserver.db.entities.*;
 import com.cosmaslang.musikdataserver.db.repositories.NamedEntityRepository;
-import com.cosmaslang.musikdataserver.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.web.cors.CorsConfiguration.ALL;
+
 @RestController
+@RequestMapping({"/", "/musik", "musik/"})
 //CORS
-@CrossOrigin(originPatterns = "http://localhost:42*")
-@RequestMapping({"/", "/musik"})
+@CrossOrigin(originPatterns = ALL)
 public class HelloController {
     @Autowired
-    TrackRepository trackRepository;
+    NamedEntityRepository<Track> trackRepository;
     @Autowired
     NamedEntityRepository<Interpret> interpretRepository;
     @Autowired
@@ -29,9 +30,10 @@ public class HelloController {
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
     public String get() {
-        if (trackRepository.count() > 0) {
+        long count = trackRepository.count();
+        if (count > 0) {
             return String.format("MusikRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Interpreten, %d Werke, %d Genres",
-                    trackRepository.count(), albumRepository.count(), komponistRepository.count(), interpretRepository.count(), werkRepository.count(), genreRepository.count());
+                    count, albumRepository.count(), komponistRepository.count(), interpretRepository.count(), werkRepository.count(), genreRepository.count());
         } else {
             return "Service gestartet aber noch leer.";
         }
