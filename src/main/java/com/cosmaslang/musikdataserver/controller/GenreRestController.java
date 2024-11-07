@@ -4,10 +4,9 @@ import com.cosmaslang.musikdataserver.db.entities.Genre;
 import com.cosmaslang.musikdataserver.db.entities.Track;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/musik/genre")
@@ -23,44 +22,39 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
     }
 
     @Override
-    protected List<Genre> find(String track, String album, String komponist, String werk, String genre, String interpret) {
-        super.find(track, album, komponist, werk, genre, interpret);
+    protected Stream<Genre> find(String track, String album, String komponist, String werk, String genre, String interpret) {
+        super.logCall(track, album, komponist, werk, genre, interpret);
         if (genre != null) {
-            return genreRepository.findByNameContainingIgnoreCase(genre).stream().sorted().toList();
+            return genreRepository.streamByNameContainsIgnoreCaseOrderByName(genre);
         } else if (album != null) {
-            return getGenres(trackRepository.findByAlbumLike(album));
+            return getGenres(trackRepository.streamByAlbum_NameContainsIgnoreCase(album));
         } else if (komponist != null) {
-            return getGenres(trackRepository.findByKomponist(komponist));
+            return getGenres(trackRepository.streamByKomponist_Name(komponist));
         } else if (interpret != null) {
-            return getGenres(trackRepository.findByInterpretenLike(interpret));
+            return getGenres(trackRepository.streamByInterpreten_NameContainsIgnoreCase(interpret));
         }
         return getAll(genreRepository);
     }
 
     @Override
-    public List<Genre> get(@RequestParam(required = false) Long trackId,
-                               @RequestParam(required = false) Long albumId,
-                               @RequestParam(required = false) Long komponistId,
-                               @RequestParam(required = false) Long werkId,
-                               @RequestParam(required = false) Long genreId,
-                               @RequestParam(required = false) Long interpretId) {
-        super.get(trackId, albumId, komponistId, werkId, genreId, interpretId);
+    public Stream<Genre> get(Long trackId, Long albumId, Long komponistId, Long werkId, Long genreId, Long interpretId) {
+        super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
-            return getGenres(trackRepository.findByAlbumId(albumId));
+            return getGenres(trackRepository.streamByAlbum_Id(albumId));
         } else if (komponistId != null) {
-            return getGenres(trackRepository.findByKomponistId(komponistId));
+            return getGenres(trackRepository.streamByKomponist_Id(komponistId));
         } else if (werkId != null) {
-            return getGenres(trackRepository.findByWerkId(werkId));
+            return getGenres(trackRepository.streamByWerk_Id(werkId));
         } else if (genreId != null) {
             return getEntitiesIfExists(genreId, genreRepository);
         } else if (interpretId != null) {
-            return getGenres(trackRepository.findByInterpretId(interpretId));
+            return getGenres(trackRepository.streamByInterpreten_Id(interpretId));
         }
 
         return getAll(genreRepository);
     }
 
-    private List<Genre> getGenres(List<Track> tracks) {
-        return getFilteredByEntitySet(tracks, Track::getGenres);
+    private Stream<Genre> getGenres(Stream<Track> tracks) {
+        return getMappedByEntitySet(tracks, Track::getGenres);
     }
 }

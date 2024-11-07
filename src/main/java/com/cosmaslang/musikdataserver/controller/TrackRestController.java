@@ -1,56 +1,54 @@
 package com.cosmaslang.musikdataserver.controller;
 
 import com.cosmaslang.musikdataserver.db.entities.Track;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/musik/track")
 public class TrackRestController extends AbstractMusikRestController<Track> {
     @Override
-    public List<Track> find(String track, String album, String komponist, String werk, String genre, String interpret) {
-        super.find(track, album, komponist, werk, genre, interpret);
+    public Stream<Track> find(String track, String album, String komponist, String werk, String genre, String interpret) {
+        super.logCall(track, album, komponist, werk, genre, interpret);
         if (track != null) {
-            return trackRepository.findByNameContainingIgnoreCase(track).stream().sorted().toList();
+            return trackRepository.streamByNameContainsIgnoreCaseOrderByName(track);
         } else if (album != null) {
-            return trackRepository.findByAlbumLike(album).stream().sorted().toList();
+            return trackRepository.streamByAlbum_NameContainsIgnoreCase(album);
         } else if (komponist != null) {
-            return trackRepository.findByKomponist(komponist).stream().sorted().toList();
+            return trackRepository.streamByKomponist_Name(komponist);
         } else if (werk != null) {
-            return trackRepository.findByWerkLike(werk).stream().sorted().toList();
+            return trackRepository.streamByWerk_NameContainsIgnoreCase(werk);
         } else if (genre != null) {
-            //List<Genre> genres = genreRepository.findByNameContaining(genre);
-            return trackRepository.findByGenreLike(genre).stream().sorted().toList(); //.findByGenresIsIn(new HashSet<>(genres));
+            //Stream<Genre> genres = genreRepository.findByNameContaining(genre);
+            return trackRepository.streamByGenres_NameContainsIgnoreCase(genre); //.streamByGenresIsIn(new HashSet<>(genres));
         } else if (interpret != null) {
-            //List<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
-            //return trackRepository.findByInterpretenIsIn(new HashSet<>(interpreten));
-            return trackRepository.findByInterpretenLike(interpret).stream().sorted().toList();
+            //Stream<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
+            //return trackRepository.streamByInterpretenIsIn(new HashSet<>(interpreten));
+            return trackRepository.streamByInterpreten_NameContainsIgnoreCase(interpret);
         }
         return getAll(trackRepository);
     }
 
     @Override
-    public List<Track> get(@RequestParam(required = false) Long trackId,
-                                  @RequestParam(required = false) Long albumId,
-                                  @RequestParam(required = false) Long komponistId,
-                                  @RequestParam(required = false) Long werkId,
-                                  @RequestParam(required = false) Long genreId,
-                                  @RequestParam(required = false) Long interpretId) {
-        super.get(trackId, albumId, komponistId, werkId, genreId, interpretId);
+    public Stream<Track> get(Long trackId, Long albumId, Long komponistId, Long werkId, Long genreId, Long interpretId) {
+        super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (trackId != null) {
             return getEntitiesIfExists(trackId, trackRepository);
         } else if (albumId != null) {
-            return trackRepository.findByAlbumId(albumId);
+            return trackRepository.streamByAlbum_Id(albumId);
         } else if (komponistId != null) {
-            return trackRepository.findByKomponistId(komponistId);
+            return trackRepository.streamByKomponist_Id(komponistId);
         } else if (werkId != null) {
-            return trackRepository.findByWerkId(werkId);
+            return trackRepository.streamByWerk_Id(werkId);
         } else if (genreId != null) {
-            return trackRepository.findByGenreId(genreId);
+            return trackRepository.streamByGenres_Id(genreId);
         } else if (interpretId != null) {
-            return trackRepository.findByInterpretId(interpretId);
+            return trackRepository.streamByInterpreten_Id(interpretId);
         }
 
         return getAll(trackRepository);
@@ -59,24 +57,6 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
     @Override
     public Track getById(@PathVariable Long id) {
         return getEntityIfExists(id, trackRepository);
-    }
-
-    @PostMapping("/create")
-    public String create(@RequestBody Track track) {
-        return add(track);
-    }
-
-    private String add(Track track) {
-        String name = track.getName();
-        List<Track> tracks = trackRepository.findByNameContainingIgnoreCase(name);
-        if (!tracks.isEmpty()) {
-            track = tracks.get(0);
-            return "track " + track + " already exists";
-        } else {
-            track = trackRepository.save(track);
-            logger.info("added track " + track);
-            return "added track " + track;
-        }
     }
 
     @Override

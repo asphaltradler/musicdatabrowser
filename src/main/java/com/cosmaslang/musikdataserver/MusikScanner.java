@@ -105,7 +105,7 @@ public class MusikScanner {
         Path filepath = file.toPath();
         //path unabhängig von Filesystem notieren, ausgehend von rootDir
         String path = filepath.subpath(rootPathSteps, filepath.getNameCount()).toString().replace('\\', '/');
-        Track track = musikDataServerStartupService.getTrackRepository().findByPath(path);
+        Track track = musikDataServerStartupService.getTrackRepository().streamByPath(path);
         if (track == null) {
             track = new Track();
             track.setPath(path);

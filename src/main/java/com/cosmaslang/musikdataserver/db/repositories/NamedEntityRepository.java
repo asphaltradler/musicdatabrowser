@@ -4,7 +4,7 @@ import com.cosmaslang.musikdataserver.db.entities.NamedEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Gemeinsames Interface für Repositories zu Datenbank-Tables,
@@ -16,5 +16,5 @@ import java.util.List;
 public interface NamedEntityRepository<ENTITY extends NamedEntity> extends CrudRepository<ENTITY, Long> {
     ENTITY findByName(String name);
 
-    List<ENTITY> findByNameContainingIgnoreCase(String name);
+    Stream<ENTITY> streamByNameContainsIgnoreCaseOrderByName(String name);
 }

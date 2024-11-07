@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 @Component
 @Qualifier("musikdataserverStartup")
@@ -110,10 +110,10 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 
     public void findAlbumWithInterpret(String name) {
         logger.info(String.format("Albums with interpret %s", name));
-        List<?> albums = entityManager.createQuery(
+        Stream<?> albums = entityManager.createQuery(
                         "select a from Album a join Track t on t.album = a where t in (select i.tracks from Interpret i where i.name ilike '%'||:name||'%')")
                 .setParameter("name", name)
-                .getResultList();
+                .getResultStream();
         albums.forEach(a -> logger.info(a.toString()));
     }
 

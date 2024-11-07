@@ -6,53 +6,48 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/musik/album")
 public class AlbumRestController extends AbstractMusikRestController<Album> {
     @Override
-    public List<Album> find(String track, String album, String komponist, String werk, String genre, String interpret) {
-        super.find(track, album, komponist, werk, genre, interpret);
+    public Stream<Album> find(String track, String album, String komponist, String werk, String genre, String interpret) {
+        super.logCall(track, album, komponist, werk, genre, interpret);
         if (album != null) {
-            return albumRepository.findByNameContainingIgnoreCase(album).stream().sorted().toList();
+            return albumRepository.streamByNameContainsIgnoreCaseOrderByName(album);
         } else if (komponist != null) {
-            return albumRepository.findByKomponist(komponist).stream().sorted().toList();
+            return albumRepository.streamByTracks_Komponist_Name(komponist);
         } else if (werk != null) {
-            return albumRepository.findByWerkLike(werk).stream().sorted().toList();
+            return albumRepository.streamByTracks_Werke_NameContainsIgnoreCase(werk);
         } else if (genre != null) {
             //"von Hand" wäre:
-            //List<Track> tracks = trackRepository.findByGenreLike(genre);
+            //Stream<Track> tracks = trackRepository.streamByGenreLike(genre);
             //return tracks.stream().map(Track::getAlbum).distinct().toList();
             //über spezielle Query:
-            return albumRepository.findByGenreLike(genre).stream().sorted().toList();
+            return albumRepository.streamByTracks_Genres_NameContainsIgnoreCase(genre);
         } else if (interpret != null) {
-            //List<Track> tracks = trackRepository.findByInterpretenLike(interpret);
+            //Stream<Track> tracks = trackRepository.streamByInterpretenLike(interpret);
             //return tracks.stream().map(Track::getAlbum).distinct().toList();
-            return albumRepository.findByInterpretLike(interpret).stream().sorted().toList();
+            return albumRepository.streamByTracks_Interpreten_NameContainsIgnoreCase(interpret);
         }
         return getAll(albumRepository);
     }
 
     @Override
-    public List<Album> get(@RequestParam(required = false) Long trackId,
-                              @RequestParam(required = false) Long albumId,
-                              @RequestParam(required = false) Long komponistId,
-                              @RequestParam(required = false) Long werkId,
-                              @RequestParam(required = false) Long genreId,
-                              @RequestParam(required = false) Long interpretId) {
-        super.get(trackId, albumId, komponistId, werkId, genreId, interpretId);
+    public Stream<Album> get(Long trackId, Long albumId, Long komponistId, Long werkId, Long genreId, Long interpretId) {
+        super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
             return getEntitiesIfExists(albumId, albumRepository);
         } else if (komponistId != null) {
-            return albumRepository.findByKomponistId(komponistId);
+            return albumRepository.streamByTracks_Komponist_Id(komponistId);
         } else if (werkId != null) {
-            return albumRepository.findByWerkId(werkId);
+            return albumRepository.streamByTracks_Werke_Id(werkId);
         } else if (genreId != null) {
-            return albumRepository.findByGenreId(genreId);
+            return albumRepository.streamByTracks_Genres_Id(genreId);
         } else if (interpretId != null) {
-            return albumRepository.findByInterpretId(interpretId);
+            return albumRepository.streamByTracks_Interpreten_Id(interpretId);
         }
 
         return getAll(albumRepository);
