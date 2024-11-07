@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
+import {appDefaults} from '../app.config';
 
 @Component({
   //selector: 'app-status',
@@ -18,7 +19,7 @@ export class StatusComponent implements OnInit {
   private status: string | undefined
 
   constructor(private http: HttpClient) {
-    this.url = 'http://localhost:8080/musik';
+    this.url = appDefaults.serverUrl;
   }
 
   ngOnInit() {

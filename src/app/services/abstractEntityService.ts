@@ -1,9 +1,10 @@
 import {Observable} from 'rxjs';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {AbstractEntity} from '../entities/abstractEntity';
+import {appDefaults} from '../app.config';
 
 export abstract class AbstractEntityService<E extends AbstractEntity> {
-  baseUrl = 'http://localhost:8080/musik/';
+  baseUrl = appDefaults.serverUrl;
   findUrl: string;
   getUrl: string;
 
