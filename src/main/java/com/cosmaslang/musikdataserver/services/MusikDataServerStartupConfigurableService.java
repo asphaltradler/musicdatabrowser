@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 @Component
 @Qualifier("musikdataserverStartup")
-@Transactional
 public class MusikDataServerStartupConfigurableService implements MusikDataServerStartupService {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 

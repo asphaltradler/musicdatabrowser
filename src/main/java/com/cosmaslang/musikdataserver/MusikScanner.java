@@ -15,6 +15,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,6 +88,7 @@ public class MusikScanner {
         }
     }
 
+    @Transactional
     private void processAudioFile(AudioFile audioFile) {
         try {
             Track track = createTrack(audioFile);
