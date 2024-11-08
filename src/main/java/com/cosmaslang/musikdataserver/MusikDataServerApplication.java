@@ -15,7 +15,7 @@ public class MusikDataServerApplication {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(MusikDataServerApplication.class);
         MusikDataServerStartupService service = context.getBean(MusikDataServerStartupService.class);
-        if (args.length <= 0 || !args[0].equals("-noreload")) {
+        if (args.length <= 0 || !args[args.length - 1].equals("-noreload")) {
             service.init();
         }
         service.start();
