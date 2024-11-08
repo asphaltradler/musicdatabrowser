@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 @Repository
 public interface TrackRepository extends NamedEntityRepository<Track> {
-    Track streamByPath(String path);
+    Track findByPath(String path);
 
     //@Query("SELECT t FROM Track t WHERE t.album.name ilike %:album%")
         //identisch im Verhalten mit:
