@@ -74,6 +74,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
     });
   }
 
+  //TODO statt Listen Streams? Titel erst nach Erhalt aller Daten möglich!
   protected extractData(data: E[], entityName?: string, id?: string) {
     console.log('Setting data');
     this._title = `${data.length} ${this._entityNamePlural}${entityName ? ' für ' + entityName : id ? ' für Id=' + id : ''}`;
