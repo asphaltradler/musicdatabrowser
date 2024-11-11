@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 @Configuration
@@ -24,7 +25,7 @@ public class MusikDataServerConfiguration {
      * Automatisch gesetzt aus application.properties
      */
     public void setRootdir(String rootdir) {
-        logger.info("setting root Directory=" + rootdir);
+        logger.info(MessageFormat.format("setting root directory={0} from config", rootdir));
         this.rootdir = rootdir;
     }
 

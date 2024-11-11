@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -47,7 +49,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
      */
     @Override
     public void setRootDir(String filename) {
-        logger.info("Setting root directory: " + filename);
+        logger.info(MessageFormat.format("Setting root directory={0}", filename));
         rootDirPath = new File(filename).toPath();
     }
 
@@ -68,9 +70,9 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 
     @Override
     public void start() {
-        logger.info("start");
-        logger.info(String.format("MusikRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres\n",
-                trackRepository.count(), albumRepository.count(), komponistRepository.count(), werkRepository.count(), genreRepository.count()));
+        logger.info(String.format("starting from dir %s", this.rootDirPath));
+        logger.info(String.format("MusikRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres, %d Interpreten\n",
+                trackRepository.count(), albumRepository.count(), komponistRepository.count(), werkRepository.count(), genreRepository.count(), interpretRepository.count()));
         //listAllTracks();
         //findAlbumWithInterpret("John");
     }

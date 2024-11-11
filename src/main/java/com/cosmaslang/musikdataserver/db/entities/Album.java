@@ -2,6 +2,8 @@ package com.cosmaslang.musikdataserver.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Set;
 
@@ -15,9 +17,9 @@ public class Album extends NamedEntity {
     //muss man leider hier drin definieren, sonst wird es nicht gefunden
     private String name;
 
-    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "album", cascade = CascadeType.MERGE, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonBackReference
-    //@JsonManagedReference
     private Set<Track> tracks;
 
     @Override

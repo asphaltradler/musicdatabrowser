@@ -46,6 +46,7 @@ public class MusikScanner {
         this.musikDataServerStartupService = service;
     }
 
+    //@Transactional
     public void scan(Path rootPath) throws IOException {
         rootPathSteps = rootPath.getNameCount();
         logger.info("Scanning " + rootPath);
@@ -57,8 +58,8 @@ public class MusikScanner {
 
     private void scanDirectory(final Path dir) throws IOException {
         try (Stream<Path> audioPaths = Files.list(dir)) {
-            //Parallelisierung führt zu Problemen bei lazy initialization
-            audioPaths./*parallel().*/forEach(path -> {
+            //nicht .parallel(): Parallelisierung führt zu Problemen bei lazy initialization
+            audioPaths.forEach(path -> {
                 try {
                     if (Files.isDirectory(path)) {
                         scanDirectory(path);
@@ -89,20 +90,18 @@ public class MusikScanner {
     }
 
     @Transactional
-    private void processAudioFile(AudioFile audioFile) {
+    protected void processAudioFile(AudioFile audioFile) {
         try {
-            Track track = createTrack(audioFile);
+            Track track = createOrUpdateTrack(audioFile);
             musikDataServerStartupService.getTrackRepository().save(track);
-        } catch (PersistenceException e) {
+            logger.info("processed " + audioFile.getFile().getName());
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "when scanning " + audioFile.getFile().getName(), e);
             throw e;
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "when scanning " + audioFile.getFile().getName(), e);
         }
-        logger.info("processed " + audioFile.getFile().getName());
     }
 
-    private Track createTrack(AudioFile audioFile) {
+    private Track createOrUpdateTrack(AudioFile audioFile) {
         File file = audioFile.getFile();
         Path filepath = file.toPath();
         //path unabhängig von Filesystem notieren, ausgehend von rootDir
@@ -142,18 +141,18 @@ public class MusikScanner {
                 }
                 str = tag.getFirst(FieldKey.ALBUM);
                 if (StringUtils.isNotBlank(str)) {
-                    Album album = createEntity(Album.class, musikDataServerStartupService.getAlbumRepository(), str);
+                    Album album = createOrUpdateEntity(Album.class, musikDataServerStartupService.getAlbumRepository(), str);
                     track.setAlbum(album);
                     //album.getTracks().add(track);
                 }
                 str = tag.getFirst(FieldKey.COMPOSER);
                 if (StringUtils.isNotBlank(str)) {
-                    Komponist komponist = createEntity(Komponist.class, musikDataServerStartupService.getKomponistRepository(), str);
+                    Komponist komponist = createOrUpdateEntity(Komponist.class, musikDataServerStartupService.getKomponistRepository(), str);
                     track.setKomponist(komponist);
                 }
                 str = tag.getFirst(Track.FIELDKEY_WORK);
                 if (StringUtils.isNotBlank(str)) {
-                    Werk werk = createEntity(Werk.class, musikDataServerStartupService.getWerkRepository(), str);
+                    Werk werk = createOrUpdateEntity(Werk.class, musikDataServerStartupService.getWerkRepository(), str);
                     track.setWerk(werk);
                 }
                 //ManyToMany Zuordnung
@@ -164,7 +163,7 @@ public class MusikScanner {
                     for (TagField field : tagFields) {
                         str = field.toString();
                         if (StringUtils.isNotBlank(str)) {
-                            Interpret interpret = createEntity(Interpret.class, musikDataServerStartupService.getInterpretRepository(), str);
+                            Interpret interpret = createOrUpdateEntity(Interpret.class, musikDataServerStartupService.getInterpretRepository(), str);
                             //track.addInterpret(interpret);
                             interpreten.add(interpret);
                         }
@@ -178,7 +177,7 @@ public class MusikScanner {
                     for (TagField field : tagFields) {
                         str = field.toString();
                         if (StringUtils.isNotBlank(str)) {
-                            Genre genre = createEntity(Genre.class, musikDataServerStartupService.getGenreRepository(), str);
+                            Genre genre = createOrUpdateEntity(Genre.class, musikDataServerStartupService.getGenreRepository(), str);
                             //track.addGenre(genre);
                             genres.add(genre);
                         }
@@ -274,8 +273,8 @@ public class MusikScanner {
      * Leider nicht möglich, das Repository direkt aus der Klasse herzuleiten.
      * Behebt gleichzeitig einige Ungereimtheiten in den Formaten der tags.
      */
-    private <ENTITY extends NamedEntity> ENTITY createEntity(Class<ENTITY> clazz, NamedEntityRepository<ENTITY> repo,
-                                                             String name) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private <ENTITY extends NamedEntity> ENTITY createOrUpdateEntity(Class<ENTITY> clazz, NamedEntityRepository<ENTITY> repo,
+                                                                     String name) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (name.toLowerCase().startsWith("text=\"")) {
             name = name.substring(6, name.length() - 1).trim();
         }

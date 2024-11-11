@@ -44,6 +44,8 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <!-- TODO postgresql scope? -->
+            <scope>runtime</scope>
         </dependency>
         <!-- https://bitbucket.org/ijabz/jaudiotagger/src/master/README.md -->
         <dependency>
