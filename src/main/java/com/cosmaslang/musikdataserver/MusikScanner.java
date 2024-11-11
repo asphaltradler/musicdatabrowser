@@ -55,10 +55,13 @@ public class MusikScanner {
     public void scan(Path rootPath) throws IOException {
         rootPathSteps = rootPath.getNameCount();
         logger.info("Scanning " + rootPath);
-        scanDirectory(rootPath);
 
-        logger.info(String.format("Found %d tracks", count));
-        logger.info(String.format("  created/unchanged/updated/failed tracks: %d/%d/%d/%d", created, unchanged, updated, failed));
+        long startTime = System.currentTimeMillis();
+        scanDirectory(rootPath);
+        long endTime = System.currentTimeMillis() - startTime;
+
+        logger.info(String.format("Found %d tracks in %ds", count, endTime / 1000));
+        logger.info(String.format("Created/unchanged/updated/failed tracks: %d/%d/%d/%d", created, unchanged, updated, failed));
     }
 
     private void scanDirectory(final Path dir) throws IOException {
