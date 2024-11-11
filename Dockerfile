@@ -11,6 +11,7 @@ FROM package AS install
 RUN npm install -g @angular/cli --force --loglevel verbose
 RUN npm install --force --loglevel verbose
 
+RUN ng build -c production
 #FROM install AS start
 #CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4200"]
 
