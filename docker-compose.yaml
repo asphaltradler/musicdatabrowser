@@ -8,4 +8,4 @@ services: # Here we define our service(s)
     ports:
       - '4202:4202' # Port mapping
     command: >
-      bash -c "ng serve --host 0.0.0.0 --port 4202"
+      bash -c "ng serve --host 0.0.0.0 --port 4202 --configuration production"
