@@ -3,6 +3,7 @@ package com.cosmaslang.musikdataserver.db.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,6 +54,8 @@ public class Track extends NamedEntity {
     //technical data
     private String path;
     private Long size;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModifiedDate;
     private Integer lengthInSeconds;
     private String encoding;
     private Integer samplerate;
@@ -224,6 +227,14 @@ public class Track extends NamedEntity {
 
     public void setSize(Long length) {
         this.size = length;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     public String getHash() {

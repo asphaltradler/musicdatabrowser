@@ -9,10 +9,14 @@ import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.SupportedFileFormat;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.flac.FlacAudioHeader;
 import org.jaudiotagger.audio.generic.Utils;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.TagField;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +44,7 @@ public class MusikScanner {
     private int rootPathSteps;
     private long count = 0;
     private long created = 0;
+    private long unchanged = 0;
     private long updated = 0;
     private long failed = 0;
 
@@ -53,7 +59,7 @@ public class MusikScanner {
         scanDirectory(rootPath);
 
         logger.info(String.format("Found %d tracks", count));
-        logger.info(String.format("  created/updated/failed tracks: %d/%d/%d", created, updated, failed));
+        logger.info(String.format("  created/unchanged/updated/failed tracks: %d/%d/%d/%d", created, unchanged, updated, failed));
     }
 
     private void scanDirectory(final Path dir) throws IOException {
@@ -68,9 +74,8 @@ public class MusikScanner {
                         if (audioFileExtensions.contains(ext)) {
                             count++;
                             try {
-                                AudioFile audioFile = AudioFileIO.read(path.toFile());
                                 //logger.info("processed " + file.getName());
-                                processAudioFile(audioFile);
+                                processAudioFile(path.toFile());
                             } catch (PersistenceException e) {
                                 failed++;
                                 throw e;
@@ -90,19 +95,18 @@ public class MusikScanner {
     }
 
     @Transactional
-    protected void processAudioFile(AudioFile audioFile) {
+    protected void processAudioFile(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         try {
-            Track track = createOrUpdateTrack(audioFile);
+            Track track = createOrUpdateTrack(file);
             musikDataServerStartupService.getTrackRepository().save(track);
-            logger.info("processed " + audioFile.getFile().getName());
+            logger.info("processed " + file.getName());
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "when scanning " + audioFile.getFile().getName(), e);
+            logger.log(Level.SEVERE, "when scanning " + file, e);
             throw e;
         }
     }
 
-    private Track createOrUpdateTrack(AudioFile audioFile) {
-        File file = audioFile.getFile();
+    private Track createOrUpdateTrack(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         Path filepath = file.toPath();
         //path unabhängig von Filesystem notieren, ausgehend von rootDir
         String path = filepath.subpath(rootPathSteps, filepath.getNameCount()).toString().replace('\\', '/');
@@ -112,12 +116,18 @@ public class MusikScanner {
             track.setPath(path);
             logger.info("create new track " + path);
             created++;
-        } else {
+        } else if (track.getLastModifiedDate().getTime() >= file.lastModified()) {
+            logger.info("-   skipping unchanged track " + path);
+            unchanged++;
+            return track;
+        }
+        else {
             logger.info("-   update track " + path);
             updated++;
         }
 
         Tag tag = null;
+        AudioFile audioFile = AudioFileIO.read(file);
         try {
             tag = audioFile.getTag();
             if (tag == null) {
@@ -198,6 +208,8 @@ public class MusikScanner {
         }
 
         track.setSize(file.length());
+        track.setLastModifiedDate(new Date(file.lastModified()));
+
         AudioHeader header = null;
         try {
             //technical data
@@ -300,6 +312,10 @@ public class MusikScanner {
 
     public long getCount() {
         return count;
+    }
+
+    public long getUnchanged() {
+        return unchanged;
     }
 
     public long getFailed() {
