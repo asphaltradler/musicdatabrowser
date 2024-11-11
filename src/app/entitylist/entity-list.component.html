@@ -9,8 +9,8 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Name</th>
-        @for (ent of searchableEntities; track ent.name) {
-        <th scope="col" class="text-center">{{ ent.namePlural }}</th>
+        @for (cat of searchableEntities; track cat.name) {
+        <th scope="col" class="text-center">{{ cat.namePlural }}</th>
         }
       </tr>
       </thead>
@@ -19,11 +19,11 @@
           <tr class="align-middle">
             <td>{{ ent.id }}</td>
             <td>{{ ent.name }}</td>
-            @for (s of searchableEntities; track s.name) {
+            @for (cat of searchableEntities; track cat.entityName) {
             <td class="text-center">
               <button class="btn btn-link"
-                      (click)="searchOtherEntityByThis(s.name, ent.name, ent.id)">
-                {{ s.namePlural }}
+                      (click)="searchOtherEntityByThis(cat.entityName, ent.name, ent.id)">
+                {{ cat.namePlural }}
               </button>
             </td>
             }

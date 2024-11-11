@@ -32,7 +32,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
     this._entityNamePlural = service.entityNamePlural;
 
     this._searchableEntities = AbstractEntityList.searchEntities.filter(
-      (name) => name.name != this._entityName
+      (name) => name.entityName != this._entityName
     );
 
     //route.title.subscribe(title => this._entityNamePlural = title || '');
@@ -42,7 +42,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   public ngOnInit(): void {
     const queryParamMap = this.route.snapshot.queryParamMap;
     for (const ent of this.searchableEntities) {
-      const key = ent.name.toLowerCase() + 'Id';
+      const key = ent.entityName + 'Id';
       if (queryParamMap.has(key)) {
         this.searchForId(key);
         //nicht weitersuchen
@@ -85,7 +85,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   public searchOtherEntityByThis(entityName: string, name: string, id: number) {
     console.log(`search ${entityName} nach ${this._entityName}=${name},${id}`);
     const params = new HttpParams()
-      .set(this._entityName.toLowerCase() + 'Id', id)
+      .set(this._entityName + 'Id', id)
       .set(AbstractEntityList.urlParamEntityName, name);
     this.router.navigateByUrl(entityName + '?' + params.toString());
   }

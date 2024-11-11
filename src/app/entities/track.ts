@@ -6,6 +6,7 @@ import {Werk} from './werk';
 import {Genre} from './genre';
 
 export class Track extends AbstractEntity {
+  static override entityName = 'track';
   static override namePlural = 'Tracks';
 
   tracknumber?: number;
