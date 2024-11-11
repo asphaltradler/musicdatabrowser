@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 @ConfigurationProperties(prefix = "musikdataserver")
 @EnableJpaRepositories("com.cosmaslang.musikdataserver.db.repositories")
 public class MusikDataServerConfiguration {
-
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private String rootdir;
 

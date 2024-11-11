@@ -18,9 +18,11 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static org.springframework.web.cors.CorsConfiguration.ALL;
+
 @NoRepositoryBean
 //CORS
-@CrossOrigin(originPatterns = "*:42*")
+@CrossOrigin(originPatterns = ALL)
 public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     protected Logger logger = Logger.getLogger(this.getClass().getName());
 
