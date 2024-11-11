@@ -22,24 +22,24 @@ public class Track extends NamedEntity {
     //tag data
     private Integer tracknumber;
     private String name;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     //@JoinColumn(name = "album_id")
     @JsonManagedReference
     private Album album;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     //@JoinColumn(name = "komponist_id")
     private Komponist komponist;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     //@JoinColumn(name = "werk_id")
     private Werk werk;
     //statt EAGER laden wir lazy und definieren startup-Service als @Transactional
-    @ManyToMany(cascade = CascadeType.ALL) //, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE) //, fetch = FetchType.EAGER)
     @JoinTable()
             //name = "interpreten_tracks",
             //joinColumns = @JoinColumn(name = "track_id"),
             //inverseJoinColumns = @JoinColumn(name = "interpret_id"))
     private Set<Interpret> interpreten; // = new HashSet<>();
-    @ManyToMany(cascade = CascadeType.ALL) //, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE) //, fetch = FetchType.EAGER)
     @JoinTable()
             //name = "genre_tracks",
             //joinColumns = @JoinColumn(name = "track_id"),
