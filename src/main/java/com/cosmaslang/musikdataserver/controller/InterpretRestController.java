@@ -27,11 +27,11 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
         if (interpret != null) {
             return interpretRepository.streamByNameContainsIgnoreCaseOrderByName(interpret);
         } else if (album != null) {
-            return getInterpreten(trackRepository.streamByAlbum_NameContainsIgnoreCase(album));
+            return getInterpreten(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
         } else if (genre != null) {
-            return getInterpreten(trackRepository.streamByGenres_NameContainsIgnoreCase(genre));
+            return getInterpreten(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
         } else if (komponist != null) {
-            return getInterpreten(trackRepository.streamByKomponist_Name(komponist));
+            return getInterpreten(trackRepository.streamByKomponistName(komponist));
         }
         return getAll(interpretRepository);
     }
@@ -40,13 +40,13 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
     public Stream<Interpret> get(Long trackId, Long albumId, Long komponistId, Long werkId, Long genreId, Long interpretId) {
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
-            return getInterpreten(trackRepository.streamByAlbum_Id(albumId));
+            return getInterpreten(trackRepository.streamByAlbumId(albumId));
         } else if (komponistId != null) {
-            return getInterpreten(trackRepository.streamByKomponist_Id(komponistId));
+            return getInterpreten(trackRepository.streamByKomponistId(komponistId));
         } else if (werkId != null) {
-            return getInterpreten(trackRepository.streamByWerk_Id(werkId));
+            return getInterpreten(trackRepository.streamByWerkId(werkId));
         } else if (genreId != null) {
-            return getInterpreten(trackRepository.streamByGenres_Id(genreId));
+            return getInterpreten(trackRepository.streamByGenresId(genreId));
         } else if (interpretId != null) {
             return getEntitiesIfExists(interpretId, interpretRepository);
         }

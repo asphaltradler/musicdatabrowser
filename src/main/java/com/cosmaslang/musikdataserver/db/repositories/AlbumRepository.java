@@ -7,12 +7,12 @@ import java.util.stream.Stream;
 
 @Repository
 public interface AlbumRepository extends NamedEntityRepository<Album> {
-    Stream<Album> streamDistinctByTracks_Komponist_NameOrderByName(String komponist);
-    Stream<Album> streamDistinctByTracks_Komponist_IdOrderByName(Long komponistId);
-    Stream<Album> streamDistinctByTracks_Genres_NameContainsIgnoreCaseOrderByName(String genre);
-    Stream<Album> streamDistinctByTracks_Genres_IdOrderByName(Long genreId);
-    Stream<Album> streamDistinctByTracks_Interpreten_NameContainsIgnoreCaseOrderByName(String interpret);
-    Stream<Album> streamDistinctByTracks_Interpreten_IdOrderByName(Long interpretId);
-    Stream<Album> streamDistinctByTracks_Werk_NameContainsIgnoreCaseOrderByName(String werk);
-    Stream<Album> streamDistinctByTracks_Werk_IdOrderByName(Long werkId);
+    Stream<Album> streamDistinctByTracksKomponistNameOrderByName(String komponist);
+    Stream<Album> streamDistinctByTracksKomponistIdOrderByName(Long komponistId);
+    Stream<Album> streamDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(String genre);
+    Stream<Album> streamDistinctByTracksGenresIdOrderByName(Long genreId);
+    Stream<Album> streamDistinctByTracksInterpretenNameContainsIgnoreCaseOrderByName(String interpret);
+    Stream<Album> streamDistinctByTracksInterpretenIdOrderByName(Long interpretId);
+    Stream<Album> streamDistinctByTracksWerkNameContainsIgnoreCaseOrderByName(String werk);
+    Stream<Album> streamDistinctByTracksWerkIdOrderByName(Long werkId);
 }

@@ -111,7 +111,7 @@ class AlbumRestControllerTest {
 
     @Test
     void findTracksForAlbum() {
-        List<Track> albumTracks = trackRepository.streamByAlbum_NameContainsIgnoreCase(ALBUM_1).toList();
+        List<Track> albumTracks = trackRepository.streamByAlbumNameContainsIgnoreCase(ALBUM_1).toList();
         assertEquals(2, albumTracks.size());
         assertTrue(albumTracks.contains(trackRepository.findByName(TRACK_1)));
         assertTrue(albumTracks.contains(trackRepository.findByName(TRACK_2)));

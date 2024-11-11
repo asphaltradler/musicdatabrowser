@@ -12,20 +12,20 @@ public interface TrackRepository extends NamedEntityRepository<Track> {
     //@Query("SELECT t FROM Track t WHERE t.album.name ilike %:album%")
         //identisch im Verhalten mit:
         //@Query("SELECT a.tracks FROM Album a WHERE a.name like %:album%")
-    Stream<Track> streamByAlbum_NameContainsIgnoreCase(String album);
+    Stream<Track> streamByAlbumNameContainsIgnoreCase(String album);
     //@Query("SELECT t FROM Track t WHERE t.komponist.name = :komponist")
-    Stream<Track> streamByKomponist_Name(String komponist);
+    Stream<Track> streamByKomponistName(String komponist);
     //@Query("select t from Track t join fetch t.genres g where g.name ilike %:genre%")
-    Stream<Track> streamByGenres_NameContainsIgnoreCase(String genre);
+    Stream<Track> streamByGenresNameContainsIgnoreCase(String genre);
     //@Query("select t from Track t join fetch t.interpreten i where i.name ilike %:interpret%")
-    Stream<Track> streamByInterpreten_NameContainsIgnoreCase(String interpret);
+    Stream<Track> streamByInterpretenNameContainsIgnoreCase(String interpret);
     //@Query("SELECT t FROM Track t WHERE t.werk.name ILIKE %:werk%")
-    Stream<Track> streamByWerk_NameContainsIgnoreCase(String werk);
+    Stream<Track> streamByWerkNameContainsIgnoreCase(String werk);
 
-    Stream<Track> streamByAlbum_Id(Long id);
-    Stream<Track> streamByKomponist_Id(Long id);
-    Stream<Track> streamByWerk_Id(Long id);
-    Stream<Track> streamByInterpreten_Id(Long id);
+    Stream<Track> streamByAlbumId(Long id);
+    Stream<Track> streamByKomponistId(Long id);
+    Stream<Track> streamByWerkId(Long id);
+    Stream<Track> streamByInterpretenId(Long id);
     //@Query("select t from Track t join fetch t.genres g where g.id = :genreId")
-    Stream<Track> streamByGenres_Id(Long id);
+    Stream<Track> streamByGenresId(Long id);
 }

@@ -18,19 +18,19 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
         if (album != null) {
             return albumRepository.streamByNameContainsIgnoreCaseOrderByName(album);
         } else if (komponist != null) {
-            return albumRepository.streamDistinctByTracks_Komponist_NameOrderByName(komponist);
+            return albumRepository.streamDistinctByTracksKomponistNameOrderByName(komponist);
         } else if (werk != null) {
-            return albumRepository.streamDistinctByTracks_Werk_NameContainsIgnoreCaseOrderByName(werk);
+            return albumRepository.streamDistinctByTracksWerkNameContainsIgnoreCaseOrderByName(werk);
         } else if (genre != null) {
             //"von Hand" wäre:
             //Stream<Track> tracks = trackRepository.streamByGenreLike(genre);
             //return tracks.stream().map(Track::getAlbum).distinct().toList();
             //über spezielle Query:
-            return albumRepository.streamDistinctByTracks_Genres_NameContainsIgnoreCaseOrderByName(genre);
+            return albumRepository.streamDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(genre);
         } else if (interpret != null) {
             //Stream<Track> tracks = trackRepository.streamByInterpretenLike(interpret);
             //return tracks.stream().map(Track::getAlbum).distinct().toList();
-            return albumRepository.streamDistinctByTracks_Interpreten_NameContainsIgnoreCaseOrderByName(interpret);
+            return albumRepository.streamDistinctByTracksInterpretenNameContainsIgnoreCaseOrderByName(interpret);
         }
         return getAll(albumRepository);
     }
@@ -41,13 +41,13 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
         if (albumId != null) {
             return getEntitiesIfExists(albumId, albumRepository);
         } else if (komponistId != null) {
-            return albumRepository.streamDistinctByTracks_Komponist_IdOrderByName(komponistId);
+            return albumRepository.streamDistinctByTracksKomponistIdOrderByName(komponistId);
         } else if (werkId != null) {
-            return albumRepository.streamDistinctByTracks_Werk_IdOrderByName(werkId);
+            return albumRepository.streamDistinctByTracksWerkIdOrderByName(werkId);
         } else if (genreId != null) {
-            return albumRepository.streamDistinctByTracks_Genres_IdOrderByName(genreId);
+            return albumRepository.streamDistinctByTracksGenresIdOrderByName(genreId);
         } else if (interpretId != null) {
-            return albumRepository.streamDistinctByTracks_Interpreten_IdOrderByName(interpretId);
+            return albumRepository.streamDistinctByTracksInterpretenIdOrderByName(interpretId);
         }
 
         return getAll(albumRepository);

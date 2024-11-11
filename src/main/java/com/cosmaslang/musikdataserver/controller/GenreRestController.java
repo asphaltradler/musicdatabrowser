@@ -27,11 +27,11 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
         if (genre != null) {
             return genreRepository.streamByNameContainsIgnoreCaseOrderByName(genre);
         } else if (album != null) {
-            return getGenres(trackRepository.streamByAlbum_NameContainsIgnoreCase(album));
+            return getGenres(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
         } else if (komponist != null) {
-            return getGenres(trackRepository.streamByKomponist_Name(komponist));
+            return getGenres(trackRepository.streamByKomponistName(komponist));
         } else if (interpret != null) {
-            return getGenres(trackRepository.streamByInterpreten_NameContainsIgnoreCase(interpret));
+            return getGenres(trackRepository.streamByInterpretenNameContainsIgnoreCase(interpret));
         }
         return getAll(genreRepository);
     }
@@ -40,15 +40,15 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
     public Stream<Genre> get(Long trackId, Long albumId, Long komponistId, Long werkId, Long genreId, Long interpretId) {
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
-            return getGenres(trackRepository.streamByAlbum_Id(albumId));
+            return getGenres(trackRepository.streamByAlbumId(albumId));
         } else if (komponistId != null) {
-            return getGenres(trackRepository.streamByKomponist_Id(komponistId));
+            return getGenres(trackRepository.streamByKomponistId(komponistId));
         } else if (werkId != null) {
-            return getGenres(trackRepository.streamByWerk_Id(werkId));
+            return getGenres(trackRepository.streamByWerkId(werkId));
         } else if (genreId != null) {
             return getEntitiesIfExists(genreId, genreRepository);
         } else if (interpretId != null) {
-            return getGenres(trackRepository.streamByInterpreten_Id(interpretId));
+            return getGenres(trackRepository.streamByInterpretenId(interpretId));
         }
 
         return getAll(genreRepository);

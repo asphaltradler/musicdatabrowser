@@ -31,11 +31,11 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
             //Außerdem können durch "like" ja mehrere Alben gefunden werden.
             //Das ganze könnte man alternativ auch wie in AlbumRepository/Controller über
             //eigene Queries mit JOIN machen
-            return getKomponisten(trackRepository.streamByAlbum_NameContainsIgnoreCase(album));
+            return getKomponisten(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
         } else if (genre != null) {
-            return getKomponisten(trackRepository.streamByGenres_NameContainsIgnoreCase(genre));
+            return getKomponisten(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
         } else if (interpret != null) {
-            return getKomponisten(trackRepository.streamByInterpreten_NameContainsIgnoreCase(interpret));
+            return getKomponisten(trackRepository.streamByInterpretenNameContainsIgnoreCase(interpret));
         }
         return getAll(komponistRepository);
     }
@@ -44,15 +44,15 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
     public Stream<Komponist> get(Long trackId, Long albumId, Long komponistId, Long werkId, Long genreId, Long interpretId) {
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
-            return getKomponisten(trackRepository.streamByAlbum_Id(albumId));
+            return getKomponisten(trackRepository.streamByAlbumId(albumId));
         } else if (komponistId != null) {
             return getEntitiesIfExists(komponistId, komponistRepository);
         } else if (werkId != null) {
-            return getKomponisten(trackRepository.streamByWerk_Id(werkId));
+            return getKomponisten(trackRepository.streamByWerkId(werkId));
         } else if (genreId != null) {
-            return getKomponisten(trackRepository.streamByGenres_Id(genreId));
+            return getKomponisten(trackRepository.streamByGenresId(genreId));
         } else if (interpretId != null) {
-            return getKomponisten(trackRepository.streamByInterpreten_Id(interpretId));
+            return getKomponisten(trackRepository.streamByInterpretenId(interpretId));
         }
 
         return getAll(komponistRepository);

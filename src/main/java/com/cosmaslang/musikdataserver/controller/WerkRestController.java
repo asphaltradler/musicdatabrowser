@@ -27,11 +27,11 @@ public class WerkRestController extends AbstractMusikRestController<Werk> {
         if (werk != null) {
             return werkRepository.streamByNameContainsIgnoreCaseOrderByName(werk);
         } else if (album != null) {
-            return getWerke(trackRepository.streamByAlbum_NameContainsIgnoreCase(album));
+            return getWerke(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
         } else if (genre != null) {
-            return getWerke(trackRepository.streamByGenres_NameContainsIgnoreCase(genre));
+            return getWerke(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
         } else if (interpret != null) {
-            return getWerke(trackRepository.streamByInterpreten_NameContainsIgnoreCase(interpret));
+            return getWerke(trackRepository.streamByInterpretenNameContainsIgnoreCase(interpret));
         }
         return getAll(werkRepository);
     }
@@ -40,15 +40,15 @@ public class WerkRestController extends AbstractMusikRestController<Werk> {
     public Stream<Werk> get(Long trackId, Long albumId, Long komponistId, Long werkId, Long genreId, Long interpretId) {
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
-            return getWerke(trackRepository.streamByAlbum_Id(albumId));
+            return getWerke(trackRepository.streamByAlbumId(albumId));
         } else if (komponistId != null) {
-            return getWerke(trackRepository.streamByKomponist_Id(komponistId));
+            return getWerke(trackRepository.streamByKomponistId(komponistId));
         } else if (werkId != null) {
             return getEntitiesIfExists(werkId, werkRepository);
         } else if (genreId != null) {
-            return getWerke(trackRepository.streamByGenres_Id(genreId));
+            return getWerke(trackRepository.streamByGenresId(genreId));
         } else if (interpretId != null) {
-            return getWerke(trackRepository.streamByInterpreten_Id(interpretId));
+            return getWerke(trackRepository.streamByInterpretenId(interpretId));
         }
 
         return getAll(werkRepository);

@@ -18,18 +18,18 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
         if (track != null) {
             return trackRepository.streamByNameContainsIgnoreCaseOrderByName(track);
         } else if (album != null) {
-            return trackRepository.streamByAlbum_NameContainsIgnoreCase(album);
+            return trackRepository.streamByAlbumNameContainsIgnoreCase(album);
         } else if (komponist != null) {
-            return trackRepository.streamByKomponist_Name(komponist);
+            return trackRepository.streamByKomponistName(komponist);
         } else if (werk != null) {
-            return trackRepository.streamByWerk_NameContainsIgnoreCase(werk);
+            return trackRepository.streamByWerkNameContainsIgnoreCase(werk);
         } else if (genre != null) {
             //Stream<Genre> genres = genreRepository.findByNameContaining(genre);
-            return trackRepository.streamByGenres_NameContainsIgnoreCase(genre); //.streamByGenresIsIn(new HashSet<>(genres));
+            return trackRepository.streamByGenresNameContainsIgnoreCase(genre); //.streamByGenresIsIn(new HashSet<>(genres));
         } else if (interpret != null) {
             //Stream<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
             //return trackRepository.streamByInterpretenIsIn(new HashSet<>(interpreten));
-            return trackRepository.streamByInterpreten_NameContainsIgnoreCase(interpret);
+            return trackRepository.streamByInterpretenNameContainsIgnoreCase(interpret);
         }
         return getAll(trackRepository);
     }
@@ -40,15 +40,15 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
         if (trackId != null) {
             return getEntitiesIfExists(trackId, trackRepository);
         } else if (albumId != null) {
-            return trackRepository.streamByAlbum_Id(albumId);
+            return trackRepository.streamByAlbumId(albumId);
         } else if (komponistId != null) {
-            return trackRepository.streamByKomponist_Id(komponistId);
+            return trackRepository.streamByKomponistId(komponistId);
         } else if (werkId != null) {
-            return trackRepository.streamByWerk_Id(werkId);
+            return trackRepository.streamByWerkId(werkId);
         } else if (genreId != null) {
-            return trackRepository.streamByGenres_Id(genreId);
+            return trackRepository.streamByGenresId(genreId);
         } else if (interpretId != null) {
-            return trackRepository.streamByInterpreten_Id(interpretId);
+            return trackRepository.streamByInterpretenId(interpretId);
         }
 
         return getAll(trackRepository);
