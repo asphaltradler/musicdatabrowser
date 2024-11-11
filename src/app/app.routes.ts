@@ -10,13 +10,16 @@ import {Werk} from './entities/werk';
 import {Interpret} from './entities/interpret';
 import {GenreListComponent} from './entitylist/genre-list.component';
 import {Genre} from './entities/genre';
+import {Track} from './entities/track';
+import {TrackListComponent} from './entitylist/track-list.component';
 
 export const routes: Routes = [
-  { path: Album.name, component: AlbumListComponent, title: 'Liste der Alben' },
-  { path: Komponist.name, component: KomponistListComponent, title: 'Liste der Komponisten' },
-  { path: Werk.name, component: WerkListComponent, title: 'Liste der Werke' },
-  { path: Genre.name, component: GenreListComponent, title: 'Liste der Genres' },
-  { path: Interpret.name, component: InterpretListComponent, title: 'Liste der Interpreten' },
-  { path: 'status', component: StatusComponent, title: 'Statusanzeige' },
+  { path: Album.name, component: AlbumListComponent, title: Album.namePlural },
+  { path: Track.name, component: TrackListComponent, title: Track.namePlural },
+  { path: Komponist.name, component: KomponistListComponent, title: Komponist.namePlural },
+  { path: Werk.name, component: WerkListComponent, title: Werk.namePlural },
+  { path: Genre.name, component: GenreListComponent, title: Genre.namePlural },
+  { path: Interpret.name, component: InterpretListComponent, title: Interpret.namePlural },
+  { path: 'status', component: StatusComponent, title: 'Status' },
   { path: '', redirectTo: Album.name, pathMatch: 'full'}
 ];

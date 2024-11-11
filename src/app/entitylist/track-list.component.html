@@ -1,0 +1,61 @@
+<app-searchfield (searchText)="searchForName($event)"></app-searchfield>
+<div class="card my-3">
+  <div class="card-body small">
+    <h3 class="card-title">{{title}}</h3>
+    <table class="table table-bordered table-striped table-hover table-responsive-sm">
+      <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col" class="text-center">{{ Album.name }}</th>
+        <th scope="col" class="text-center">{{ Komponist.name }}</th>
+        <th scope="col" class="text-center">{{ Interpret.namePlural }}</th>
+        <th scope="col" class="text-center">{{ Werk.name }}</th>
+        <th scope="col" class="text-center">{{ Genre.namePlural }}</th>
+        <th scope="col" class="text-center">Pfad</th>
+        <th scope="col" class="text-center">Letzte Änd.</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (track of entities; track track.id) {
+          <tr class="align-middle">
+            <td>{{ track.tracknumber }}</td>
+            <td>{{ track.name }}</td>
+            <td class="text-center">
+              <button class="btn btn-link"
+                      (click)="searchOtherEntityByThis(Album.name, track.name, track.id)">
+                {{ track.album?.name }}
+              </button>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-link"
+                      (click)="searchOtherEntityByThis(Komponist.name, track.name, track.id)">
+                {{ track.komponist?.name }}
+              </button>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-link"
+                      (click)="searchOtherEntityByThis(Interpret.name, track.name, track.id)">
+                <div *ngFor="let i of track.interpreten">{{ i.name }}</div>
+              </button>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-link"
+                      (click)="searchOtherEntityByThis(Werk.name, track.name, track.id)">
+                {{ track.werk?.name }}
+              </button>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-link"
+                      (click)="searchOtherEntityByThis(Genre.name, track.name, track.id)">
+                <div *ngFor="let i of track.genres">{{ i.name }}</div>
+              </button>
+            </td>
+            <td>{{ track.path }}</td>
+            <td>{{ Track.getLastModificationSince(track) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

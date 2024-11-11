@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
-import {appDefaults} from '../app.config';
+import {appDefaults} from '../../config/config';
 
 @Component({
   //selector: 'app-status',

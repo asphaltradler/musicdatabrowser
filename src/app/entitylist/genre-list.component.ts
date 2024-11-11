@@ -1,8 +1,6 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {SearchfieldComponent} from '../search/searchfield.component';
 import {AbstractEntityList} from './abstractEntityList';
-import {Interpret} from '../entities/interpret';
-import {InterpretService} from '../services/interpret.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Genre} from '../entities/genre';
 import {GenreService} from '../services/genre.service';

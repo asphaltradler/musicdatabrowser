@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {AbstractEntity} from '../entities/abstractEntity';
-import {appDefaults} from '../app.config';
+import {appDefaults} from '../../config/config';
 
 export abstract class AbstractEntityService<E extends AbstractEntity> {
   baseUrl = appDefaults.serverUrl;

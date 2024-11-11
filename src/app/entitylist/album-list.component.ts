@@ -4,7 +4,6 @@ import {AlbumService} from '../services/album.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
 import {AbstractEntityList} from './abstractEntityList';
 import {ActivatedRoute, Router} from '@angular/router';
-import {appDefaults} from '../app.config';
 
 @Component({
   selector: 'app-album-list',
@@ -12,15 +11,15 @@ import {appDefaults} from '../app.config';
   imports: [
     SearchfieldComponent
   ],
-  templateUrl: './album-list.component.html',
-  styleUrl: './album-list.component.css'
+  templateUrl: './entity-list.component.html',
+  styleUrl: './entity-list.component.css'
 })
 export class AlbumListComponent extends AbstractEntityList<Album> {
-
   constructor(service: AlbumService, route: ActivatedRoute, router: Router) {
     super(service, route, router);
   }
 
+  /*
   public override searchForName(searchText: string) {
     const subscription = super.searchForName(searchText);
     subscription.add(() => {
@@ -31,5 +30,7 @@ export class AlbumListComponent extends AbstractEntityList<Album> {
     });
     return subscription;
   }
+
+  */
 
 }

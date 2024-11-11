@@ -9,6 +9,7 @@ import {Komponist} from '../entities/komponist';
 import {Werk} from '../entities/werk';
 import {Interpret} from '../entities/interpret';
 import {Genre} from '../entities/genre';
+import {Track} from '../entities/track';
 
 @Component({
   template: ''
@@ -21,7 +22,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   protected _entityName: string;
   protected _entityNamePlural!: string;
 
-  private static searchEntities = [Album, Komponist, Werk, Genre, Interpret];
+  private static searchEntities = [Album, Track, Komponist, Werk, Genre, Interpret];
   private _searchableEntities;
 
   constructor(protected service: AbstractEntityService<E>,
@@ -35,7 +36,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
     );
 
     //route.title.subscribe(title => this._entityNamePlural = title || '');
-    console.log(`${this._entityName} created`);
+    console.log(`${this._entityName}List created`);
   }
 
   public ngOnInit(): void {
@@ -58,7 +59,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
     if (id) {
       console.log(`Suche ${this._entityNamePlural} nach ${idKey}=${id}`);
       const obs = this.service.findBy(idKey, <string>id); //this.service.get(id);
-      obs.subscribe(data => {
+      obs.pipe().subscribe(data => {
         this.extractData(data, entityName, id);
       });
     } else {
@@ -69,7 +70,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   protected searchForName(searchText?: string): Subscription {
     console.log(`Suche ${this._entityNamePlural} nach ${searchText}`);
     const obs = this.service.find(searchText);
-    return obs.subscribe(data => {
+    return obs.pipe().subscribe(data => {
       this.extractData(data, searchText);
     });
   }
