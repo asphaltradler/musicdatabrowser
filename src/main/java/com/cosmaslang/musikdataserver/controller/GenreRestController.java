@@ -28,6 +28,8 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
             return genreRepository.streamByNameContainsIgnoreCaseOrderByName(genre);
         } else if (album != null) {
             return getGenres(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
+        } else if (track != null) {
+            return getGenres(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (komponist != null) {
             return getGenres(trackRepository.streamByKomponistName(komponist));
         } else if (interpret != null) {
@@ -41,6 +43,8 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
             return getGenres(trackRepository.streamByAlbumId(albumId));
+        } else if (trackId != null) {
+            return getGenres(trackRepository.findById(trackId).stream());
         } else if (komponistId != null) {
             return getGenres(trackRepository.streamByKomponistId(komponistId));
         } else if (werkId != null) {

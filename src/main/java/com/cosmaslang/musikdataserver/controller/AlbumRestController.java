@@ -17,6 +17,8 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
         super.logCall(track, album, komponist, werk, genre, interpret);
         if (album != null) {
             return albumRepository.streamByNameContainsIgnoreCaseOrderByName(album);
+        } else if (track != null) {
+            return albumRepository.streamDistinctByTracksNameContainsIgnoreCase(track);
         } else if (komponist != null) {
             return albumRepository.streamDistinctByTracksKomponistNameOrderByName(komponist);
         } else if (werk != null) {
@@ -40,6 +42,8 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
             return getEntitiesIfExists(albumId, albumRepository);
+        } else if (trackId != null) {
+            return albumRepository.streamByTracksId(trackId);
         } else if (komponistId != null) {
             return albumRepository.streamDistinctByTracksKomponistIdOrderByName(komponistId);
         } else if (werkId != null) {

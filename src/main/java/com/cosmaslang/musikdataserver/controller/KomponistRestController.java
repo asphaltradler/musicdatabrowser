@@ -32,6 +32,8 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
             //Das ganze könnte man alternativ auch wie in AlbumRepository/Controller über
             //eigene Queries mit JOIN machen
             return getKomponisten(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
+        } else if (track != null) {
+            return getKomponisten(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (genre != null) {
             return getKomponisten(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
         } else if (interpret != null) {
@@ -45,6 +47,8 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
             return getKomponisten(trackRepository.streamByAlbumId(albumId));
+        } else if (trackId != null) {
+            return getKomponisten(trackRepository.findById(trackId).stream());
         } else if (komponistId != null) {
             return getEntitiesIfExists(komponistId, komponistRepository);
         } else if (werkId != null) {

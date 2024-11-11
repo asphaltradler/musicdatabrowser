@@ -28,6 +28,8 @@ public class WerkRestController extends AbstractMusikRestController<Werk> {
             return werkRepository.streamByNameContainsIgnoreCaseOrderByName(werk);
         } else if (album != null) {
             return getWerke(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
+        } else if (track != null) {
+            return getWerke(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (genre != null) {
             return getWerke(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
         } else if (interpret != null) {
@@ -41,6 +43,8 @@ public class WerkRestController extends AbstractMusikRestController<Werk> {
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
             return getWerke(trackRepository.streamByAlbumId(albumId));
+        } else if (trackId != null) {
+            return getWerke(trackRepository.findById(trackId).stream());
         } else if (komponistId != null) {
             return getWerke(trackRepository.streamByKomponistId(komponistId));
         } else if (werkId != null) {

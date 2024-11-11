@@ -28,6 +28,8 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
             return interpretRepository.streamByNameContainsIgnoreCaseOrderByName(interpret);
         } else if (album != null) {
             return getInterpreten(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
+        } else if (track != null) {
+            return getInterpreten(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (genre != null) {
             return getInterpreten(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
         } else if (komponist != null) {
@@ -41,6 +43,8 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
         if (albumId != null) {
             return getInterpreten(trackRepository.streamByAlbumId(albumId));
+        } else if (trackId != null) {
+            return getInterpreten(trackRepository.findById(trackId).stream());
         } else if (komponistId != null) {
             return getInterpreten(trackRepository.streamByKomponistId(komponistId));
         } else if (werkId != null) {
