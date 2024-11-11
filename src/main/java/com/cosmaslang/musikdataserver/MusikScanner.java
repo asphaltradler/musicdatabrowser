@@ -52,7 +52,6 @@ public class MusikScanner {
         this.musikDataServerStartupService = service;
     }
 
-    //@Transactional
     public void scan(Path rootPath) throws IOException {
         rootPathSteps = rootPath.getNameCount();
         logger.info("Scanning " + rootPath);
@@ -65,36 +64,34 @@ public class MusikScanner {
     private void scanDirectory(final Path dir) throws IOException {
         try (Stream<Path> audioPaths = Files.list(dir)) {
             //nicht .parallel(): Parallelisierung führt zu Problemen bei lazy initialization
-            audioPaths.forEach(path -> {
-                try {
-                    if (Files.isDirectory(path)) {
-                        scanDirectory(path);
-                    } else {
-                        String ext = Utils.getExtension(path.toFile()).toLowerCase();
-                        if (audioFileExtensions.contains(ext)) {
-                            count++;
-                            try {
-                                //logger.info("processed " + file.getName());
-                                processAudioFile(path.toFile());
-                            } catch (PersistenceException e) {
-                                failed++;
-                                throw e;
-                            } catch (Throwable t) {
-                                failed++;
-                                logger.log(Level.WARNING, "Unable to read record:" + count + ":" + path, t);
-                            }
-
-                        }
-                    }
-                } catch (IOException e) {
-                    failed++;
-                    logger.log(Level.WARNING, "Unable to read: " + path);
-                }
-            });
+            audioPaths.forEach(this::processPath);
         }
     }
 
     @Transactional
+    protected void processPath(Path path) {
+        try {
+            if (Files.isDirectory(path)) {
+                scanDirectory(path);
+            } else {
+                String ext = Utils.getExtension(path.toFile()).toLowerCase();
+                if (audioFileExtensions.contains(ext)) {
+                    count++;
+                    try {
+                        processAudioFile(path.toFile());
+                    } catch (Throwable t) {
+                        failed++;
+                        logger.log(Level.WARNING, "Unable to read record:" + count + ":" + path, t);
+                    }
+
+                }
+            }
+        } catch (IOException e) {
+            failed++;
+            logger.log(Level.WARNING, "Unable to read: " + path);
+        }
+    }
+
     protected void processAudioFile(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         try {
             Track track = createOrUpdateTrack(file);
@@ -125,6 +122,10 @@ public class MusikScanner {
             logger.info("-   update track " + path);
             updated++;
         }
+
+        //Daten direkt aus File
+        track.setSize(file.length());
+        track.setLastModifiedDate(new Date(file.lastModified()));
 
         Tag tag = null;
         AudioFile audioFile = AudioFileIO.read(file);
@@ -168,7 +169,7 @@ public class MusikScanner {
                 //ManyToMany Zuordnung
                 List<TagField> tagFields = tag.getFields(FieldKey.ARTIST);
                 if (tagFields != null) {
-                    //alle als Liste setzen => dann ist kein update eines vorhandenen tracks möglich
+                    //alle als Liste setzen => dann ist kein teilweises update eines vorhandenen tracks möglich
                     Set<Interpret> interpreten = new HashSet<>();
                     for (TagField field : tagFields) {
                         str = field.toString();
@@ -195,8 +196,9 @@ public class MusikScanner {
                     track.setGenres(genres);
                 }
 
-                //TODO comment länger als 255?
+                //TODO comment länger als 255 möglich?
                 String comment = tag.getFirst(FieldKey.COMMENT);
+                //abschneiden
                 track.setComment(comment.substring(0, Math.min(255, comment.length())));
                 track.setPublisher(tag.getFirst(Track.FIELDKEY_ORGANIZATION));
             }
@@ -206,9 +208,6 @@ public class MusikScanner {
             logger.log(Level.WARNING, "error when processing track " + path
                     + " with tag " + (tag == null ? "NULL" : tag), t);
         }
-
-        track.setSize(file.length());
-        track.setLastModifiedDate(new Date(file.lastModified()));
 
         AudioHeader header = null;
         try {
@@ -227,9 +226,8 @@ public class MusikScanner {
                     noOfSamples = ((long) track.getLengthInSeconds() * track.getSamplerate());
                 }
                 track.setNoOfSamples(noOfSamples);
-                //Long length = header.getAudioDataLength();
-                track.setHash(getHash(header, path, track));
             }
+            track.setHash(getHash(header, path, track));
         } catch (PersistenceException e) {
             throw e;
         } catch (Throwable t) {
