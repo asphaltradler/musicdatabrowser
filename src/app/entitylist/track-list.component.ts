@@ -9,14 +9,15 @@ import {Komponist} from '../entities/komponist';
 import {Interpret} from '../entities/interpret';
 import {Werk} from '../entities/werk';
 import {Genre} from '../entities/genre';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-track-list',
   standalone: true,
   imports: [
     SearchfieldComponent,
-    NgForOf
+    NgForOf,
+    NgIf
   ],
   templateUrl: './track-list.component.html',
   styleUrl: './track-list.component.css'

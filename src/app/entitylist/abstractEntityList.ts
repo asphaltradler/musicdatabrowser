@@ -83,9 +83,13 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   }
 
   public searchOtherEntityByThis(entityName: string, name: string, id: number) {
-    console.log(`search ${entityName} nach ${this._entityName}=${name},${id}`);
+    this.searchOtherEntityBy(entityName, this._entityName, name, id);
+  }
+
+  public searchOtherEntityBy(entityName: string, searchEntityName: string, name: string, id: number) {
+    console.log(`search ${entityName} nach ${searchEntityName}=${name},${id}`);
     const params = new HttpParams()
-      .set(this._entityName + 'Id', id)
+      .set(searchEntityName + 'Id', id)
       .set(AbstractEntityList.urlParamEntityName, name);
     this.router.navigateByUrl(entityName + '?' + params.toString());
   }

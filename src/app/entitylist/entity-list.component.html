@@ -22,6 +22,7 @@
             @for (cat of searchableEntities; track cat.entityName) {
             <td class="text-center">
               <button class="btn btn-link"
+                      title="{{ cat.namePlural}} für {{ent.name}}"
                       (click)="searchOtherEntityByThis(cat.entityName, ent.name, ent.id)">
                 {{ cat.namePlural }}
               </button>
