@@ -4,9 +4,11 @@ import com.cosmaslang.musikdataserver.db.entities.*;
 import com.cosmaslang.musikdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musikdataserver.db.repositories.TrackRepository;
 
+import java.io.IOException;
+
 public interface MusikDataServerStartupService {
 
-    void setRootDir(String rootDir);
+    void setMediaDirectories(String rootDir, String startDir) throws IOException;
 
     void init();
 

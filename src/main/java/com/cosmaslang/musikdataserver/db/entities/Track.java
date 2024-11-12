@@ -9,8 +9,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(indexes = {@Index(columnList = "path", unique = true),
-        @Index(columnList = "hash", unique = true)})
+//@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"hash", "path"})})
+@Table(indexes = {
+        @Index(name="hash_idx", columnList = "hash", unique = true),
+        @Index(name="path_idx", columnList = "path", unique = true)
+})
 public class Track extends NamedEntity {
 
     public static final String FIELDKEY_ORGANIZATION = "ORGANIZATION";

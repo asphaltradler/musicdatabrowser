@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ public class MusikScanner {
     private int rootPathSteps;
     private long count = 0;
     private long created = 0;
+    private long reused = 0;
     private long unchanged = 0;
     private long updated = 0;
     private long failed = 0;
@@ -52,16 +54,17 @@ public class MusikScanner {
         this.musikDataServerStartupService = service;
     }
 
-    public void scan(Path rootPath) throws IOException {
+    public void scan(Path rootPath, Path startPath) throws IOException {
         rootPathSteps = rootPath.getNameCount();
-        logger.info("Scanning " + rootPath);
+        logger.info(MessageFormat.format("Scanning {0} from start {1}", rootPath, startPath));
 
         long startTime = System.currentTimeMillis();
-        scanDirectory(rootPath);
+        scanDirectory(startPath);
         long endTime = System.currentTimeMillis() - startTime;
 
         logger.info(String.format("Found %d tracks in %ds", count, endTime / 1000));
-        logger.info(String.format("Created/unchanged/updated/failed tracks: %d/%d/%d/%d", created, unchanged, updated, failed));
+        logger.info(String.format("Created/updated/unchanged/re-used/failed tracks: %d/%d/%d/%d/%d",
+                created, updated, unchanged, reused, failed));
     }
 
     private void scanDirectory(final Path dir) throws IOException {
@@ -96,61 +99,94 @@ public class MusikScanner {
     }
 
     protected void processAudioFile(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
-        try {
-            Track track = createOrUpdateTrack(file);
+        Track track = createOrUpdateTrack(file);
+        if (track != null) {
+            //null markiert unveränderte Tracks, die nicht mehr gespeichert werden müssen
             musikDataServerStartupService.getTrackRepository().save(track);
-            logger.info("processed " + file.getName());
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "when scanning " + file, e);
-            throw e;
         }
+        logger.info("processed " + file.getName());
     }
 
     private Track createOrUpdateTrack(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         Path filepath = file.toPath();
         //path unabhängig von Filesystem notieren, ausgehend von rootDir
-        String path = filepath.subpath(rootPathSteps, filepath.getNameCount()).toString().replace('\\', '/');
-        Track track = musikDataServerStartupService.getTrackRepository().findByPath(path);
+        String pathString = filepath.subpath(rootPathSteps, filepath.getNameCount()).toString().replace('\\', '/');
+        Track track = musikDataServerStartupService.getTrackRepository().findByPath(pathString);
         if (track == null) {
             track = new Track();
-            track.setPath(path);
-            logger.info("create new track " + path);
+            //default
+            track.setName(file.getName());
+            logger.info("create new track " + pathString);
             created++;
         } else if (track.getLastModifiedDate().getTime() >= file.lastModified()) {
-            logger.info("-   skipping unchanged track " + path);
+            logger.info("-   skipping unchanged track " + pathString);
             unchanged++;
-            return track;
+            //muss nicht nochmal gespeichert werden
+            return null;
         }
         else {
-            logger.info("-   update track " + path);
+            logger.info("-   update track " + pathString);
             updated++;
         }
 
+        Tag tag = null;
+        AudioHeader header = null;
+        try {
+            AudioFile audioFile = AudioFileIO.read(file);
+            tag = audioFile.getTag();
+            //technical data
+            header = audioFile.getAudioHeader();
+            if (header != null) {
+                String hash = getHash(header, file.getName());
+                Track existingTrack = musikDataServerStartupService.getTrackRepository().findByHash(hash);
+                if (existingTrack != null) {
+                    //wir übernehmen die Daten aus dem bisherigen Track
+                    track = existingTrack;
+                    reused++;
+                    if (track.getLastModifiedDate().getTime() >= file.lastModified()) {
+                        //nur neue Position, aber keine Änderung an Daten
+                        logger.info(MessageFormat.format("-   skipping re-used unchanged track {0} from path {1}", pathString, track.getPath()));
+                        unchanged++;
+                        //path muss aber neu gespeichert werden
+                        track.setPath(pathString);
+                        return track;
+                    }
+                    logger.info(MessageFormat.format("-   re-using track {0} from path {1}", pathString, track.getPath()));
+                } else {
+                    track.setHash(hash);
+                }
+                track.setBitsPerSample(header.getBitsPerSample());
+                track.setBitrate(header.getBitRateAsNumber());
+                track.setSamplerate(header.getSampleRateAsNumber());
+                track.setEncoding(header.getFormat());
+                track.setLengthInSeconds(header.getTrackLength());
+                //ist null bei Ogg, WMA, manchen WAV, etc.
+                track.setNoOfSamples(getNumberOfSamples(header));
+            }
+        } catch (PersistenceException e) {
+            throw e;
+        } catch (Throwable t) {
+            logger.log(Level.WARNING, MessageFormat.format("error when processing track {0} with header {1}", pathString, header == null ? "NULL" : header),
+                    t);
+        }
+
         //Daten direkt aus File
+        track.setPath(pathString);
         track.setSize(file.length());
         track.setLastModifiedDate(new Date(file.lastModified()));
 
-        Tag tag = null;
-        AudioFile audioFile = AudioFileIO.read(file);
-        try {
-            tag = audioFile.getTag();
-            if (tag == null) {
-                track.setName(file.getName());
-            } else {
-                String title;
+        if (tag != null) {
+            try {
                 String str = tag.getFirst(FieldKey.TITLE);
                 if (StringUtils.isNotBlank(str)) {
-                    title = str;
-                } else {
-                    title = file.getName();
+                    track.setName(str);
                 }
-                track.setName(title);
                 str = tag.getFirst(FieldKey.TRACK);
                 if (StringUtils.isNotBlank(str)) {
                     try {
                         track.setTracknumber(Integer.valueOf(str));
                     } catch (NumberFormatException e) {
-                        logger.log(Level.WARNING, "invalid track number " + str + " for track " + path);
+                        logger.log(Level.WARNING, "invalid track number " + str + " for track " + pathString);
                     }
                 }
                 str = tag.getFirst(FieldKey.ALBUM);
@@ -204,43 +240,18 @@ public class MusikScanner {
                 //abschneiden
                 track.setComment(comment.substring(0, Math.min(255, comment.length())));
                 track.setPublisher(tag.getFirst(Track.FIELDKEY_ORGANIZATION));
+            } catch (PersistenceException e) {
+                throw e;
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "error when processing track " + pathString
+                        + " with tag " + (tag == null ? "NULL" : tag), t);
             }
-        } catch (PersistenceException e) {
-            throw e;
-        } catch (Throwable t) {
-            logger.log(Level.WARNING, "error when processing track " + path
-                    + " with tag " + (tag == null ? "NULL" : tag), t);
         }
 
-        AudioHeader header = null;
-        try {
-            //technical data
-            header = audioFile.getAudioHeader();
-            if (header != null) {
-                track.setBitsPerSample(header.getBitsPerSample());
-                track.setBitrate(header.getBitRateAsNumber());
-                track.setSamplerate(header.getSampleRateAsNumber());
-                track.setEncoding(header.getFormat());
-                track.setLengthInSeconds(header.getTrackLength());
-                //ist null bei Ogg, WMA, manchen WAV, etc.
-                Long noOfSamples = header.getNoOfSamples();
-                if (noOfSamples == null) {
-                    //dann selbst berechnen (wieso macht das jaudiotagger nicht schon?)
-                    noOfSamples = ((long) track.getLengthInSeconds() * track.getSamplerate());
-                }
-                track.setNoOfSamples(noOfSamples);
-            }
-            track.setHash(getHash(header, path, track));
-        } catch (PersistenceException e) {
-            throw e;
-        } catch (Throwable t) {
-            logger.log(Level.WARNING, "error when processing track " + path
-                    + " with header " + (header == null ? "NULL" : header));
-        }
         return track;
     }
 
-    private static String getHash(AudioHeader header, String path, Track track) {
+    private static String getHash(AudioHeader header, String filename) {
         //nur Flac hat (meistens) einen korrekten Audio-MD5, der unabhängig von Tags ist
         if (header instanceof FlacAudioHeader) {
             String hash = ((FlacAudioHeader) header).getMd5();
@@ -250,7 +261,7 @@ public class MusikScanner {
             }
         }
         //beim Rest muss filepath-hash plus Länge in samples reichen, um Änderungen anzuzeigen
-        return getFileHash(path, track);
+        return getFileHash(filename, header);
         //Leider viel zu langsam...
         /*
         try {
@@ -275,9 +286,18 @@ public class MusikScanner {
         return true;
     }
 
-    private static String getFileHash(String path, Track track) {
-        return Long.toHexString(path.hashCode())
-                + '-' + Long.toHexString(track.getNoOfSamples());
+    private static String getFileHash(String filename, AudioHeader header) {
+        return Long.toHexString(filename.hashCode())
+                + '-' + Long.toHexString(getNumberOfSamples(header));
+    }
+
+    private static Long getNumberOfSamples(AudioHeader header) {
+        Long noOfSamples = header.getNoOfSamples();
+        if (noOfSamples == null) {
+            //dann selbst berechnen (wieso macht das jaudiotagger nicht schon?)
+            noOfSamples = ((long) header.getTrackLength() * header.getSampleRateAsNumber());
+        }
+        return noOfSamples;
     }
 
     /**
@@ -308,26 +328,5 @@ public class MusikScanner {
             entity = repo.save(entity);
         }
         return entity;
-    }
-
-
-    public long getCount() {
-        return count;
-    }
-
-    public long getUnchanged() {
-        return unchanged;
-    }
-
-    public long getFailed() {
-        return failed;
-    }
-
-    public long getCreated() {
-        return created;
-    }
-
-    public long getUpdated() {
-        return updated;
     }
 }

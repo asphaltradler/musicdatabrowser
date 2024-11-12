@@ -8,7 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.util.Set;
 
 @Entity
-@Table(indexes = @Index(columnList = "name", unique = true))
+@Table(indexes = @Index(name="name_idx", columnList = "name", unique = true))
 public class Album extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id

@@ -20,8 +20,8 @@ services:
       - database-password
     volumes:
       - db-volume:/var/lib/postgresql/data
-      - /F/Cosmas/Musikarchiv:/usr/src/app/Musikarchiv
-      #- /C/Users/CosmasLang/Music:/usr/src/app/Musikarchiv
+      #- /F/Cosmas/Musikarchiv:/usr/src/app/Musikarchiv
+      - /C/Users/CosmasLang/Music:/usr/src/app/Musikarchiv
     environment:
       #      POSTGRES_USER: postgres
       POSTGRES_PASSWORD_FILE: /run/secrets/database-password

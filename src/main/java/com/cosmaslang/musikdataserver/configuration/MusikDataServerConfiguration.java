@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
 public class MusikDataServerConfiguration {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private String rootdir;
+    private String startdir;
 
     /**
      * Automatisch gesetzt aus application.properties
@@ -28,11 +30,16 @@ public class MusikDataServerConfiguration {
         this.rootdir = rootdir;
     }
 
+    public void setStartdir(String startdir) {
+        logger.info(MessageFormat.format("setting start directory={0} from config", startdir));
+        this.startdir = startdir;
+    }
+
     @Bean
     @Primary
-    MusikDataServerStartupService getService() {
+    MusikDataServerStartupService getService() throws IOException {
         MusikDataServerStartupService service = new MusikDataServerStartupConfigurableService();
-        service.setRootDir(rootdir);
+        service.setMediaDirectories(rootdir, startdir);
         return service;
     }
 }

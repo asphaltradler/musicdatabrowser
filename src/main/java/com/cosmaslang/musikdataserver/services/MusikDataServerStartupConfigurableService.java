@@ -13,6 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -43,14 +44,22 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
     NamedEntityRepository<Komponist> komponistRepository;
 
     private Path rootDirPath;
+    private Path startDirPath;
 
     /**
      * Wird von der {@link MusikDataServerConfiguration} gesetzt
      */
     @Override
-    public void setRootDir(String filename) {
-        logger.info(MessageFormat.format("Setting root directory={0}", filename));
-        rootDirPath = new File(filename).toPath();
+    public void setMediaDirectories(String rootdir, String startdir) throws IOException {
+        logger.info(MessageFormat.format("Setting root directory={0}, start directory={1}", rootdir, startdir));
+        rootDirPath = new File(rootdir).toPath();
+        startDirPath = new File(startdir).toPath();
+        if (!startDirPath.toFile().exists()) {
+            throw new FileNotFoundException(MessageFormat.format("Start directory {0} doesn't exist", startDirPath));
+        }
+        if (!startDirPath.startsWith(rootDirPath)) {
+            throw new IOException(MessageFormat.format("Start directory {0} is not in {1}", startDirPath, rootDirPath));
+        }
     }
 
     @Override
@@ -65,7 +74,7 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
 
     private void scanMusikdirectory() throws IOException {
         MusikScanner scanner = new MusikScanner(this);
-        scanner.scan(rootDirPath);
+        scanner.scan(rootDirPath, startDirPath);
     }
 
     @Override
