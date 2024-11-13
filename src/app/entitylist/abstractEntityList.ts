@@ -19,7 +19,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   protected entityType: typeof AbstractEntity;
 
   private static searchEntities: typeof AbstractEntity[] = [Album, Track, Komponist, Werk, Genre, Interpret];
-  private _searchableEntities;
+  protected _searchableEntities;
 
   constructor(protected service: AbstractEntityService<E>,
               protected route: ActivatedRoute,
@@ -42,7 +42,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
         const obs = this.service.findBy(ent.entityName + 'Id', id); //this.service.get(id);
         const time = performance.now();
         obs.pipe().subscribe(data => {
-          this.fillEntities(data, `für ${ent.getNameSingular()}='${searchName}'`);
+          this.fillEntities(data, `für ${ent.getNameSingular()} '${searchName}'`);
           console.log(`dauerte ${performance.now() - time}ms`);
         });
         //nicht weitersuchen
@@ -58,15 +58,14 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
     const obs = this.service.find(searchText || '');
     const time = performance.now();
     obs.pipe().subscribe(data => {
-      this.fillEntities(data, searchText ? `für Name=${searchText}` : 'insgesamt');
+      this.fillEntities(data, searchText ? `für Name '${searchText}'` : 'insgesamt');
       console.log(`dauerte ${performance.now() - time}ms`);
     });
   }
 
   //TODO statt Listen Streams? Titel erst nach Erhalt aller Daten möglich!
   fillEntities(data: E[], titleName?: string) {
-    this._title = `${data.length} ${data.length == 1 ? this.entityType.getNameSingular()
-      : this.entityType.namePlural} ${titleName}`;
+    this._title = `${this.service.entityType.getNumberDescription(data.length)} ${titleName}`;
     this._entities = data;
   }
 

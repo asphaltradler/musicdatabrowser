@@ -9,4 +9,10 @@ export abstract class AbstractEntity {
   static getNameSingular() {
     return this.entityName.replace(/\b(\w)/g, s => s.toUpperCase());
   }
+
+  static getNumberDescription(num: number) {
+    return `${num} ${num === 1
+      ? this.getNameSingular()
+      : this.namePlural}`;
+  }
 }

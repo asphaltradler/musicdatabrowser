@@ -8,10 +8,10 @@ import {Album} from './entities/album';
 import {Komponist} from './entities/komponist';
 import {Werk} from './entities/werk';
 import {Interpret} from './entities/interpret';
-import {GenreListComponent} from './entitylist/genre-list.component';
 import {Genre} from './entities/genre';
 import {Track} from './entities/track';
 import {TrackListComponent} from './entitylist/track-list.component';
+import {GenreListComponent} from './entitylist/genre-list.component';
 
 export const routes: Routes = [
   { path: Album.entityName, component: AlbumListComponent, title: Album.namePlural },
