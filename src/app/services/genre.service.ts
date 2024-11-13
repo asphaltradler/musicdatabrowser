@@ -8,6 +8,6 @@ import {HttpClient} from '@angular/common/http';
 })
 export class GenreService extends AbstractEntityService<Genre> {
   constructor(http: HttpClient) {
-    super(http, Genre.entityName, Genre.namePlural);
+    super(http, Genre);
   }
 }

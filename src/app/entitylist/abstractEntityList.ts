@@ -16,8 +16,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
 
   protected _title!: string;
   protected _entities!: E[];
-  protected _entityName: string;
-  protected _entityNamePlural: string;
+  protected entityType: typeof AbstractEntity;
 
   private static searchEntities: typeof AbstractEntity[] = [Album, Track, Komponist, Werk, Genre, Interpret];
   private _searchableEntities;
@@ -25,13 +24,12 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   constructor(protected service: AbstractEntityService<E>,
               protected route: ActivatedRoute,
               protected router: Router) {
-    this._entityName = service.entityName;
-    this._entityNamePlural = service.entityNamePlural;
+    this.entityType = service.entityType;
     this._searchableEntities = AbstractEntityList.searchEntities.filter(
-      (entity) => entity.entityName != this._entityName
+      (entity) => entity != this.entityType
     );
 
-    console.log(`${this._entityName}List created`);
+    console.log(`${this.entityType.getNameSingular()}List created`);
   }
 
   ngOnInit(): void {
@@ -40,7 +38,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
       const id = queryParamMap.get(ent.entityName);
       if (id) {
         const searchName = queryParamMap.get(AbstractEntityList.urlParamEntityName) || undefined;
-        console.log(`Suche ${this._entityNamePlural} nach ${ent.entityName}=${id}`);
+        console.log(`Suche ${this.entityType.namePlural} nach ${ent.entityName}=${id}`);
         const obs = this.service.findBy(ent.entityName + 'Id', id); //this.service.get(id);
         const time = performance.now();
         obs.pipe().subscribe(data => {
@@ -56,7 +54,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   }
 
   searchForName(searchText?: string) {
-    console.log(`Suche ${this._entityNamePlural} nach ${searchText ? searchText : '*'}`);
+    console.log(`Suche ${this.entityType.namePlural} nach ${searchText ? searchText : '*'}`);
     const obs = this.service.find(searchText || '');
     const time = performance.now();
     obs.pipe().subscribe(data => {
@@ -67,12 +65,13 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
 
   //TODO statt Listen Streams? Titel erst nach Erhalt aller Daten möglich!
   fillEntities(data: E[], titleName?: string) {
-    this._title = `${data.length} ${this._entityNamePlural} ${titleName}`;
+    this._title = `${data.length} ${data.length == 1 ? this.entityType.getNameSingular()
+      : this.entityType.namePlural} ${titleName}`;
     this._entities = data;
   }
 
   searchOtherEntityByThis(entityName: string, entity: AbstractEntity) {
-    this.searchOtherEntityBy(entityName, this._entityName, entity);
+    this.searchOtherEntityBy(entityName, this.entityType.entityName, entity);
   }
 
   searchOtherEntityByItself(entityName: string, entity: AbstractEntity) {

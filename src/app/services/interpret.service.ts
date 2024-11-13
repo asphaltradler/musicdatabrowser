@@ -8,6 +8,6 @@ import {Interpret} from '../entities/interpret';
 })
 export class InterpretService extends AbstractEntityService<Interpret> {
   constructor(http: HttpClient) {
-    super(http, Interpret.entityName, Interpret.namePlural);
+    super(http, Interpret);
   }
 }

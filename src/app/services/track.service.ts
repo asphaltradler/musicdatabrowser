@@ -9,6 +9,6 @@ import {HttpClient} from '@angular/common/http';
 export class TrackService extends AbstractEntityService<Track> {
 
   constructor(http: HttpClient) {
-    super(http, Track.entityName, Track.namePlural);
+    super(http, Track);
   }
 }

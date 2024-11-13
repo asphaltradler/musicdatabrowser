@@ -8,6 +8,6 @@ import {AbstractEntityService} from './abstractEntityService';
 })
 export class KomponistService extends AbstractEntityService<Komponist> {
   constructor(http: HttpClient) {
-    super(http, Komponist.entityName, Komponist.namePlural);
+    super(http, Komponist);
   }
 }
