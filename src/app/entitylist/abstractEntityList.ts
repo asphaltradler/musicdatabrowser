@@ -1,8 +1,7 @@
 import {OnInit} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Album} from '../entities/album';
-import {HttpParams} from '@angular/common/http';
 import {AbstractEntityService} from '../services/abstractEntityService';
 import {Komponist} from '../entities/komponist';
 import {Werk} from '../entities/werk';
@@ -12,7 +11,8 @@ import {Track} from '../entities/track';
 
 @Object
 export abstract class AbstractEntityList<E extends AbstractEntity> implements OnInit {
-  public static urlParamEntityName = 'entityName';
+  public static urlParamEntitySearchTitle = 'title';
+  public static urlParamEntityName = 'searchby';
 
   protected _title!: string;
   protected _entities!: E[];
@@ -34,19 +34,24 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
 
   ngOnInit(): void {
     const queryParamMap = this.route.snapshot.queryParamMap;
-    for (const ent of AbstractEntityList.searchEntities) {
-      const id = queryParamMap.get(ent.entityName);
-      if (id) {
-        const searchName = queryParamMap.get(AbstractEntityList.urlParamEntityName) || undefined;
-        console.log(`Suche ${this.entityType.namePlural} nach ${ent.entityName}=${id}`);
-        const obs = this.service.findBy(ent.entityName + 'Id', id); //this.service.get(id);
-        const time = performance.now();
-        obs.pipe().subscribe(data => {
-          this.fillEntities(data, `für ${ent.getNameSingular()} '${searchName}'`);
-          console.log(`dauerte ${performance.now() - time}ms`);
-        });
-        //nicht weitersuchen
-        return;
+    const searchEntityName = queryParamMap.get(AbstractEntityList.urlParamEntityName);
+    if (searchEntityName) {
+      for (const ent of AbstractEntityList.searchEntities) {
+        if (ent.entityName === searchEntityName) {
+          const id = queryParamMap.get('id');
+          if (id) {
+            const searchName = queryParamMap.get(AbstractEntityList.urlParamEntitySearchTitle) || '';
+            console.log(`Suche ${this.entityType.namePlural} nach ${ent.entityName}=${id}`);
+            const obs = this.service.findBy(ent.entityName + 'Id', id); //this.service.get(id);
+            const time = performance.now();
+            obs.subscribe(data => {
+              this.fillEntities(data, `für ${ent.getNameSingular()} '${searchName}'`);
+              console.log(`dauerte ${performance.now() - time}ms`);
+            });
+            //nicht weitersuchen
+            return;
+          }
+        }
       }
     }
     //default: alle anzeigen
@@ -57,7 +62,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
     console.log(`Suche ${this.entityType.namePlural} nach ${searchText ? searchText : '*'}`);
     const obs = this.service.find(searchText || '');
     const time = performance.now();
-    obs.pipe().subscribe(data => {
+    obs.subscribe(data => {
       this.fillEntities(data, searchText ? `für Name '${searchText}'` : 'insgesamt');
       console.log(`dauerte ${performance.now() - time}ms`);
     });
@@ -65,7 +70,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
 
   //TODO statt Listen Streams? Titel erst nach Erhalt aller Daten möglich!
   fillEntities(data: E[], titleName?: string) {
-    this._title = `${this.service.entityType.getNumberDescription(data.length)} ${titleName}`;
+    this._title = `${this.entityType.getNumberDescription(data.length)} ${titleName}`;
     this._entities = data;
   }
 
@@ -78,11 +83,12 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   }
 
   searchOtherEntityBy(entityName: string, searchEntityName: string, entity: AbstractEntity) {
-    console.log(`search ${entityName} nach ${searchEntityName}=${entity.name},${entity.id}`);
-    const params = new HttpParams()
-      .set(searchEntityName, entity.id)
-      .set(AbstractEntityList.urlParamEntityName, entity.name);
-    this.router.navigateByUrl(entityName + '?' + params.toString());
+    console.log(`Suche ${entityName} nach ${searchEntityName}=${entity.name},${entity.id}`);
+    let params: Params = {};
+    params[AbstractEntityList.urlParamEntityName] = searchEntityName;
+    params[AbstractEntityList.urlParamEntitySearchTitle] = entity.name;
+    params['id'] = entity.id;
+    this.router.navigate([entityName], {queryParams: params});
   }
 
   trackByItemId(index: number, item: E): number {
