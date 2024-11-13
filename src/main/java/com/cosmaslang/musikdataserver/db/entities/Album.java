@@ -1,6 +1,6 @@
 package com.cosmaslang.musikdataserver.db.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -19,7 +19,8 @@ public class Album extends NamedEntity {
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.MERGE, fetch = FetchType.LAZY, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonBackReference
+    //@JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     private Set<Track> tracks;
 
     @Override

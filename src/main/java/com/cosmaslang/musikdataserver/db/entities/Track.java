@@ -1,6 +1,7 @@
 package com.cosmaslang.musikdataserver.db.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -14,8 +15,10 @@ import java.util.stream.Collectors;
         @Index(name="hash_idx", columnList = "hash", unique = true),
         @Index(name="path_idx", columnList = "path", unique = true)
 })
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Track extends NamedEntity {
-
     public static final String FIELDKEY_ORGANIZATION = "ORGANIZATION";
     public static final String FIELDKEY_WORK = "WORK";
 
@@ -29,8 +32,9 @@ public class Track extends NamedEntity {
     //Bei den ManyToOne dürfen wir NICHT Lazy kaskadieren!!!
     @ManyToOne(cascade = CascadeType.MERGE /*, fetch = FetchType.LAZY*/)
     //@JoinColumn(name = "album_id")
-    @JsonManagedReference
+    //@JsonManagedReference
     //@JsonIgnore
+    //@JsonIdentityReference(alwaysAsId = true)
     private Album album;
     @ManyToOne(cascade = CascadeType.MERGE)
     //@JoinColumn(name = "komponist_id")
