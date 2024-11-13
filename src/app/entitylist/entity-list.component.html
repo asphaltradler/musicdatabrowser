@@ -21,7 +21,7 @@
           <td *ngFor="let cat of searchableEntities" class="text-center">
             <button class="btn btn-link"
                     title="{{ cat.namePlural}} für {{ent.name}}"
-                    (click)="searchOtherEntityByThis(cat.entityName, ent.name, ent.id)">
+                    (click)="searchOtherEntityByThis(cat.entityName, ent)">
               {{ cat.namePlural }}
             </button>
           </td>

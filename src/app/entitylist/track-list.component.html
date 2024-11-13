@@ -23,18 +23,18 @@
           <td class="text-center">
             <button class="btn btn-link"
                     title="{{ Album.namePlural}} für Track"
-                    (click)="searchOtherEntityByThis(Album.entityName, track.name, track.id)">
+                    (click)="searchOtherEntityByThis(Album.entityName, track)">
               {{ track.album?.name }}
             </button>
           </td>
           <td class="text-center">
             <button *ngIf="track.komponist" class="btn btn-link"
                     title="{{ Album.namePlural}} für {{track.komponist.name}}"
-                    (click)="searchOtherEntityBy(Album.entityName, Komponist.entityName, track.komponist.name, track.komponist.id)">
+                    (click)="searchOtherEntityBy(Album.entityName, Komponist.entityName, track.komponist)">
               {{ track.komponist.name }}
               <a class="page-link"
                  title="Details für {{track.komponist.name}}"
-                 (click)="searchOtherEntityBy(Komponist.entityName, Komponist.entityName, track.komponist.name, track.komponist.id)">
+                 (click)="searchOtherEntityByItself(Komponist.entityName, track.komponist)">
                 (Details)
               </a>
             </button>
@@ -42,11 +42,11 @@
           <td class="text-center">
             <button *ngFor="let i of track.interpreten" class="btn btn-link"
                     title="{{ Album.namePlural}} für {{i.name}}"
-                    (click)="searchOtherEntityBy(Album.entityName, Interpret.entityName, i.name, i.id)">
+                    (click)="searchOtherEntityBy(Album.entityName, Interpret.entityName, i)">
               {{ i.name }}
               <a class="page-link"
                  title="Details für {{i.name}}"
-                 (click)="searchOtherEntityBy(Interpret.entityName, Interpret.entityName, i.name, i.id)">
+                 (click)="searchOtherEntityByItself(Interpret.entityName, i)">
                 (Details)
               </a>
             </button>
@@ -54,11 +54,11 @@
           <td class="text-center">
             <button *ngIf="track.werk" class="btn btn-link"
                     title="{{ Album.namePlural}} für {{track.werk.name}}"
-                    (click)="searchOtherEntityBy(Album.entityName, Werk.entityName, track.werk.name, track.werk.id)">
+                    (click)="searchOtherEntityBy(Album.entityName, Werk.entityName, track.werk)">
               {{ track.werk.name }}
               <a class="page-link"
                  title="Details für {{track.werk.name}}"
-                 (click)="searchOtherEntityBy(Werk.entityName, Werk.entityName, track.werk.name, track.werk.id)">
+                 (click)="searchOtherEntityByItself(Werk.entityName, track.werk)">
                 (Details)
               </a>
             </button>
@@ -66,11 +66,11 @@
           <td class="text-center">
             <button *ngFor="let g of track.genres" class="btn btn-link"
                     title="{{ Album.namePlural}} für {{g.name}}"
-                    (click)="searchOtherEntityBy(Album.entityName, Genre.entityName, g.name, g.id)">
+                    (click)="searchOtherEntityBy(Album.entityName, Genre.entityName, g)">
               {{ g.name }}
               <a class="page-link"
                  title="Details für {{g.name}}"
-                 (click)="searchOtherEntityBy(Genre.entityName, Genre.entityName, g.name, g.id)">
+                 (click)="searchOtherEntityByItself(Genre.entityName, g)">
                 (Details)
               </a>
             </button>
