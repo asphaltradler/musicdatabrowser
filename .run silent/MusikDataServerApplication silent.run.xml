@@ -3,7 +3,7 @@
     <option name="ACTIVE_PROFILES" value="dev-silent" />
     <option name="ALTERNATIVE_JRE_PATH" value="$PROJECT_DIR$/../../SEU/jdk-17" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-    <module name="musikdataserver" />
+    <module name="musikserver" />
     <projectPathOnTarget name="projectPathOnTarget" value="/app" />
     <target name="@@@LOCAL@@@" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.cosmaslang.musikdataserver.MusikDataServerApplication" />
