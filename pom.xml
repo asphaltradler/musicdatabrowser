@@ -58,6 +58,11 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- für Analyse
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency -->
         <!-- wird vorerst nicht gebraucht -->
         <!-- dependency>
              <groupId>org.apache.commons</groupId>
