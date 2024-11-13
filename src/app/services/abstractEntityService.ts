@@ -14,12 +14,12 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
     this.getUrl = this.baseUrl + entityName.toLowerCase() + '/get';
   }
 
-  public find(searchString: string): Observable<E[]> {
+  find(searchString: string): Observable<E[]> {
     const params = new HttpParams().set(this.entityName.toLowerCase(), searchString);
     return this.http.get<E[]>(this.findUrl, {params});
   }
 
-  public findBy(otherEntityName: string, id: string): Observable<E[]> {
+  findBy(otherEntityName: string, id: string): Observable<E[]> {
     const params = new HttpParams().set(otherEntityName, id);
     return this.http.get<E[]>(this.getUrl, {params});
   }

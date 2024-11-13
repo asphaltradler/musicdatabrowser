@@ -14,9 +14,8 @@ import {appDefaults} from '../../config/config';
   styleUrl: './status.component.css'
 })
 export class StatusComponent implements OnInit {
-
   private readonly url: string;
-  private status: string | undefined
+  status?: string
 
   constructor(private http: HttpClient) {
     this.url = appDefaults.serverUrl;
@@ -27,9 +26,5 @@ export class StatusComponent implements OnInit {
     obs.subscribe(data => {
       this.status = data;
     });
-  }
-
-  getStatus() {
-    return this.status;
   }
 }

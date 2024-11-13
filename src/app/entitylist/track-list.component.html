@@ -32,6 +32,11 @@
                     title="{{ Album.namePlural}} für {{track.komponist.name}}"
                     (click)="searchOtherEntityBy(Album.entityName, Komponist.entityName, track.komponist.name, track.komponist.id)">
               {{ track.komponist.name }}
+              <a class="page-link"
+                 title="Details für {{track.komponist.name}}"
+                 (click)="searchOtherEntityBy(Komponist.entityName, Komponist.entityName, track.komponist.name, track.komponist.id)">
+                (Details)
+              </a>
             </button>
           </td>
           <td class="text-center">
@@ -39,6 +44,11 @@
                     title="{{ Album.namePlural}} für {{i.name}}"
                     (click)="searchOtherEntityBy(Album.entityName, Interpret.entityName, i.name, i.id)">
               {{ i.name }}
+              <a class="page-link"
+                 title="Details für {{i.name}}"
+                 (click)="searchOtherEntityBy(Interpret.entityName, Interpret.entityName, i.name, i.id)">
+                (Details)
+              </a>
             </button>
           </td>
           <td class="text-center">
@@ -46,6 +56,11 @@
                     title="{{ Album.namePlural}} für {{track.werk.name}}"
                     (click)="searchOtherEntityBy(Album.entityName, Werk.entityName, track.werk.name, track.werk.id)">
               {{ track.werk.name }}
+              <a class="page-link"
+                 title="Details für {{track.werk.name}}"
+                 (click)="searchOtherEntityBy(Werk.entityName, Werk.entityName, track.werk.name, track.werk.id)">
+                (Details)
+              </a>
             </button>
           </td>
           <td class="text-center">
@@ -53,6 +68,11 @@
                     title="{{ Album.namePlural}} für {{g.name}}"
                     (click)="searchOtherEntityBy(Album.entityName, Genre.entityName, g.name, g.id)">
               {{ g.name }}
+              <a class="page-link"
+                 title="Details für {{g.name}}"
+                 (click)="searchOtherEntityBy(Genre.entityName, Genre.entityName, g.name, g.id)">
+                (Details)
+              </a>
             </button>
           </td>
           <td>{{ track.path }}</td>

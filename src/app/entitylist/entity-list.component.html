@@ -15,7 +15,7 @@
       </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let ent of entities" class="align-middle">
+        <tr *ngFor="let ent of entities; trackBy: trackByItemId" class="align-middle">
           <td>{{ ent.id }}</td>
           <td>{{ ent.name }}</td>
           <td *ngFor="let cat of searchableEntities" class="text-center">

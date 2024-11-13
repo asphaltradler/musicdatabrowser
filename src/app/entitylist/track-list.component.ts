@@ -33,8 +33,4 @@ export class TrackListComponent extends AbstractEntityList<Track> {
   protected readonly Werk = Werk;
   protected readonly Genre = Genre;
   protected readonly Track = Track;
-
-  trackByItemId(index: number, item: Track): number {
-    return item.id;
-  }
 }
