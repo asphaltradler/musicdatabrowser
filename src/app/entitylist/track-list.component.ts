@@ -17,7 +17,7 @@ import {NgForOf, NgIf} from '@angular/common';
   imports: [
     SearchfieldComponent,
     NgForOf,
-    NgIf
+    NgIf,
   ],
   templateUrl: './track-list.component.html',
   styleUrl: './track-list.component.css'
@@ -32,6 +32,9 @@ export class TrackListComponent extends AbstractEntityList<Track> {
   protected readonly Interpret = Interpret;
   protected readonly Werk = Werk;
   protected readonly Genre = Genre;
-  protected readonly Date = Date;
   protected readonly Track = Track;
+
+  trackByItemId(index: number, item: Track): number {
+    return item.id;
+  }
 }

@@ -4,12 +4,14 @@ import {Interpret} from '../entities/interpret';
 import {InterpretService} from '../services/interpret.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
 import {ActivatedRoute, Router} from '@angular/router';
+import {NgForOf} from '@angular/common';
 
 @Component({
   selector: 'app-interpret-list',
   standalone: true,
   imports: [
-    SearchfieldComponent
+    SearchfieldComponent,
+    NgForOf,
   ],
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'

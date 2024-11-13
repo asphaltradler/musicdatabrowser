@@ -2,7 +2,7 @@
 <div class="card my-3">
   <div class="card-body small">
     <h3 class="card-title">{{title}}</h3>
-    <table class="table table-bordered table-striped table-hover table-responsive-sm">
+    <table class="table table-bordered table-striped table-hover">
       <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
@@ -17,50 +17,48 @@
       </tr>
       </thead>
       <tbody>
-        @for (track of entities; track track.id) {
-          <tr class="align-middle">
-            <td>{{ track.tracknumber }}</td>
-            <td>{{ track.name }}</td>
-            <td class="text-center">
-              <button class="btn btn-link"
-                      title="{{ Album.namePlural}} für Track"
-                      (click)="searchOtherEntityByThis(Album.entityName, track.name, track.id)">
-                {{ track.album?.name }}
-              </button>
-            </td>
-            <td class="text-center">
-              <button *ngIf="track.komponist" class="btn btn-link"
-                      title="{{ Album.namePlural}} für {{track.komponist.name}}"
-                      (click)="searchOtherEntityBy(Album.entityName, Komponist.entityName, track.komponist.name, track.komponist.id)">
-                {{ track.komponist.name }}
-              </button>
-            </td>
-            <td class="text-center">
-              <button *ngFor="let i of track.interpreten" class="btn btn-link"
-                      title="{{ Album.namePlural}} für {{i.name}}"
-                      (click)="searchOtherEntityBy(Album.entityName, Interpret.entityName, i.name, i.id)">
-                {{ i.name }}
-              </button>
-            </td>
-            <td class="text-center">
-              <button *ngIf="track.werk" class="btn btn-link"
-                      title="{{ Album.namePlural}} für {{track.werk.name}}"
-                      (click)="searchOtherEntityBy(Album.entityName, Werk.entityName, track.werk.name, track.werk.id)">
-                {{ track.werk.name }}
-              </button>
-            </td>
-            <td class="text-center">
-              <button *ngFor="let g of track.genres" class="btn btn-link"
-                      title="{{ Album.namePlural}} für {{g.name}}"
-                      (click)="searchOtherEntityBy(Album.entityName, Genre.entityName, g.name, g.id)">
-                {{ g.name }}
-              </button>
-            </td>
-            <td>{{ track.path }}</td>
-            <td>{{ Track.getLastModificationSince(track) }}</td>
-          </tr>
-        }
+        <tr *ngFor="let track of entities" class="align-middle">
+          <td>{{ track.tracknumber }}</td>
+          <td>{{ track.name }}</td>
+          <td class="text-center">
+            <button class="btn btn-link"
+                    title="{{ Album.namePlural}} für Track"
+                    (click)="searchOtherEntityByThis(Album.entityName, track.name, track.id)">
+              {{ track.album?.name }}
+            </button>
+          </td>
+          <td class="text-center">
+            <button *ngIf="track.komponist" class="btn btn-link"
+                    title="{{ Album.namePlural}} für {{track.komponist.name}}"
+                    (click)="searchOtherEntityBy(Album.entityName, Komponist.entityName, track.komponist.name, track.komponist.id)">
+              {{ track.komponist.name }}
+            </button>
+          </td>
+          <td class="text-center">
+            <button *ngFor="let i of track.interpreten" class="btn btn-link"
+                    title="{{ Album.namePlural}} für {{i.name}}"
+                    (click)="searchOtherEntityBy(Album.entityName, Interpret.entityName, i.name, i.id)">
+              {{ i.name }}
+            </button>
+          </td>
+          <td class="text-center">
+            <button *ngIf="track.werk" class="btn btn-link"
+                    title="{{ Album.namePlural}} für {{track.werk.name}}"
+                    (click)="searchOtherEntityBy(Album.entityName, Werk.entityName, track.werk.name, track.werk.id)">
+              {{ track.werk.name }}
+            </button>
+          </td>
+          <td class="text-center">
+            <button *ngFor="let g of track.genres" class="btn btn-link"
+                    title="{{ Album.namePlural}} für {{g.name}}"
+                    (click)="searchOtherEntityBy(Album.entityName, Genre.entityName, g.name, g.id)">
+              {{ g.name }}
+            </button>
+          </td>
+          <td>{{ track.path }}</td>
+          <td>{{ Track.getLastModificationSince(track) }}</td>
+        </tr>
       </tbody>
     </table>
-  </div>
+   </div>
 </div>

@@ -14,7 +14,7 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
     this.getUrl = this.baseUrl + entityName.toLowerCase() + '/get';
   }
 
-  public find(searchString: string = ''): Observable<E[]> {
+  public find(searchString: string): Observable<E[]> {
     const params = new HttpParams().set(this.entityName.toLowerCase(), searchString);
     return this.http.get<E[]>(this.findUrl, {params});
   }

@@ -9,27 +9,23 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Name</th>
-        @for (cat of searchableEntities; track cat.name) {
-        <th scope="col" class="text-center">{{ cat.namePlural }}</th>
-        }
+        <th *ngFor="let cat of searchableEntities" scope="col" class="text-center">
+          {{ cat.namePlural }}
+        </th>
       </tr>
       </thead>
       <tbody>
-        @for (ent of entities; track ent.id) {
-          <tr class="align-middle">
-            <td>{{ ent.id }}</td>
-            <td>{{ ent.name }}</td>
-            @for (cat of searchableEntities; track cat.entityName) {
-            <td class="text-center">
-              <button class="btn btn-link"
-                      title="{{ cat.namePlural}} für {{ent.name}}"
-                      (click)="searchOtherEntityByThis(cat.entityName, ent.name, ent.id)">
-                {{ cat.namePlural }}
-              </button>
-            </td>
-            }
-          </tr>
-        }
+        <tr *ngFor="let ent of entities" class="align-middle">
+          <td>{{ ent.id }}</td>
+          <td>{{ ent.name }}</td>
+          <td *ngFor="let cat of searchableEntities" class="text-center">
+            <button class="btn btn-link"
+                    title="{{ cat.namePlural}} für {{ent.name}}"
+                    (click)="searchOtherEntityByThis(cat.entityName, ent.name, ent.id)">
+              {{ cat.namePlural }}
+            </button>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>

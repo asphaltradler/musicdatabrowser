@@ -4,12 +4,14 @@ import {AbstractEntityList} from './abstractEntityList';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Genre} from '../entities/genre';
 import {GenreService} from '../services/genre.service';
+import {NgForOf} from '@angular/common';
 
 @Component({
   selector: 'app-genre-list',
   standalone: true,
   imports: [
-    SearchfieldComponent
+    SearchfieldComponent,
+    NgForOf,
   ],
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'

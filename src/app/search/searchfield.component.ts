@@ -17,10 +17,6 @@ export class SearchfieldComponent {
     searchField: new FormControl('')
   });
 
-  setSearchText(searchText: string) {
-    this.searchForm.setValue({searchField: searchText});
-  }
-
   handleSubmit() {
     this.searchText.emit(this.searchForm.value.searchField || '');
   }
