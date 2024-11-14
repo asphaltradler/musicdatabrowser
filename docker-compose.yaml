@@ -1,11 +1,16 @@
-version: '3.5' # We use version 3.5 syntax
-services: # Here we define our service(s)
-  frontend: # The name of the service
-    # container_name: musikserver-client  # Container name
+services:
+  frontend:
+    # container_name: musikserver-client
     build: ./ # Location of our Dockerfile
-    #volumes: # Volume binding
+    #volumes:
+    #  - frontend-volume:/
     #  - './build:/usr/src/app'
     ports:
-      - '4202:4202' # Port mapping
+#      - '4202:4202'
+      - '80:80'
     command: >
-      bash -c "ng serve --host 0.0.0.0 --port 4202 --configuration production"
+      npm run start-prod -- --host 0.0.0.0 --port 80
+#nginx
+
+#volumes:
+#  frontend-volume:

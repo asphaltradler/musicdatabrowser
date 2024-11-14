@@ -1,18 +1,30 @@
-FROM node:slim AS deps
+FROM node:alpine AS deps
 LABEL authors="CosmasLang"
-#WORKDIR /usr/src/app
+
 WORKDIR /build
-#COPY . /usr/src/app
 
 FROM deps AS package
 COPY . /build
 
 FROM package AS install
-RUN npm install -g @angular/cli --force --loglevel verbose
-RUN npm install --force --loglevel verbose
+RUN npm config set strict-ssl false
+#ci ist schneller als install, produziert aber größeres Image und geht nur lokal statt global
+RUN npm ci @angular/cli --force #--loglevel verbose
+#RUN npm install -g @angular/cli --force #--loglevel verbose
+RUN npm ci --loglevel verbose
 
-RUN ng build --configuration production
-#FROM install AS start
-#CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4200"]
+FROM install AS build
+#RUN npm run build-prod
+#RUN ng build --configuration production
+CMD ["npm", "run", "build"]
 
-# ENTRYPOINT ["top", "-b"]
+# Production-Stage / Verwende NGINX als Basis-Image für die Produktionsumgebung
+#FROM nginx:alpine AS deploy
+# Kopiere die gebaute App in das NGINX-Verzeichnis
+#COPY --from=build /build/dist/musikserverclient /usr/share/nginx/html
+# Kopiere deine angepasste NGINX-Konfiguration (optional, aber empfohlen. Eine Beispiel Konfiguration findest du weiter unten)
+#COPY nginx.conf /etc/nginx/nginx.conf
+# Port 80 freigeben, nginx läuft auf diesem Port
+#EXPOSE 80
+#CMD ["nginx", "-g", "daemon off;"]
+
