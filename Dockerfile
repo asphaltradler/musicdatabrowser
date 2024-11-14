@@ -16,6 +16,7 @@ RUN npm ci --loglevel verbose
 FROM install AS build
 #RUN npm run build-prod
 #RUN ng build --configuration production
+#wird überschrieben von command in docker-compose.yaml
 CMD ["npm", "run", "build"]
 
 # Production-Stage / Verwende NGINX als Basis-Image für die Produktionsumgebung
