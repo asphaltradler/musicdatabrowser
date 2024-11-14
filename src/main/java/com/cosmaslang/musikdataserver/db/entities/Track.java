@@ -56,6 +56,7 @@ public class Track extends NamedEntity {
             //inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private Set<Genre> genres; // = new HashSet<>();
     private String publisher;
+    private String publishedDate;
     private String comment;
 
     //technical data
@@ -170,6 +171,14 @@ public class Track extends NamedEntity {
 
     public void setPublisher(String publisher) {
         this.publisher = publisher;
+    }
+
+    public String getPublishedDate() {
+        return publishedDate;
+    }
+
+    public void setPublishedDate(String publishedDate) {
+        this.publishedDate = publishedDate;
     }
 
     public String getComment() {

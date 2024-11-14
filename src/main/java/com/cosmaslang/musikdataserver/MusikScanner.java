@@ -89,7 +89,6 @@ public class MusikScanner {
                         failed++;
                         logger.log(Level.WARNING, "Unable to read record:" + count + ":" + path, t);
                     }
-
                 }
             }
         } catch (IOException e) {
@@ -240,11 +239,12 @@ public class MusikScanner {
                 //abschneiden
                 track.setComment(comment.substring(0, Math.min(255, comment.length())));
                 track.setPublisher(tag.getFirst(Track.FIELDKEY_ORGANIZATION));
+                track.setPublishedDate(tag.getFirst(FieldKey.YEAR));
             } catch (PersistenceException e) {
                 throw e;
             } catch (Throwable t) {
                 logger.log(Level.WARNING, "error when processing track " + pathString
-                        + " with tag " + (tag == null ? "NULL" : tag), t);
+                        + " with tag " + tag, t);
             }
         }
 
