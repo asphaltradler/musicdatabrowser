@@ -20,7 +20,7 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
   }
 
   findBy(otherEntityName: string, id: string): Observable<E[]> {
-    const params = new HttpParams().set(otherEntityName, id);
+    const params = new HttpParams().set(otherEntityName + 'Id', id);
     return this.http.get<E[]>(this.getUrl, {params});
   }
 }

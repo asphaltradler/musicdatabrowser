@@ -9,7 +9,6 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Name</th>
-        <th scope="col" class="text-center">{{ Track.namePlural }}</th>
         <th *ngFor="let cat of searchableEntities" scope="col" class="text-center">
           {{ cat.namePlural }}
         </th>
@@ -19,19 +18,26 @@
       <tr *ngFor="let ent of entities; trackBy: trackByItemId" class="align-middle">
         <td>{{ ent.id }}</td>
         <td>{{ ent.name }}</td>
-        <td class="text-center">
-          <button class="btn btn-link"
-                  title="{{ Track.getNumberDescription(ent.tracks.length) }} für {{ent.name}}"
-                  (click)="searchOtherEntityByThis(Track.entityName, ent)">
-            {{ Track.getNumberDescription(ent.tracks.length) }}
-          </button>
-        </td>
-        <td *ngFor="let cat of searchableEntities" class="text-center">
-          <button class="btn btn-link"
-                  title="{{ cat.namePlural}} für {{ent.name}}"
-                  (click)="searchOtherEntityByThis(cat.entityName, ent)">
-            {{ cat.namePlural }}
-          </button>
+        <td *ngFor="let cat of searchableEntities; index as i" class="text-center">
+          @if (cat === Track) {
+            <button class="btn btn-link"
+                    title="{{ Track.getNumberDescription(ent.tracks?.length) }} für {{ent.name}}"
+                    (click)="searchOtherEntityByThis(Track.entityName, ent)">
+              {{ Track.getNumberDescription(ent.tracks?.length) }}
+            </button>
+          } @else {
+          <div *ngFor="let multi of getMultiEntity(ent, cat)">
+            <a (click)="searchOtherEntityByItself(cat.entityName, multi)"
+               title="Details für {{multi.name}}">
+              {{ multi.name }}
+            </a>
+            <a (click)="searchOtherEntityBy(Album.entityName, cat.entityName, multi)"
+               class="btn-link"
+               title="{{ Album.namePlural}} für {{multi.name}}">
+              [&nbsp;{{ Album.namePlural }}&nbsp;]
+            </a>
+          </div>
+          }
         </td>
       </tr>
       </tbody>
