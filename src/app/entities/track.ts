@@ -12,6 +12,9 @@ export class Track extends AbstractEntity {
   tracknumber?: number;
   path!: string;
   lastModifiedDate!: string;
+  publisher?: string;
+  publishedDate?: string;
+  lengthInSeconds!: number;
   album?: Album;
   komponist?: Komponist;
   interpreten?: Interpret[];
@@ -30,21 +33,31 @@ export class Track extends AbstractEntity {
     const differenceInMonths = Math.floor(differenceInDays / 30);
     const differenceInYears = Math.floor(differenceInDays / 365);
     if (differenceInYears > 1) {
-      return differenceInYears + ' Jahre';
+      return differenceInYears + 'y';
     } else if (differenceInMonths > 1) {
-      return differenceInMonths + ' Monate';
+      return differenceInMonths + 'mon';
     } else if (differenceInWeeks > 1) {
-      return differenceInWeeks + ' Wochen';
+      return differenceInWeeks + 'w';
     } else if (differenceInDays > 1) {
-      return differenceInDays + ' Tage';
+      return differenceInDays + 'd';
     } else if (differenceInHours > 1) {
-      return differenceInHours + ' Stunden';
+      return differenceInHours + 'h';
     } else if (differenceInMinutes > 1) {
-      return differenceInMinutes + ' Minuten';
+      return differenceInMinutes + 'm';
     } else if (differenceInSeconds > 1) {
-      return differenceInSeconds + ' Sekunden';
+      return differenceInSeconds + 's';
     } else {
       return 'JETZT';
     }
+  }
+
+  static getLength(t: Track) {
+    const len = t.lengthInSeconds;
+    let min = Math.floor(len / 60).toString();
+    let sec = (len % 60).toString();
+    if (sec.length <= 1) {
+      sec = '0' + sec;
+    }
+    return `${min}:${sec}`;
   }
 }

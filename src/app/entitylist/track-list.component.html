@@ -1,4 +1,4 @@
-<app-searchfield (searchText)="searchForName($event)"></app-searchfield>
+<app-searchfield (searchText)="searchForName($event)"/>
 <div class="card my-3">
   <div class="card-body small">
     <h4 class="card-title">{{ title }}</h4>
@@ -6,21 +6,24 @@
       <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
-        <th scope="col">Name</th>
+        <th class="name-long" scope="col">Name</th>
         <th scope="col">{{ Album.namePlural }}</th>
         <th scope="col">{{ Komponist.namePlural }}</th>
         <th scope="col">{{ Interpret.namePlural }}</th>
         <th scope="col">{{ Werk.namePlural }}</th>
         <th scope="col">{{ Genre.namePlural }}</th>
-        <th scope="col">Pfad</th>
+        <th scope="col">Label</th>
+        <th scope="col">Jahr</th>
+        <th scope="col" class="text-right">Länge</th>
+        <th class="name-long">Pfad</th>
         <th scope="col">Änd.</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let track of entities" class="align-middle">
         <td>{{ track.tracknumber }}</td>
-        <td>{{ track.name }}</td>
-        <td>
+        <td class="name-long">{{ track.name }}</td>
+        <td class="name-long">
           <a (click)="searchOtherEntityByThis(Album.entityName, track)"
              title="{{Album.namePlural}} für Track">
             {{ track.album?.name }}
@@ -78,7 +81,10 @@
             </a>
           </div>
         </td>
-        <td>{{ track.path }}</td>
+        <td>{{ track.publisher }}</td>
+        <td>{{ track.publishedDate }}</td>
+        <td class="text-right">{{ Track.getLength(track) }}</td>
+        <td class="name-long">{{ track.path }}</td>
         <td>{{ Track.getLastModificationSince(track) }}</td>
       </tr>
       </tbody>

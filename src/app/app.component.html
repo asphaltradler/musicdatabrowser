@@ -1,21 +1,15 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card bg-dark py-1 my-1">
-        <div class="card-body">
-          <h2 class="card-title text-center text-white py-1">{{ title }}</h2>
-          <ul class="text-center list-inline">
-            @for (r of routes; track r.path) {
-              @if (r.path) {
-            <li class="list-inline-item">
-              <a routerLink="{{ r.path }}" class="btn btn-outline-light" routerLinkActive="active" title="{{ r.title }}">{{ r.title }}</a>
-            </li>
-              }
-            }
-          </ul>
-        </div>
-      </div>
-      <router-outlet></router-outlet>
+<div class="container-fluid">
+  <div class="card bg-dark py-1 my-1">
+    <div class="card-body">
+      <h2 class="card-title text-center text-white py-1">{{ title }}</h2>
+      <ul class="text-center list-inline">
+        <li *ngFor="let r of routes" class="list-inline-item">
+          <a *ngIf="r.path" class="btn btn-outline-light"
+             routerLink="{{ r.path }}" routerLinkActive="active"
+             title="{{ r.title }}">{{ r.title }}</a>
+        </li>
+      </ul>
     </div>
   </div>
+  <router-outlet></router-outlet>
 </div>

@@ -56,7 +56,7 @@ export class AlbumListComponent extends AbstractEntityList<Album> {
     })
   }
 
-  getMultiEntity(album: Album, entity: typeof AbstractEntity): AbstractEntity[] {
+  getEntityList(album: Album, entity: typeof AbstractEntity): AbstractEntity[] {
     if (entity === Komponist) {
       return album.komponisten || [];
     } else if (entity === Interpret) {
