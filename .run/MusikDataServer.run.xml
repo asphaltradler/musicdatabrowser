@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MusikDataServer" type="Application" factoryName="Application">
+    <envs>
+      <env name="spring.profiles.active" value="dev" />
+    </envs>
+    <option name="envFilePaths">
+      <option value="$PROJECT_DIR$/.env.sileo" />
+    </option>
+    <option name="MAIN_CLASS_NAME" value="com.cosmaslang.musikdataserver.MusikDataServerApplication" />
+    <module name="musikdataserver" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.cosmaslang.musikdataserver.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
