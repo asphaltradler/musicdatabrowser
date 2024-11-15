@@ -9,9 +9,9 @@ COPY . /build
 FROM package AS install
 RUN npm config set strict-ssl false
 #ci ist schneller als install, produziert aber größeres Image und geht nur lokal statt global
-RUN npm ci @angular/cli --force #--loglevel verbose
-#RUN npm install -g @angular/cli --force #--loglevel verbose
-RUN npm ci --loglevel verbose
+#RUN npm ci @angular/cli --force --loglevel verbose
+#RUN npm install @angular/cli #--force #--loglevel verbose
+RUN npm install #--loglevel verbose
 
 FROM install AS build
 #RUN npm run build-prod
