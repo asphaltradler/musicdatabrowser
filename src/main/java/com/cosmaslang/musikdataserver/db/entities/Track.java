@@ -22,12 +22,15 @@ public class Track extends NamedEntity {
     public static final String FIELDKEY_ORGANIZATION = "ORGANIZATION";
     public static final String FIELDKEY_WORK = "WORK";
 
+    private final static Date DATE_DEFAULT = new Date(0);
+
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     long id;
 
     //tag data
     private Integer tracknumber;
+    @Column(nullable = false)
     private String name;
     //Bei den ManyToOne dürfen wir NICHT Lazy kaskadieren!!!
     @ManyToOne(cascade = CascadeType.MERGE /*, fetch = FetchType.LAZY*/)
@@ -60,16 +63,20 @@ public class Track extends NamedEntity {
     private String comment;
 
     //technical data
+    @Column(nullable = false)
     private String path;
+    @Column(nullable = false)
     private Long size;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date lastModifiedDate;
+    @Column(nullable = false, columnDefinition = "TIMESTAMP default '1970-01-01'")
+    private Date lastModifiedDate = DATE_DEFAULT;
     private Integer lengthInSeconds;
     private String encoding;
     private Integer samplerate;
     private Long bitrate;
     private Long noOfSamples;
     private Integer bitsPerSample;
+    @Column(nullable = false)
     private String hash;
 
     public String getPath() {

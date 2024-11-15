@@ -9,14 +9,10 @@ import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.SupportedFileFormat;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.flac.FlacAudioHeader;
 import org.jaudiotagger.audio.generic.Utils;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.TagField;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +50,7 @@ public class MusikScanner {
         this.musikDataServerStartupService = service;
     }
 
-    public void scan(Path rootPath, Path startPath) throws IOException {
+    public void scan(Path rootPath, Path startPath) {
         rootPathSteps = rootPath.getNameCount();
         logger.info(MessageFormat.format("Scanning {0} from start {1}", rootPath, startPath));
 
@@ -67,37 +63,34 @@ public class MusikScanner {
                 created, updated, unchanged, reused, failed));
     }
 
-    private void scanDirectory(final Path dir) throws IOException {
+    private void scanDirectory(final Path dir) {
         try (Stream<Path> audioPaths = Files.list(dir)) {
             //nicht .parallel(): Parallelisierung führt zu Problemen bei lazy initialization
             audioPaths.forEach(this::processPath);
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Unable to read dir: " + dir);
         }
     }
 
     @Transactional
     protected void processPath(Path path) {
-        try {
-            if (Files.isDirectory(path)) {
-                scanDirectory(path);
-            } else {
-                String ext = Utils.getExtension(path.toFile()).toLowerCase();
-                if (audioFileExtensions.contains(ext)) {
-                    count++;
-                    try {
-                        processAudioFile(path.toFile());
-                    } catch (Throwable t) {
-                        failed++;
-                        logger.log(Level.WARNING, "Unable to read record:" + count + ":" + path, t);
-                    }
+        if (Files.isDirectory(path)) {
+            scanDirectory(path);
+        } else {
+            String ext = Utils.getExtension(path.toFile()).toLowerCase();
+            if (audioFileExtensions.contains(ext)) {
+                count++;
+                try {
+                    processAudioFile(path.toFile());
+                } catch (Throwable t) {
+                    failed++;
+                    logger.log(Level.WARNING, "Unable to read file: " + path, t);
                 }
             }
-        } catch (IOException e) {
-            failed++;
-            logger.log(Level.WARNING, "Unable to read: " + path);
         }
     }
 
-    protected void processAudioFile(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
+    protected void processAudioFile(File file) {
         Track track = createOrUpdateTrack(file);
         if (track != null) {
             //null markiert unveränderte Tracks, die nicht mehr gespeichert werden müssen
@@ -106,7 +99,7 @@ public class MusikScanner {
         logger.info("processed " + file.getName());
     }
 
-    private Track createOrUpdateTrack(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
+    private Track createOrUpdateTrack(File file) {
         Path filepath = file.toPath();
         //path unabhängig von Filesystem notieren, ausgehend von rootDir
         String pathString = filepath.subpath(rootPathSteps, filepath.getNameCount()).toString().replace('\\', '/');
@@ -117,7 +110,7 @@ public class MusikScanner {
             track.setName(file.getName());
             logger.info("create new track " + pathString);
             created++;
-        } else if (track.getLastModifiedDate().getTime() >= file.lastModified()) {
+        } else if (isFileNotModifiedAfterTrack(file, track)) {
             logger.info("-   skipping unchanged track " + pathString);
             unchanged++;
             //muss nicht nochmal gespeichert werden
@@ -142,7 +135,7 @@ public class MusikScanner {
                     //wir übernehmen die Daten aus dem bisherigen Track
                     track = existingTrack;
                     reused++;
-                    if (track.getLastModifiedDate().getTime() >= file.lastModified()) {
+                    if (isFileNotModifiedAfterTrack(file, track)) {
                         //nur neue Position, aber keine Änderung an Daten
                         logger.info(MessageFormat.format("-   skipping re-used unchanged track {0} from path {1}", pathString, track.getPath()));
                         unchanged++;
@@ -207,7 +200,7 @@ public class MusikScanner {
                 //ManyToMany Zuordnung
                 List<TagField> tagFields = tag.getFields(FieldKey.ARTIST);
                 if (tagFields != null) {
-                    //alle als Liste setzen => dann ist kein teilweises update eines vorhandenen tracks möglich
+                    //alle als Liste setzen → dann ist kein teilweises update eines vorhandenen tracks möglich
                     Set<Interpret> interpreten = new HashSet<>();
                     for (TagField field : tagFields) {
                         str = field.toString();
@@ -249,6 +242,11 @@ public class MusikScanner {
         }
 
         return track;
+    }
+
+    private static boolean isFileNotModifiedAfterTrack(File file, Track track) {
+        Date modified = track.getLastModifiedDate();
+        return modified != null && modified.getTime() >= file.lastModified();
     }
 
     private static String getHash(AudioHeader header, String filename) {

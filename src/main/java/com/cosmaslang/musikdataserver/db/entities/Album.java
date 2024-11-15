@@ -8,13 +8,14 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.util.Set;
 
 @Entity
-@Table(indexes = @Index(name="name_idx", columnList = "name", unique = true))
+@Table(indexes = @Index(columnList = "name", unique = true))
 public class Album extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     long id;
 
     //muss man leider hier drin definieren, sonst wird es nicht gefunden
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.MERGE, fetch = FetchType.LAZY, orphanRemoval = true)
