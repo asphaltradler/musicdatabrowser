@@ -24,16 +24,18 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
     @Override
     protected Stream<Interpret> find(String track, String album, String komponist, String werk, String genre, String interpret) {
         super.logCall(track, album, komponist, werk, genre, interpret);
-        if (interpret != null) {
-            return interpretRepository.streamByNameContainsIgnoreCaseOrderByName(interpret);
+        if (track != null) {
+            return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (album != null) {
-            return getInterpreten(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
-        } else if (track != null) {
-            return getInterpreten(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
-        } else if (genre != null) {
-            return getInterpreten(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
+            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
         } else if (komponist != null) {
-            return getInterpreten(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByName(komponist));
+            return getMappedTracks(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByName(komponist));
+        } else if (werk != null) {
+            return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(werk));
+        } else if (genre != null) {
+            return getMappedTracks(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
+        } else if (interpret != null) {
+            return interpretRepository.streamByNameContainsIgnoreCaseOrderByName(interpret);
         }
         return getAll(interpretRepository);
     }
@@ -41,24 +43,23 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
     @Override
     public Stream<Interpret> get(Long trackId, Long albumId, Long komponistId, Long werkId, Long genreId, Long interpretId) {
         super.logCall(trackId, albumId, komponistId, werkId, genreId, interpretId);
-        if (albumId != null) {
-            return getInterpreten(trackRepository.streamByAlbumId(albumId));
-        } else if (trackId != null) {
-            return getInterpreten(trackRepository.findById(trackId).stream());
+        if (trackId != null) {
+            return getMappedTracks(trackRepository.findById(trackId).stream());
+        } else if (albumId != null) {
+            return getMappedTracks(trackRepository.streamByAlbumId(albumId));
         } else if (komponistId != null) {
-            return getInterpreten(trackRepository.streamByKomponistId(komponistId));
+            return getMappedTracks(trackRepository.streamByKomponistId(komponistId));
         } else if (werkId != null) {
-            return getInterpreten(trackRepository.streamByWerkId(werkId));
+            return getMappedTracks(trackRepository.streamByWerkId(werkId));
         } else if (genreId != null) {
-            return getInterpreten(trackRepository.streamByGenresId(genreId));
+            return getMappedTracks(trackRepository.streamByGenresId(genreId));
         } else if (interpretId != null) {
             return getEntitiesIfExists(interpretId, interpretRepository);
         }
-
         return getAll(interpretRepository);
     }
 
-    private Stream<Interpret> getInterpreten(Stream<Track> tracks) {
+    private Stream<Interpret> getMappedTracks(Stream<Track> tracks) {
         return getMappedByEntitySet(tracks, Track::getInterpreten);
     }
 }

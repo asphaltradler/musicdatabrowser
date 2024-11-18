@@ -15,10 +15,10 @@ public class AlbumRestController extends AbstractMusikRestController<Album> {
     @Override
     public Stream<Album> find(String track, String album, String komponist, String werk, String genre, String interpret) {
         super.logCall(track, album, komponist, werk, genre, interpret);
-        if (album != null) {
-            return albumRepository.streamByNameContainsIgnoreCaseOrderByName(album);
-        } else if (track != null) {
+        if (track != null) {
             return albumRepository.streamDistinctByTracksNameContainsIgnoreCase(track);
+        } else if (album != null) {
+            return albumRepository.streamByNameContainsIgnoreCaseOrderByName(album);
         } else if (komponist != null) {
             return albumRepository.streamDistinctByTracksKomponistNameContainsIgnoreCaseOrderByName(komponist);
         } else if (werk != null) {
