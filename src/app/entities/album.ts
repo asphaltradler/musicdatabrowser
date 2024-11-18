@@ -5,8 +5,8 @@ import {Genre} from './genre';
 import {Werk} from './werk';
 
 export class Album extends AbstractEntity {
-  static override entityName = 'album';
-  static override namePlural = 'Alben';
+  static override entityName = $localize`album`;
+  static override namePlural = $localize`Alben`;
 
   //tracks?: Track[];
   tracks?: number[];

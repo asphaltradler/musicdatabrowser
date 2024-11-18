@@ -17,7 +17,8 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -57,6 +58,17 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "dev-prod": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/config/config.ts",
+                  "with": "src/config/config.prod.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "development"
@@ -69,7 +81,11 @@
             },
             "development": {
               "buildTarget": "musikserverclient:build:development"
+            },
+            "dev-prod": {
+              "buildTarget": "musikserverclient:build:dev-prod"
             }
+
           },
           "defaultConfiguration": "development"
         },
@@ -81,7 +97,8 @@
           "options": {
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
