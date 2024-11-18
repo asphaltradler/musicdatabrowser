@@ -10,7 +10,7 @@
       <env name="serverUrl" value="http://localhost:8080/musik" />
     </envs>
     <EXTENSION ID="com.intellij.lang.javascript.buildTools.npm.rc.StartBrowserRunConfigurationExtension">
-      <browser name="37cae5b9-e8b2-4949-9172-aafa37fbc09c" start="true" url="http://localhost:4200" />
+      <browser name="37cae5b9-e8b2-4949-9172-aafa37fbc09c" url="http://localhost:4200" />
     </EXTENSION>
     <method v="2" />
   </configuration>
