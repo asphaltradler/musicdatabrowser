@@ -1,4 +1,4 @@
-<app-searchfield (searchText)="searchForName($event)"/>
+<app-searchfield selection="{{searchEntityName}}" (searchText)="searchForEntityByName($event)" (searchEntityName)="setSearchEntityName($event)"/>
 <div class="card my-3">
   <div class="card-body small">
     <h4 class="card-title">{{ title }}</h4>

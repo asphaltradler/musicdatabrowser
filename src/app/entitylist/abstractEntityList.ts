@@ -1,14 +1,9 @@
 import {OnDestroy, OnInit} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {ActivatedRoute, EventType, Params, Router} from '@angular/router';
-import {Album} from '../entities/album';
 import {AbstractEntityService} from '../services/abstractEntityService';
-import {Komponist} from '../entities/komponist';
-import {Werk} from '../entities/werk';
-import {Interpret} from '../entities/interpret';
-import {Genre} from '../entities/genre';
-import {Track} from '../entities/track';
 import {Subscription} from 'rxjs';
+import {SearchfieldComponent} from '../search/searchfield.component';
 
 @Object
 export abstract class AbstractEntityList<E extends AbstractEntity> implements OnInit, OnDestroy {
@@ -18,18 +13,20 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   protected _title!: string;
   protected _entities!: E[];
   protected entityType: typeof AbstractEntity;
+  protected searchEntityName: string;
 
   private changeSubscription!: Subscription;
   private lastSearchSubscription!: Subscription;
 
-  private static searchEntities: typeof AbstractEntity[] = [Album, Track, Komponist, Werk, Genre, Interpret];
   protected _searchableEntities;
 
   constructor(protected service: AbstractEntityService<E>,
               protected route: ActivatedRoute,
               protected router: Router) {
     this.entityType = service.entityType;
-    this._searchableEntities = AbstractEntityList.searchEntities.filter(
+    //default/Vorbelegung
+    this.searchEntityName = this.entityType.entityName;
+    this._searchableEntities = SearchfieldComponent.searchEntities.filter(
       (entity) => entity != this.entityType
     );
     this.changeSubscription = router.events.subscribe((event) => {
@@ -52,33 +49,41 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
   startSearchFromQuery(): void {
     const queryParamMap = this.route.snapshot.queryParamMap;
     const searchEntityName = queryParamMap.get(AbstractEntityList.urlParamEntityName);
-    const id = queryParamMap.get('id');
-    if (searchEntityName && id) {
-      const ent = AbstractEntityList.searchEntities.find(e => e.entityName === searchEntityName);
+    const id = Number.parseInt(queryParamMap.get('id') || '-1');
+    const name = queryParamMap.get(AbstractEntityList.urlParamEntityName);
+    if (searchEntityName && (id > -1 || name)) {
+      const ent = SearchfieldComponent.searchEntities.find(e => e.entityName === searchEntityName);
       if (ent) {
           //falls noch eine Suche unterwegs ist: abbrechen
           this.lastSearchSubscription?.unsubscribe();
           const searchName = queryParamMap.get(AbstractEntityList.urlParamEntitySearchTitle) || '';
-          const obs = this.service.findBy(ent.entityName, id); //this.service.get(id);
+          const obs = id
+            ? this.service.findByOtherId(ent.entityName, id)
+            : this.service.findByOtherNameLike(ent.entityName, name!);
           const time = performance.now();
           this.lastSearchSubscription = obs.subscribe(data => {
             this.fillEntities(data, `für ${ent.getNameSingular()} '${searchName}'`);
-            console.log(`Suche ${this.entityType.namePlural} nach ${ent.entityName}=${id} dauerte ${performance.now() - time}ms`);
+            console.log(`Suche ${this.entityType.namePlural} nach ${ent.entityName} dauerte ${performance.now() - time}ms`);
           });
         }
     } else {
       //default: alle anzeigen
-      this.searchForName();
+      this.searchForEntityByName();
     }
   }
 
-  searchForName(searchText?: string) {
-    console.log(`Suche ${this.entityType.namePlural} nach ${searchText || '*'}`);
+  setSearchEntityName(entity: string): void {
+    this.searchEntityName = entity;
+  }
+
+  searchForEntityByName(searchText?: string) {
     this.lastSearchSubscription?.unsubscribe();
-    const obs = this.service.find(searchText || '');
+    const searchName = this.searchEntityName || this.entityType.entityName;
+    console.log(`Suche ${this.entityType.namePlural} nach ${searchName}=${searchText || '*'}`);
+    const obs = this.service.findByOtherNameLike(searchName, searchText || '');
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(data => {
-      this.fillEntities(data, searchText ? `für Name '${searchText}'` : 'insgesamt');
+      this.fillEntities(data, searchText ? `für ${AbstractEntity.getEntityNameSingular(searchName)} '${searchText}'` : 'insgesamt');
       console.log(`dauerte ${performance.now() - time}ms`);
     });
   }

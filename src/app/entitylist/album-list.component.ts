@@ -36,20 +36,20 @@ export class AlbumListComponent extends AbstractEntityList<Album> {
   override fillEntities(data: Album[], titleName?: string) {
     super.fillEntities(data, titleName);
     this._entities.forEach((album: Album) => {
-      this.komponistenService.findBy(Album.entityName, album.id.toString()).subscribe(data => {
+      this.komponistenService.findByOtherId(Album.entityName, album.id).subscribe(data => {
         album.komponisten = data;
       });
-      this.interpretenService.findBy(Album.entityName, album.id.toString()).subscribe(data => {
+      this.interpretenService.findByOtherId(Album.entityName, album.id).subscribe(data => {
         album.interpreten = data;
       });
-      this.werkService.findBy(Album.entityName, album.id.toString()).subscribe(data => {
+      this.werkService.findByOtherId(Album.entityName, album.id).subscribe(data => {
         album.werke = data;
       });
-      this.genreService.findBy(Album.entityName, album.id.toString()).subscribe(data => {
+      this.genreService.findByOtherId(Album.entityName, album.id).subscribe(data => {
         album.genres = data;
       });
       /*
-      this.trackService.findBy(Album.entityName, album.id.toString()).subscribe(data => {
+      this.trackService.findBy(Album.entityName, album.id).subscribe(data => {
         album.tracks = data;
       });
        */
