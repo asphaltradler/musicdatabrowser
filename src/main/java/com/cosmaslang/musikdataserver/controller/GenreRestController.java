@@ -31,7 +31,7 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
         } else if (track != null) {
             return getGenres(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (komponist != null) {
-            return getGenres(trackRepository.streamByKomponistName(komponist));
+            return getGenres(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByName(komponist));
         } else if (interpret != null) {
             return getGenres(trackRepository.streamByInterpretenNameContainsIgnoreCase(interpret));
         }

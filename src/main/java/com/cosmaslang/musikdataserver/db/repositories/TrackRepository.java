@@ -15,7 +15,7 @@ public interface TrackRepository extends NamedEntityRepository<Track> {
         //@Query("SELECT a.tracks FROM Album a WHERE a.name like %:album%")
     Stream<Track> streamByAlbumNameContainsIgnoreCase(String album);
     //@Query("SELECT t FROM Track t WHERE t.komponist.name = :komponist")
-    Stream<Track> streamByKomponistName(String komponist);
+    Stream<Track> streamByKomponistNameContainsIgnoreCaseOrderByName(String komponist);
     //@Query("select t from Track t join fetch t.genres g where g.name ilike %:genre%")
     Stream<Track> streamByGenresNameContainsIgnoreCase(String genre);
     //@Query("select t from Track t join fetch t.interpreten i where i.name ilike %:interpret%")

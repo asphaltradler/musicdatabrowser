@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 public interface AlbumRepository extends NamedEntityRepository<Album> {
     Stream<Album> streamDistinctByTracksNameContainsIgnoreCase(String track);
     Stream<Album> streamByTracksId(Long trackId);
-    Stream<Album> streamDistinctByTracksKomponistNameOrderByName(String komponist);
+    Stream<Album> streamDistinctByTracksKomponistNameContainsIgnoreCaseOrderByName(String komponist);
     Stream<Album> streamDistinctByTracksKomponistIdOrderByName(Long komponistId);
     Stream<Album> streamDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(String genre);
     Stream<Album> streamDistinctByTracksGenresIdOrderByName(Long genreId);

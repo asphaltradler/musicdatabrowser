@@ -33,7 +33,7 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
         } else if (genre != null) {
             return getInterpreten(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
         } else if (komponist != null) {
-            return getInterpreten(trackRepository.streamByKomponistName(komponist));
+            return getInterpreten(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByName(komponist));
         }
         return getAll(interpretRepository);
     }

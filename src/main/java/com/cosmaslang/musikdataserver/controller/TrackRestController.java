@@ -20,7 +20,7 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
         } else if (album != null) {
             return trackRepository.streamByAlbumNameContainsIgnoreCase(album);
         } else if (komponist != null) {
-            return trackRepository.streamByKomponistName(komponist);
+            return trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByName(komponist);
         } else if (werk != null) {
             return trackRepository.streamByWerkNameContainsIgnoreCase(werk);
         } else if (genre != null) {
