@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {AbstractEntityList} from './abstractEntityList';
+import {EntityListComponent} from './entity-list.component';
 import {Interpret} from '../entities/interpret';
 import {InterpretService} from '../services/interpret.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
@@ -16,7 +16,7 @@ import {NgForOf} from '@angular/common';
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'
 })
-export class InterpretListComponent extends AbstractEntityList<Interpret> {
+export class InterpretListComponent extends EntityListComponent<Interpret> {
   constructor(interpretService: InterpretService, route: ActivatedRoute, router: Router) {
     super(interpretService, route, router);
   }

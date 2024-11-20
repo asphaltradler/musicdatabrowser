@@ -1,4 +1,4 @@
-import {Component, input, InputSignal, output} from '@angular/core';
+import {Component, input, InputSignal, OnInit, output} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {Album} from '../entities/album';
@@ -18,23 +18,31 @@ import {NgForOf} from '@angular/common';
     NgForOf
   ],
   templateUrl: './searchfield.component.html',
+  styles: ['input.form-control {width:50%}']
 })
-export class SearchfieldComponent {
+export class SearchfieldComponent implements OnInit {
   public static searchEntities: typeof AbstractEntity[] = [Album, Track, Komponist, Werk, Genre, Interpret];
   searchEntities = SearchfieldComponent.searchEntities;
 
-  searchEntityName = output<string>();
+  searchEntity = output<typeof AbstractEntity>();
   searchText = output<string>();
-  selection = input<string>();
+  selection = input<typeof AbstractEntity>();
 
   searchForm = new FormGroup({
-    entitySelector: new FormControl(''),
+    entitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
     searchField: new FormControl('')
   });
 
+  ngOnInit() {
+    //default setzen
+    this.searchForm.controls.entitySelector.setValue(this.selection() || null);
+  }
+
   handleSelection() {
     this.clearSearchText();
-    this.searchEntityName.emit(this.searchForm.value.entitySelector || '');
+    if (this.searchForm.value.entitySelector) {
+      this.searchEntity.emit(this.searchForm.value.entitySelector);
+    }
   }
 
   clearSearchText() {

@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {Album} from '../entities/album';
 import {AlbumService} from '../services/album.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
-import {AbstractEntityList} from './abstractEntityList';
+import {EntityListComponent} from './entity-list.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgForOf} from '@angular/common';
 import {Track} from '../entities/track';
@@ -24,9 +24,9 @@ import {Genre} from '../entities/genre';
     NgForOf,
   ],
   templateUrl: './album-list.component.html',
-  styleUrl: './album-list.component.css'
+  styleUrls: ['./entity-list.component.css', './album-list.component.css']
 })
-export class AlbumListComponent extends AbstractEntityList<Album> {
+export class AlbumListComponent extends EntityListComponent<Album> {
   constructor(service: AlbumService, route: ActivatedRoute, router: Router,
               private komponistenService: KomponistService, private interpretenService: InterpretService,
               private werkService: WerkService, private genreService: GenreService) {

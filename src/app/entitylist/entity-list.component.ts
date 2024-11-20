@@ -6,14 +6,14 @@ import {Subscription} from 'rxjs';
 import {SearchfieldComponent} from '../search/searchfield.component';
 
 @Object
-export abstract class AbstractEntityList<E extends AbstractEntity> implements OnInit, OnDestroy {
+export abstract class EntityListComponent<E extends AbstractEntity> implements OnInit, OnDestroy {
   public static urlParamEntitySearchTitle = 'title';
   public static urlParamEntityName = 'searchby';
 
   protected _title!: string;
   protected _entities!: E[];
   protected entityType: typeof AbstractEntity;
-  protected searchEntityName: string;
+  protected searchEntityType: typeof AbstractEntity;
 
   private changeSubscription!: Subscription;
   private lastSearchSubscription!: Subscription;
@@ -25,7 +25,7 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
               protected router: Router) {
     this.entityType = service.entityType;
     //default/Vorbelegung
-    this.searchEntityName = this.entityType.entityName;
+    this.searchEntityType = this.entityType;
     this._searchableEntities = SearchfieldComponent.searchEntities.filter(
       (entity) => entity != this.entityType
     );
@@ -48,15 +48,15 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
 
   startSearchFromQuery(): void {
     const queryParamMap = this.route.snapshot.queryParamMap;
-    const searchEntityName = queryParamMap.get(AbstractEntityList.urlParamEntityName);
+    const searchEntityName = queryParamMap.get(EntityListComponent.urlParamEntityName);
     const id = Number.parseInt(queryParamMap.get('id') || '-1');
-    const name = queryParamMap.get(AbstractEntityList.urlParamEntityName);
+    const name = queryParamMap.get(EntityListComponent.urlParamEntityName);
     if (searchEntityName && (id > -1 || name)) {
       const ent = SearchfieldComponent.searchEntities.find(e => e.entityName === searchEntityName);
       if (ent) {
           //falls noch eine Suche unterwegs ist: abbrechen
           this.lastSearchSubscription?.unsubscribe();
-          const searchName = queryParamMap.get(AbstractEntityList.urlParamEntitySearchTitle) || '';
+          const searchName = queryParamMap.get(EntityListComponent.urlParamEntitySearchTitle) || '';
           const obs = id
             ? this.service.findByOtherId(ent.entityName, id)
             : this.service.findByOtherNameLike(ent.entityName, name!);
@@ -72,13 +72,13 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
     }
   }
 
-  setSearchEntityName(entity: string): void {
-    this.searchEntityName = entity;
+  setSearchEntityType(entity: typeof AbstractEntity): void {
+    this.searchEntityType = entity;
   }
 
   searchForEntityByName(searchText?: string) {
     this.lastSearchSubscription?.unsubscribe();
-    const searchName = this.searchEntityName || this.entityType.entityName;
+    const searchName = this.searchEntityType.entityName || this.entityType.entityName;
     console.log(`Suche ${this.entityType.namePlural} nach ${searchName}=${searchText || '*'}`);
     const obs = this.service.findByOtherNameLike(searchName, searchText || '');
     const time = performance.now();
@@ -104,8 +104,8 @@ export abstract class AbstractEntityList<E extends AbstractEntity> implements On
 
   searchOtherEntityBy(entityName: string, searchEntityName: string, entity: AbstractEntity) {
     const params: Params = {};
-    params[AbstractEntityList.urlParamEntityName] = searchEntityName;
-    params[AbstractEntityList.urlParamEntitySearchTitle] = entity.name;
+    params[EntityListComponent.urlParamEntityName] = searchEntityName;
+    params[EntityListComponent.urlParamEntitySearchTitle] = entity.name;
     params['id'] = entity.id;
     console.log(`Navigiere nach ${entityName} mit ${Object.entries(params).join('|')}`);
     this.router.navigate([entityName], {queryParams: params});

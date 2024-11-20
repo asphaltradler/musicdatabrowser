@@ -1,12 +1,12 @@
 <form [formGroup]="searchForm" (ngSubmit)="handleSubmit()">
   <div class="input-group my-3">
-    <span id="searchDesc" class="input-group-text">Suche nach {{selection()}}:</span>
+    <label for="searchfield" class="input-group-text">Suche nach:</label>
     <select class="form-control" formControlName="entitySelector" (change)="handleSelection()" title="Auswahl Suchkriterium">
-      <option *ngFor="let e of searchEntities" value="{{e.entityName}}" selected="{{e.entityName == selection()}}">
+      <option *ngFor="let e of searchEntities" [ngValue]="e">
         {{ e.namePlural }}
       </option>
     </select>
-    <input class="form-control" formControlName="searchField"
+    <input class="form-control" formControlName="searchField" id="searchfield"
            type="text" (input)="handleSubmit()"
            placeholder="Suchtext" aria-label="Suchtext" aria-describedby="searchDesc"/>
     <button class="btn btn-secondary" type="submit">Suche</button>

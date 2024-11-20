@@ -1,8 +1,0 @@
-a {
-  cursor: pointer;
-}
-td.name-long {
-  width: 200px;
-  max-width: 240px;
-  overflow: clip;
-}
