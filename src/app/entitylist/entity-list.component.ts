@@ -48,36 +48,42 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   startSearchFromQuery(): void {
     const queryParamMap = this.route.snapshot.queryParamMap;
     const searchEntityName = queryParamMap.get(EntityListComponent.urlParamEntityName);
-    const id = Number.parseInt(queryParamMap.get('id') || '-1');
-    if (searchEntityName && id > -1) {
+    if (searchEntityName) {
       const ent = SearchfieldComponent.searchEntities.find(e => e.entityName === searchEntityName);
       if (ent) {
-          //falls noch eine Suche unterwegs ist: abbrechen
-          this.lastSearchSubscription?.unsubscribe();
-          const searchTitle = queryParamMap.get(EntityListComponent.urlParamEntitySearchTitle) || '';
-          const obs = id
-            ? this.service.findByOtherId(ent.entityName, id)
-            : this.service.findByOtherNameLike(ent.entityName, searchTitle);
-          const time = performance.now();
-          this.lastSearchSubscription = obs.subscribe(data => {
-            this.fillEntities(data, `für ${ent.getNameSingular()} '${searchTitle}'`);
-            console.log(`Suche ${this.entityType.namePlural} nach ${ent.entityName} dauerte ${performance.now() - time}ms`);
-          });
+        const id = queryParamMap.get('id');
+        const searchString = queryParamMap.get(EntityListComponent.urlParamEntitySearchTitle);
+        if (id) {
+          this.searchByEntityId(ent, Number.parseInt(id || '-1'), searchString || '');
+        } else if (searchString) {
+          this.searchByEntityName(ent, searchString || '');
         }
+      }
     } else {
       //default: alle anzeigen
-      this.searchByEntityName(this.entityType);
+      this.searchByEntityIdOrName(this.entityType);
     }
   }
 
-  public searchByEntityName(searchEntityType: typeof AbstractEntity, searchText?: string) {
+  searchByEntityName(searchEntityType: typeof AbstractEntity, searchString?: string) {
+    this.searchByEntityIdOrName(searchEntityType, undefined, searchString);
+  }
+
+  searchByEntityId(searchEntityType: typeof AbstractEntity, id: number, searchString?: string) {
+    this.searchByEntityIdOrName(searchEntityType, id, searchString);
+  }
+
+  private searchByEntityIdOrName(searchEntityType: typeof AbstractEntity, id?: Number, searchString?: string) {
+    //falls noch eine Suche unterwegs ist: abbrechen
     this.lastSearchSubscription?.unsubscribe();
-    console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchText || '*'}`);
-    const obs = this.service.findByOtherNameLike(searchEntityType.entityName, searchText || '');
+    console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'}`);
+    const obs = id
+      ? this.service.findByOtherId(searchEntityType.entityName, id.valueOf())
+      : this.service.findByOtherNameLike(searchEntityType.entityName, searchString || '');
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(data => {
-      this.fillEntities(data, searchText ? `für ${searchEntityType.entityName} '${searchText}'` : 'insgesamt');
-      console.log(`dauerte ${performance.now() - time}ms`);
+      this.fillEntities(data, searchString ? `für ${searchEntityType.getNameSingular()} '${searchString}'` : 'insgesamt');
+      console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName} dauerte ${performance.now() - time}ms`);
     });
   }
 
