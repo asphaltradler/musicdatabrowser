@@ -7,7 +7,6 @@ import {HttpClient} from '@angular/common/http';
   providedIn: 'root'
 })
 export class TrackService extends AbstractEntityService<Track> {
-
   constructor(http: HttpClient) {
     super(http, Track);
   }

@@ -70,6 +70,5 @@ export class AlbumListComponent extends EntityListComponent<Album> {
   }
 
   protected readonly Track = Track;
-  protected readonly Komponist = Komponist;
   protected readonly Album = Album;
 }

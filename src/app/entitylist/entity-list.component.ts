@@ -10,10 +10,10 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   public static urlParamEntitySearchTitle = 'title';
   public static urlParamEntityName = 'searchby';
 
+  public entityType!: typeof AbstractEntity;
+
   protected _title!: string;
   protected _entities!: E[];
-  protected entityType: typeof AbstractEntity;
-  protected searchEntityType: typeof AbstractEntity;
 
   private changeSubscription!: Subscription;
   private lastSearchSubscription!: Subscription;
@@ -25,7 +25,6 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
               protected router: Router) {
     this.entityType = service.entityType;
     //default/Vorbelegung
-    this.searchEntityType = this.entityType;
     this._searchableEntities = SearchfieldComponent.searchEntities.filter(
       (entity) => entity != this.entityType
     );
@@ -68,27 +67,22 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
         }
     } else {
       //default: alle anzeigen
-      this.searchForEntityByName();
+      this.searchByEntityName(this.entityType);
     }
   }
 
-  setSearchEntityType(entity: typeof AbstractEntity): void {
-    this.searchEntityType = entity;
-  }
-
-  searchForEntityByName(searchText?: string) {
+  public searchByEntityName(searchEntityType: typeof AbstractEntity, searchText?: string) {
     this.lastSearchSubscription?.unsubscribe();
-    const searchName = this.searchEntityType.entityName || this.entityType.entityName;
-    console.log(`Suche ${this.entityType.namePlural} nach ${searchName}=${searchText || '*'}`);
-    const obs = this.service.findByOtherNameLike(searchName, searchText || '');
+    console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchText || '*'}`);
+    const obs = this.service.findByOtherNameLike(searchEntityType.entityName, searchText || '');
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(data => {
-      this.fillEntities(data, searchText ? `für ${AbstractEntity.getEntityNameSingular(searchName)} '${searchText}'` : 'insgesamt');
+      this.fillEntities(data, searchText ? `für ${searchEntityType.entityName} '${searchText}'` : 'insgesamt');
       console.log(`dauerte ${performance.now() - time}ms`);
     });
   }
 
-  //TODO statt Listen Streams? Wor müssten dann paginieren
+  //TODO statt Listen Streams? Wir müssten dann paginieren
   fillEntities(data: E[], titleName?: string) {
     this._title = `${this.entityType.getNumberDescription(data.length)} ${titleName}`;
     this._entities = data;

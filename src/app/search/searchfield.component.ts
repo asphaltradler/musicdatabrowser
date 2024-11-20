@@ -1,4 +1,4 @@
-import {Component, input, InputSignal, OnInit, output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {Album} from '../entities/album';
@@ -8,6 +8,7 @@ import {Werk} from '../entities/werk';
 import {Genre} from '../entities/genre';
 import {Interpret} from '../entities/interpret';
 import {NgForOf} from '@angular/common';
+import {EntityListComponent} from '../entitylist/entity-list.component';
 
 @Component({
   standalone: true,
@@ -24,9 +25,8 @@ export class SearchfieldComponent implements OnInit {
   public static searchEntities: typeof AbstractEntity[] = [Album, Track, Komponist, Werk, Genre, Interpret];
   searchEntities = SearchfieldComponent.searchEntities;
 
-  searchEntity = output<typeof AbstractEntity>();
-  searchText = output<string>();
-  selection = input<typeof AbstractEntity>();
+  @Input({required:true})
+  entityList!: EntityListComponent<any>;
 
   searchForm = new FormGroup({
     entitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
@@ -35,14 +35,11 @@ export class SearchfieldComponent implements OnInit {
 
   ngOnInit() {
     //default setzen
-    this.searchForm.controls.entitySelector.setValue(this.selection() || null);
+    this.searchForm.controls.entitySelector.setValue(this.entityList.entityType);
   }
 
   handleSelection() {
     this.clearSearchText();
-    if (this.searchForm.value.entitySelector) {
-      this.searchEntity.emit(this.searchForm.value.entitySelector);
-    }
   }
 
   clearSearchText() {
@@ -50,6 +47,10 @@ export class SearchfieldComponent implements OnInit {
   }
 
   handleSubmit() {
-    this.searchText.emit(this.searchForm.value.searchField || '');
+    //this.searchText.emit(this.searchForm.value.searchField || '');
+    const entityType = this.searchForm.value.entitySelector;
+    if (entityType) {
+      this.entityList.searchByEntityName(entityType, this.searchForm.value.searchField || '');
+    }
   }
 }

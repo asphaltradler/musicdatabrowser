@@ -7,11 +7,11 @@ export abstract class AbstractEntity {
 
   /** EntityName aber vorne großgeschrieben */
   static getNameSingular() {
-    return AbstractEntity.getEntityNameSingular(this.entityName);
+    return AbstractEntity.getUppercaseFirst(this.entityName);
   }
 
-  static getEntityNameSingular(entityName: string) {
-    return entityName.replace(/\b(\w)/g, s => s.toUpperCase());
+  static getUppercaseFirst(s: string) {
+    return s.replace(/\b(\w)/g, s => s.toUpperCase());
   }
 
   static getNumberDescription(num?: number) {
