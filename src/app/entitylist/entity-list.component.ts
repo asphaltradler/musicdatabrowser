@@ -49,19 +49,18 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     const queryParamMap = this.route.snapshot.queryParamMap;
     const searchEntityName = queryParamMap.get(EntityListComponent.urlParamEntityName);
     const id = Number.parseInt(queryParamMap.get('id') || '-1');
-    const name = queryParamMap.get(EntityListComponent.urlParamEntityName);
-    if (searchEntityName && (id > -1 || name)) {
+    if (searchEntityName && id > -1) {
       const ent = SearchfieldComponent.searchEntities.find(e => e.entityName === searchEntityName);
       if (ent) {
           //falls noch eine Suche unterwegs ist: abbrechen
           this.lastSearchSubscription?.unsubscribe();
-          const searchName = queryParamMap.get(EntityListComponent.urlParamEntitySearchTitle) || '';
+          const searchTitle = queryParamMap.get(EntityListComponent.urlParamEntitySearchTitle) || '';
           const obs = id
             ? this.service.findByOtherId(ent.entityName, id)
-            : this.service.findByOtherNameLike(ent.entityName, name!);
+            : this.service.findByOtherNameLike(ent.entityName, searchTitle);
           const time = performance.now();
           this.lastSearchSubscription = obs.subscribe(data => {
-            this.fillEntities(data, `für ${ent.getNameSingular()} '${searchName}'`);
+            this.fillEntities(data, `für ${ent.getNameSingular()} '${searchTitle}'`);
             console.log(`Suche ${this.entityType.namePlural} nach ${ent.entityName} dauerte ${performance.now() - time}ms`);
           });
         }
