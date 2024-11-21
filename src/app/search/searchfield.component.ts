@@ -51,6 +51,7 @@ export class SearchfieldComponent implements OnInit {
 
   clearSearchText() {
     this.searchForm.controls.searchField.reset();
+    this.handleSubmit();
   }
 
   handleSubmit() {

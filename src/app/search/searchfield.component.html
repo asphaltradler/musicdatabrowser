@@ -10,11 +10,11 @@
     <input class="form-control" formControlName="searchField" id="searchfield"
            type="text" (input)="handleSubmit()"
            placeholder="Suchtext" aria-label="Suchtext"/>
-    <button class="btn btn-secondary" (click)="clearSearchText()">Reset</button>
+    <button class="btn btn-secondary" type="button" (click)="clearSearchText()">Reset</button>
 
     <input class="form-control" formControlName="filterField" id="filterfield"
            type="text" (input)="handleFilter()"
            placeholder="Filtere {{ entityList.entityType.namePlural}} nach" aria-label="Filter"/>
-    <button class="btn btn-secondary" (click)="clearFilter()">Alle</button>
+    <button class="btn btn-secondary" type="button" (click)="clearFilter()">Alle</button>
   </div>
 </form>
