@@ -27,15 +27,15 @@ public class WerkRestController extends AbstractMusikRestController<Werk> {
         if (track != null) {
             return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (album != null) {
-            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
+            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCaseOrderByAlbumName(album));
         } else if (komponist != null) {
-            return getMappedTracks(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByName(komponist));
+            return getMappedTracks(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByKomponistNameAscAlbumNameAscId(komponist));
         } else if (werk != null) {
             return werkRepository.streamByNameContainsIgnoreCaseOrderByName(werk);
         } else if (genre != null) {
-            return getMappedTracks(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
+            return getMappedTracks(trackRepository.streamDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(genre));
         } else if (interpret != null) {
-            return getMappedTracks(trackRepository.streamByInterpretenNameContainsIgnoreCase(interpret));
+            return getMappedTracks(trackRepository.streamDistinctByInterpretenNameContainsIgnoreCaseOrderByInterpretenNameAscAlbumNameAscId(interpret));
         }
         return getAll(werkRepository);
     }

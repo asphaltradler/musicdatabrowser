@@ -27,15 +27,15 @@ public class GenreRestController extends AbstractMusikRestController<Genre> {
         if (track != null) {
             return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (album != null) {
-            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
+            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCaseOrderByAlbumName(album));
         } else if (komponist != null) {
-            return getMappedTracks(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByName(komponist));
+            return getMappedTracks(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByKomponistNameAscAlbumNameAscId(komponist));
         } else if (werk != null) {
             return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(werk));
         } else if (genre != null) {
             return genreRepository.streamByNameContainsIgnoreCaseOrderByName(genre);
         } else if (interpret != null) {
-            return getMappedTracks(trackRepository.streamByInterpretenNameContainsIgnoreCase(interpret));
+            return getMappedTracks(trackRepository.streamDistinctByInterpretenNameContainsIgnoreCaseOrderByInterpretenNameAscAlbumNameAscId(interpret));
         }
         return getAll(genreRepository);
     }

@@ -27,13 +27,13 @@ public class InterpretRestController extends AbstractMusikRestController<Interpr
         if (track != null) {
             return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (album != null) {
-            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
+            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCaseOrderByAlbumName(album));
         } else if (komponist != null) {
-            return getMappedTracks(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByName(komponist));
+            return getMappedTracks(trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByKomponistNameAscAlbumNameAscId(komponist));
         } else if (werk != null) {
             return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(werk));
         } else if (genre != null) {
-            return getMappedTracks(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
+            return getMappedTracks(trackRepository.streamDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(genre));
         } else if (interpret != null) {
             return interpretRepository.streamByNameContainsIgnoreCaseOrderByName(interpret);
         }

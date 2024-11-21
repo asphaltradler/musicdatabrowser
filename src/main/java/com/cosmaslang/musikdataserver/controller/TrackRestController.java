@@ -18,18 +18,18 @@ public class TrackRestController extends AbstractMusikRestController<Track> {
         if (track != null) {
             return trackRepository.streamByNameContainsIgnoreCaseOrderByName(track);
         } else if (album != null) {
-            return trackRepository.streamByAlbumNameContainsIgnoreCase(album);
+            return trackRepository.streamByAlbumNameContainsIgnoreCaseOrderByAlbumName(album);
         } else if (komponist != null) {
-            return trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByName(komponist);
+            return trackRepository.streamByKomponistNameContainsIgnoreCaseOrderByKomponistNameAscAlbumNameAscId(komponist);
         } else if (werk != null) {
-            return trackRepository.streamByWerkNameContainsIgnoreCase(werk);
+            return trackRepository.streamByWerkNameContainsIgnoreCaseOrderByWerkNameAscAlbumNameAscId(werk);
         } else if (genre != null) {
             //Stream<Genre> genres = genreRepository.findByNameContaining(genre);
-            return trackRepository.streamByGenresNameContainsIgnoreCase(genre); //.streamByGenresIsIn(new HashSet<>(genres));
+            return trackRepository.streamDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(genre); //.streamByGenresIsIn(new HashSet<>(genres));
         } else if (interpret != null) {
             //Stream<Interpret> interpreten = interpretRepository.findByNameContaining(interpret);
             //return trackRepository.streamByInterpretenIsIn(new HashSet<>(interpreten));
-            return trackRepository.streamByInterpretenNameContainsIgnoreCase(interpret);
+            return trackRepository.streamDistinctByInterpretenNameContainsIgnoreCaseOrderByInterpretenNameAscAlbumNameAscId(interpret);
         }
         return getAll(trackRepository);
     }

@@ -27,15 +27,15 @@ public class KomponistRestController extends AbstractMusikRestController<Komponi
         if (track != null) {
             return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
         } else if (album != null) {
-            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCase(album));
+            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCaseOrderByAlbumName(album));
         } else if (komponist != null) {
             return komponistRepository.streamByNameContainsIgnoreCaseOrderByName(komponist);
         } else if (werk != null) {
             return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(werk));
         } else if (genre != null) {
-            return getMappedTracks(trackRepository.streamByGenresNameContainsIgnoreCase(genre));
+            return getMappedTracks(trackRepository.streamDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(genre));
         } else if (interpret != null) {
-            return getMappedTracks(trackRepository.streamByInterpretenNameContainsIgnoreCase(interpret));
+            return getMappedTracks(trackRepository.streamDistinctByInterpretenNameContainsIgnoreCaseOrderByInterpretenNameAscAlbumNameAscId(interpret));
         }
         return getAll(komponistRepository);
     }
