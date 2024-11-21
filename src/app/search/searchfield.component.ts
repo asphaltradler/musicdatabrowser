@@ -28,6 +28,8 @@ export class SearchfieldComponent implements OnInit {
   @Input({required:true})
   entityList!: EntityListComponent<any>;
 
+  @Input() filterString?: string;
+
   searchForm = new FormGroup({
     entitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
     searchField: new FormControl(''),
@@ -51,7 +53,6 @@ export class SearchfieldComponent implements OnInit {
 
   clearSearchText() {
     this.searchForm.controls.searchField.reset();
-    this.handleSubmit();
   }
 
   handleSubmit() {

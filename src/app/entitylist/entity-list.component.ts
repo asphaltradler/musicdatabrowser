@@ -15,21 +15,22 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   protected _entities: E[] = [];
   protected filter = '';
   protected titleFor = '';
-  protected lastSearchNameForThis = '';
+  protected lastSearchNameForThis?: string = undefined;
 
-  private changeSubscription!: Subscription;
-  private lastSearchSubscription!: Subscription;
+  private changeSubscription: Subscription;
+  private lastSearchSubscription?: Subscription;
 
-  protected _searchableEntities;
+  protected _searchableEntities: typeof AbstractEntity[];
 
   constructor(protected service: AbstractEntityService<E>,
               protected route: ActivatedRoute,
               protected router: Router) {
     this.entityType = service.entityType;
-    //default/Vorbelegung
+    //eigenen Typ ausschließen in Darstellung
     this._searchableEntities = SearchfieldComponent.searchEntities.filter(
       (entity) => entity != this.entityType
     );
+    //default/Vorbelegung bei Aktivierung
     this.changeSubscription = router.events.subscribe((event) => {
       if (event.type === EventType.ActivationEnd) {
         this.startSearchFromQuery();
@@ -39,7 +40,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   }
 
   ngOnInit(): void {
-    //erledigt die Change-Subscription schon
+    //wird durch ActivationEnd-Event erledigt
   }
 
   ngOnDestroy(): void {
@@ -65,18 +66,18 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
       }
     } else {
       //default: alle anzeigen
-      this.searchByEntityIdOrName(this.entityType);
+      this.searchByEntityName(this.entityType, '');
     }
   }
 
   searchByEntityName(searchEntityType: typeof AbstractEntity, searchString: string) {
     if (searchEntityType === this.entityType) {
-      if (searchString.includes(this.lastSearchNameForThis)) {
-        this.filter = searchString;
+      if (this.lastSearchNameForThis !== undefined && searchString.toLowerCase().includes(this.lastSearchNameForThis)) {
+        this.filter = searchString.toLowerCase();
         console.log(`Keine neue Suche, da Suchtext '${searchString}' im vorherigen '${this.lastSearchNameForThis}' enthalten`);
-        //this.lastSearchNameForThis = searchString;
         return;
       }
+      this.lastSearchNameForThis = searchString.toLowerCase();
     }
     this.searchByEntityIdOrName(searchEntityType, undefined, searchString);
   }
@@ -91,7 +92,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'}`);
     const obs = id
       ? this.service.findByOtherId(searchEntityType, id.valueOf())
-      : this.service.findByOtherNameLike(searchEntityType, searchString || '');
+      : this.service.findByOtherNameLike(searchEntityType, searchString?.toLowerCase() || '');
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(data => {
       this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()} '${searchString}'` : 'insgesamt';
