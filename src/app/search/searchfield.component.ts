@@ -19,7 +19,7 @@ import {EntityListComponent} from '../entitylist/entity-list.component';
     NgForOf
   ],
   templateUrl: './searchfield.component.html',
-  styles: ['input.form-control {width:50%}']
+  styles: ['input.form-control {width:10%}']
 })
 export class SearchfieldComponent implements OnInit {
   public static searchEntities: typeof AbstractEntity[] = [Album, Track, Komponist, Werk, Genre, Interpret];
@@ -30,16 +30,23 @@ export class SearchfieldComponent implements OnInit {
 
   searchForm = new FormGroup({
     entitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
-    searchField: new FormControl('')
+    searchField: new FormControl(''),
+    filterField: new FormControl('')
   });
 
   ngOnInit() {
     //default setzen
     this.searchForm.controls.entitySelector.setValue(this.entityList.entityType);
+    this.handleSelection();
   }
 
   handleSelection() {
     this.clearSearchText();
+    if (this.searchForm.controls.entitySelector.value === this.entityList.entityType) {
+      this.searchForm.controls.filterField.disable();
+    } else {
+      this.searchForm.controls.filterField.enable();
+    }
   }
 
   clearSearchText() {
@@ -52,5 +59,14 @@ export class SearchfieldComponent implements OnInit {
     if (entityType) {
       this.entityList.searchByEntityName(entityType, this.searchForm.value.searchField || '');
     }
+  }
+
+  clearFilter() {
+    this.searchForm.controls.filterField.reset();
+    this.handleFilter();
+  }
+
+  handleFilter() {
+    this.entityList.setFilter(this.searchForm.value.filterField || '');
   }
 }

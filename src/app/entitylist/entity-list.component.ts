@@ -12,8 +12,10 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
 
   public entityType!: typeof AbstractEntity;
 
-  protected _title!: string;
-  protected _entities!: E[];
+  protected _entities: E[] = [];
+  protected filter = '';
+  protected titleFor = '';
+  protected lastSearchNameForThis = '';
 
   private changeSubscription!: Subscription;
   private lastSearchSubscription!: Subscription;
@@ -43,6 +45,8 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   ngOnDestroy(): void {
     this.changeSubscription?.unsubscribe();
     this.lastSearchSubscription?.unsubscribe();
+    this.filter = '';
+    this.lastSearchNameForThis = '';
   }
 
   startSearchFromQuery(): void {
@@ -65,11 +69,19 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     }
   }
 
-  searchByEntityName(searchEntityType: typeof AbstractEntity, searchString?: string) {
+  searchByEntityName(searchEntityType: typeof AbstractEntity, searchString: string) {
+    if (searchEntityType === this.entityType) {
+      if (searchString.includes(this.lastSearchNameForThis)) {
+        this.filter = searchString;
+        console.log(`Keine neue Suche, da Suchtext '${searchString}' im vorherigen '${this.lastSearchNameForThis}' enthalten`);
+        //this.lastSearchNameForThis = searchString;
+        return;
+      }
+    }
     this.searchByEntityIdOrName(searchEntityType, undefined, searchString);
   }
 
-  searchByEntityId(searchEntityType: typeof AbstractEntity, id: number, searchString?: string) {
+  searchByEntityId(searchEntityType: typeof AbstractEntity, id: number, searchString: string) {
     this.searchByEntityIdOrName(searchEntityType, id, searchString);
   }
 
@@ -82,13 +94,13 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
       : this.service.findByOtherNameLike(searchEntityType, searchString || '');
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(data => {
-      this.fillEntities(data, searchString ? `für ${searchEntityType.getNameSingular()} '${searchString}'` : 'insgesamt');
+      this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()} '${searchString}'` : 'insgesamt';
+      this.fillData(data);
       console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName} dauerte ${performance.now() - time}ms`);
     });
   }
 
-  fillEntities(data: E[], titleName?: string) {
-    this._title = `${this.entityType.getNumberDescription(data.length)} ${titleName}`;
+  fillData(data: E[]) {
     this._entities = data;
   }
 
@@ -122,12 +134,23 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     return item.id;
   }
 
+  setFilter(filterString: string) {
+    this.filter = filterString.toLowerCase();
+  }
+
   get title() {
-    return this._title;
+    if (this.filter) {
+      const filteredCount = this._entities.filter((ent) => ent.name.toLowerCase().includes(this.filter)).length;
+      return `${filteredCount} von ${this.entityType.getNumberDescription(this._entities.length)} ${this.titleFor}`;
+    } else {
+      return `${this.entityType.getNumberDescription(this._entities.length)} ${this.titleFor}`;
+    }
   }
 
   get entities(): E[] {
-    return this._entities;
+    return this.filter
+      ? this._entities.filter((ent) => ent.name.toLowerCase().includes(this.filter))
+      : this._entities;
   }
 
   get searchableEntities() {

@@ -33,8 +33,8 @@ export class AlbumListComponent extends EntityListComponent<Album> {
     super(service, route, router);
   }
 
-  override fillEntities(data: Album[], titleName?: string) {
-    super.fillEntities(data, titleName);
+  override fillData(data: Album[]) {
+    super.fillData(data);
     this._entities.forEach((album: Album) => {
       this.komponistenService.findByOtherId(Album, album.id).subscribe(data => {
         album.komponisten = data;
