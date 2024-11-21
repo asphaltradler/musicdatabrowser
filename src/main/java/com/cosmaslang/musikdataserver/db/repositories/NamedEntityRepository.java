@@ -1,7 +1,7 @@
 package com.cosmaslang.musikdataserver.db.repositories;
 
 import com.cosmaslang.musikdataserver.db.entities.NamedEntity;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.stream.Stream;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * @param <ENTITY> eine NamedEntity
  */
 @NoRepositoryBean
-public interface NamedEntityRepository<ENTITY extends NamedEntity> extends CrudRepository<ENTITY, Long> {
+public interface NamedEntityRepository<ENTITY extends NamedEntity> extends JpaRepository<ENTITY, Long> {
     ENTITY findByName(String name);
 
     Stream<ENTITY> streamByNameContainsIgnoreCaseOrderByName(String name);
