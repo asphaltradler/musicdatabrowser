@@ -33,6 +33,8 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     //default/Vorbelegung bei Aktivierung
     this.changeSubscription = router.events.subscribe((event) => {
       if (event.type === EventType.ActivationEnd) {
+        //zurücksetzen, damit wir neu suchen
+        this.lastSearchNameForThis = undefined;
         this.startSearchFromQuery();
       }
     });
@@ -47,7 +49,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     this.changeSubscription?.unsubscribe();
     this.lastSearchSubscription?.unsubscribe();
     this.filter = '';
-    this.lastSearchNameForThis = '';
+    this.lastSearchNameForThis = undefined;
   }
 
   startSearchFromQuery(): void {
