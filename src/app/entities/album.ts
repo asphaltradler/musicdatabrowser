@@ -8,7 +8,6 @@ export class Album extends AbstractEntity {
   static override entityName = 'album';
   static override namePlural = 'Alben';
 
-  //tracks?: Track[];
   tracks?: number[];
   komponisten?: Komponist[];
   interpreten?: Interpret[];

@@ -13,23 +13,23 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let ent of entities; trackBy: trackByItemId" class="align-middle">
-        <td>{{ ent.id }}</td>
-        <td>{{ ent.name }}</td>
+      <tr *ngFor="let album of entities; trackBy: trackByItemId" class="align-middle">
+        <td>{{ album.id }}</td>
+        <td>{{ album.name }}</td>
         <td *ngFor="let cat of searchableEntities" class="text-center">
           @if (cat === Track) {
             <button class="btn btn-link"
-                    title="{{ Track.getNumberDescription(ent.tracks?.length) }} für {{ent.name}}"
-                    (click)="searchOtherEntityByThis(Track.entityName, ent)">
-              {{ Track.getNumberDescription(ent.tracks?.length) }}
+                    title="{{ Track.getNumberDescription(album.tracks?.length) }} für {{album.name}}"
+                    (click)="navigateOtherEntityByThis(Track, album)">
+              {{ Track.getNumberDescription(album.tracks?.length) }}
             </button>
           } @else {
-          <div *ngFor="let searchEntity of getEntityList(ent, cat)">
-            <a (click)="searchOtherEntityByItself(cat.entityName, searchEntity)"
+          <div *ngFor="let searchEntity of getEntityList(album, cat)">
+            <a (click)="navigateOtherEntityByItself(cat, searchEntity)"
                title="Details für {{searchEntity.name}}">
               {{ searchEntity.name }}
             </a>
-            <a (click)="searchOtherEntityBy(Album.entityName, cat.entityName, searchEntity)"
+            <a (click)="navigateOtherEntityBy(Album, cat, searchEntity)"
                class="btn-link"
                title="{{ Album.namePlural}} für {{searchEntity.name}}">
               [&nbsp;{{ Album.namePlural }}&nbsp;]

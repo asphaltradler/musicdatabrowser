@@ -24,18 +24,18 @@
         <td>{{ track.tracknumber }}</td>
         <td class="col-long">{{ track.name }}</td>
         <td class="col-long">
-          <a (click)="searchOtherEntityByThis(Album.entityName, track)"
+          <a (click)="navigateOtherEntityByThis(Album, track)"
              title="{{Album.namePlural}} für Track">
             {{ track.album?.name }}
           </a>
         </td>
         <td>
           <div *ngIf="track.komponist">
-            <a (click)="searchOtherEntityByItself(Komponist.entityName, track.komponist)"
+            <a (click)="navigateOtherEntityByItself(Komponist, track.komponist)"
                title="Details für {{track.komponist.name}}">
               {{ track.komponist.name }}
             </a>
-            <a (click)="searchOtherEntityBy(Album.entityName, Komponist.entityName, track.komponist)"
+            <a (click)="navigateOtherEntityBy(Album, Komponist, track.komponist)"
                class="btn-link"
                title="{{ Album.namePlural}} für {{track.komponist.name}}">
               [&nbsp;{{ Album.namePlural }}&nbsp;]
@@ -44,11 +44,11 @@
         </td>
         <td>
           <div *ngFor="let i of track.interpreten">
-            <a (click)="searchOtherEntityByItself(Interpret.entityName, i)"
+            <a (click)="navigateOtherEntityByItself(Interpret, i)"
               title="Details für {{i.name}}">
               {{ i.name }}
             </a>
-            <a (click)="searchOtherEntityBy(Album.entityName, Interpret.entityName, i)"
+            <a (click)="navigateOtherEntityBy(Album, Interpret, i)"
                class="btn-link"
                title="{{ Album.namePlural}} für {{i.name}}">
               [&nbsp;{{ Album.namePlural }}&nbsp;]
@@ -57,11 +57,11 @@
         </td>
         <td>
           <div *ngIf="track.werk">
-            <a (click)="searchOtherEntityByItself(Werk.entityName, track.werk)"
+            <a (click)="navigateOtherEntityByItself(Werk, track.werk)"
                title="Details für {{track.werk.name}}">
               {{ track.werk.name }}
             </a>
-            <a (click)="searchOtherEntityBy(Album.entityName, Werk.entityName, track.werk)"
+            <a (click)="navigateOtherEntityBy(Album, Werk, track.werk)"
                class="btn-link"
                title="{{ Album.namePlural }} für {{ track.werk.name }}">
               [&nbsp;{{ Album.namePlural }}&nbsp;]
@@ -70,11 +70,11 @@
         </td>
         <td>
           <div *ngFor="let g of track.genres">
-            <a (click)="searchOtherEntityByItself(Genre.entityName, g)"
+            <a (click)="navigateOtherEntityByItself(Genre, g)"
                title="Details für {{g.name}}">
               {{ g.name }}
             </a>
-            <a (click)="searchOtherEntityBy(Album.entityName, Genre.entityName, g)"
+            <a (click)="navigateOtherEntityBy(Album, Genre, g)"
                class="btn-link"
                title="{{ Album.namePlural}} für {{g.name}}">
               [&nbsp;{{ Album.namePlural }}&nbsp;]

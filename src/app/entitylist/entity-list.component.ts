@@ -78,8 +78,8 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     this.lastSearchSubscription?.unsubscribe();
     console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'}`);
     const obs = id
-      ? this.service.findByOtherId(searchEntityType.entityName, id.valueOf())
-      : this.service.findByOtherNameLike(searchEntityType.entityName, searchString || '');
+      ? this.service.findByOtherId(searchEntityType, id.valueOf())
+      : this.service.findByOtherNameLike(searchEntityType, searchString || '');
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(data => {
       this.fillEntities(data, searchString ? `für ${searchEntityType.getNameSingular()} '${searchString}'` : 'insgesamt');
@@ -87,27 +87,35 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     });
   }
 
-  //TODO statt Listen Streams? Wir müssten dann paginieren
   fillEntities(data: E[], titleName?: string) {
     this._title = `${this.entityType.getNumberDescription(data.length)} ${titleName}`;
     this._entities = data;
   }
 
-  searchOtherEntityByThis(entityName: string, entity: AbstractEntity) {
-    this.searchOtherEntityBy(entityName, this.entityType.entityName, entity);
+  navigateOtherEntityByThis(entityType: typeof AbstractEntity, entity: AbstractEntity) {
+    this.navigateOtherEntityBy(entityType, this.entityType, entity);
   }
 
-  searchOtherEntityByItself(entityName: string, entity: AbstractEntity) {
-    this.searchOtherEntityBy(entityName, entityName, entity);
+  navigateOtherEntityByItself(entityType: typeof AbstractEntity, entity: AbstractEntity) {
+    this.navigateOtherEntityBy(entityType, entityType, entity);
   }
 
-  searchOtherEntityBy(entityName: string, searchEntityName: string, entity: AbstractEntity) {
+  /**
+   * Sucht mittels einer gegebenen Entity als Suchkriterium in einer anderen Entity-Liste.
+   * Beim Öffnen der entsprechenden View (anderen EntityListComponent) wird dann über die
+   * queryParams die entsprechende Suche ausgelöst.
+   * @param entityType der Typ, zu dem navigiert wird
+   * @param searchEntityType der Typ, anhand dem gesucht werden soll
+   * @param entity eine Entity des searchEntityType, nach der gesucht wird (anhand id)
+   */
+  navigateOtherEntityBy(entityType: typeof AbstractEntity,
+                        searchEntityType: typeof AbstractEntity, entity: AbstractEntity) {
     const params: Params = {};
-    params[EntityListComponent.urlParamEntityName] = searchEntityName;
+    params[EntityListComponent.urlParamEntityName] = searchEntityType.entityName;
     params[EntityListComponent.urlParamEntitySearchTitle] = entity.name;
     params['id'] = entity.id;
-    console.log(`Navigiere nach ${entityName} mit ${Object.entries(params).join('|')}`);
-    this.router.navigate([entityName], {queryParams: params});
+    console.log(`Navigiere nach ${entityType.entityName} mit ${Object.entries(params).join('|')}`);
+    this.router.navigate([entityType.entityName], {queryParams: params});
   }
 
   trackByItemId(_index: number, item: E): number {
