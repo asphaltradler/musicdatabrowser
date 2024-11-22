@@ -1,6 +1,9 @@
 package com.cosmaslang.musikdataserver.controller;
 
 import com.cosmaslang.musikdataserver.db.entities.Album;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,11 +15,15 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("/musik/album")
 public class AlbumRestController extends AbstractMusikRestController<Album> {
+    Pageable pageable = PageRequest.ofSize(10);
     @Override
     public Stream<Album> find(String track, String album, String komponist, String werk, String genre, String interpret) {
         super.logCall(track, album, komponist, werk, genre, interpret);
         if (track != null) {
-            return albumRepository.streamDistinctByTracksNameContainsIgnoreCase(track);
+            Page<Album> page = albumRepository.findDistinctByTracksNameContainsIgnoreCase(track, pageable);
+            logger.info("Found %d albums on %d pages".formatted(page.getTotalElements(), page.getTotalPages()));
+            //pageable = pageable.next();
+            return page.stream();
         } else if (album != null) {
             return albumRepository.streamByNameContainsIgnoreCaseOrderByName(album);
         } else if (komponist != null) {

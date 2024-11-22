@@ -1,13 +1,15 @@
 package com.cosmaslang.musikdataserver.db.repositories;
 
 import com.cosmaslang.musikdataserver.db.entities.Album;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.stream.Stream;
 
 @Repository
 public interface AlbumRepository extends NamedEntityRepository<Album> {
-    Stream<Album> streamDistinctByTracksNameContainsIgnoreCase(String track);
+    Page<Album> findDistinctByTracksNameContainsIgnoreCase(String track, Pageable pageable);
     Stream<Album> streamByTracksId(Long trackId);
     Stream<Album> streamDistinctByTracksKomponistNameContainsIgnoreCaseOrderByName(String komponist);
     Stream<Album> streamDistinctByTracksKomponistIdOrderByName(Long komponistId);
