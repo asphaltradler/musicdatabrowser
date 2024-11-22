@@ -143,7 +143,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
 
   get title() {
     if (this.filter) {
-      const filteredCount = this._entities.filter((ent) => ent.name.toLowerCase().includes(this.filter)).length;
+      const filteredCount = this._entities.filter((ent) => ent.name?.toLowerCase().includes(this.filter)).length;
       return `${filteredCount} von ${this.entityType.getNumberDescription(this._entities.length)} ${this.titleFor}`;
     } else {
       return `${this.entityType.getNumberDescription(this._entities.length)} ${this.titleFor}`;
@@ -152,7 +152,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
 
   get entities(): E[] {
     return this.filter
-      ? this._entities.filter((ent) => ent.name.toLowerCase().includes(this.filter))
+      ? this._entities.filter((ent) => ent.name?.toLowerCase().includes(this.filter))
       : this._entities;
   }
 
