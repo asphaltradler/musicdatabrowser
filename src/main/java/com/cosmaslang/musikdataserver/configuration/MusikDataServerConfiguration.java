@@ -3,20 +3,18 @@ package com.cosmaslang.musikdataserver.configuration;
 import com.cosmaslang.musikdataserver.services.MusikDataServerStartupConfigurableService;
 import com.cosmaslang.musikdataserver.services.MusikDataServerStartupService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 @Configuration
-@ConfigurationPropertiesScan
+//@ConfigurationPropertiesScan
 @ConfigurationProperties(prefix = "musikdataserver")
-@EnableJpaRepositories("com.cosmaslang.musikdataserver.db.repositories")
+//@EnableJpaRepositories("com.cosmaslang.musikdataserver.db.repositories")
 public class MusikDataServerConfiguration {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private String rootdir;
