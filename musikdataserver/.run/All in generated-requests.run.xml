@@ -2,7 +2,7 @@
   <configuration default="false" name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" path="$PROJECT_DIR$/generated-requests.http">
     <method v="2" />
   </configuration>
-  <configuration default="false" name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" path="$PROJECT_DIR$/generated-requests.http">
+  <configuration default="false" name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" environment="dev" path="$PROJECT_DIR$/generated-requests.http">
     <method v="2" />
   </configuration>
 </component>
