@@ -6,10 +6,10 @@
     <module name="musikdataserver" />
     <option name="PROGRAM_PARAMETERS" value="-noreload" />
     <target name="@@@LOCAL@@@" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.cosmaslang.musikdataserver.MusikDataServerApplication" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.cosmaslang.musicdataserver.MusikDataServerApplication" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.cosmaslang.musikdataserver.*" />
+        <option name="PATTERN" value="com.cosmaslang.musicdataserver.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
