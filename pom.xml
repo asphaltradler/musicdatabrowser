@@ -7,7 +7,7 @@
     <version>1.0</version>
     <packaging>pom</packaging>
     <modules>
-        <module>musikdataserver</module>
-        <module>musikserverclient</module>
+        <module>musicdataserver</module>
+        <module>musicdataclient</module>
     </modules>
 </project>
