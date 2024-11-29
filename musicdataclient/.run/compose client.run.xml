@@ -3,7 +3,7 @@
     <deployment type="docker-compose.yml">
       <settings>
         <option name="envFilePath" value="" />
-        <option name="sourceFilePath" value="musikserverclient/docker-compose.yaml" />
+        <option name="sourceFilePath" value="musicdataclient/docker-compose.yaml" />
         <option name="upRemoveOrphans" value="true" />
       </settings>
     </deployment>

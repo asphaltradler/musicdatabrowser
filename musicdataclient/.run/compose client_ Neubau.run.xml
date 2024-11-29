@@ -4,7 +4,7 @@
       <settings>
         <option name="envFilePath" value="" />
         <option name="commandLineOptions" value="--build" />
-        <option name="sourceFilePath" value="musikserverclient/docker-compose.yaml" />
+        <option name="sourceFilePath" value="musicdataclient/docker-compose.yaml" />
         <option name="upForceRecreate" value="true" />
         <option name="upRemoveOrphans" value="true" />
       </settings>
