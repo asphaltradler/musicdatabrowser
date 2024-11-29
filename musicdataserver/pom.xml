@@ -9,10 +9,10 @@
         <relativePath/>
     </parent>
     <groupId>org.asphaltradler</groupId>
-    <artifactId>musikdataserver</artifactId>
+    <artifactId>musicdataserver</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>musikdataserver</name>
-    <description>musikdataserver for Spring Boot</description>
+    <name>musicdataserver</name>
+    <description>musicdataserver for Spring Boot</description>
     <properties>
         <java.version>21</java.version>
     </properties>

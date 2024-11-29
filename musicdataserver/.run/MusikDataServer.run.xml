@@ -21,7 +21,7 @@
     <option name="ACTIVE_PROFILES" value="dev" />
     <option name="ALTERNATIVE_JRE_PATH" value="21" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-    <module name="musikdataserver" />
+    <module name="musicdataserver" />
     <projectPathOnTarget name="projectPathOnTarget" value="/app" />
     <target name="@@@LOCAL@@@" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.cosmaslang.musikdataserver.MusikDataServerApplication" />
