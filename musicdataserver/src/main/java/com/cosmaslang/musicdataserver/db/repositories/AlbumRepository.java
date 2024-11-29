@@ -5,18 +5,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 @Repository
 public interface AlbumRepository extends NamedEntityRepository<Album> {
     Page<Album> findDistinctByTracksNameContainsIgnoreCase(String track, Pageable pageable);
-    Stream<Album> streamByTracksId(Long trackId);
-    Stream<Album> streamDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(String composer);
-    Stream<Album> streamDistinctByTracksComposerIdOrderByName(Long composerId);
-    Stream<Album> streamDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(String genre);
-    Stream<Album> streamDistinctByTracksGenresIdOrderByName(Long genreId);
-    Stream<Album> streamDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(String artist);
-    Stream<Album> streamDistinctByTracksArtistsIdOrderByName(Long artistId);
-    Stream<Album> streamDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(String work);
-    Stream<Album> streamDistinctByTracksWorkIdOrderByName(Long workId);
+    List<Album> findByTracksId(Long trackId);
+    List<Album> findDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(String composer);
+    List<Album> findDistinctByTracksComposerIdOrderByName(Long composerId);
+    List<Album> findDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(String genre);
+    List<Album> findDistinctByTracksGenresIdOrderByName(Long genreId);
+    List<Album> findDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(String artist);
+    List<Album> findDistinctByTracksArtistsIdOrderByName(Long artistId);
+    List<Album> findDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(String work);
+    List<Album> findDistinctByTracksWorkIdOrderByName(Long workId);
 }

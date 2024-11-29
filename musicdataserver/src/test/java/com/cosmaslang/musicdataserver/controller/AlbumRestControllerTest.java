@@ -71,21 +71,21 @@ class AlbumRestControllerTest {
 
     @Test
     void findAllAlbumsFromController() {
-        List<Album> allAlbums = albumRestController.getAll(albumRepository).toList();
+        List<Album> allAlbums = albumRestController.getAll(albumRepository);
         assertTrue(allAlbums.contains(album));
         assertEquals(albumRepository.count(), allAlbums.size());
     }
 
     @Test
     void findAlbumByName() {
-        List<Album> foundAlbums = albumRepository.streamByNameContainsIgnoreCaseOrderByName(ALBUM_1).toList();
+        List<Album> foundAlbums = albumRepository.findByNameContainsIgnoreCaseOrderByName(ALBUM_1);
         assertEquals(1, foundAlbums.size());
         assertEquals(foundAlbums.get(0), album);
     }
 
     @Test
     void findAllTracksFromController() {
-        List<Track> allTracks = trackRestController.getAll(trackRepository).toList();
+        List<Track> allTracks = trackRestController.getAll(trackRepository);
         assertEquals(trackRepository.count(), allTracks.size());
         assertTrue(allTracks.contains(track1));
         assertTrue(allTracks.contains(track2));
@@ -111,7 +111,7 @@ class AlbumRestControllerTest {
 
     @Test
     void findTracksForAlbum() {
-        List<Track> albumTracks = trackRepository.streamByAlbumNameContainsIgnoreCaseOrderByAlbumName(ALBUM_1).toList();
+        List<Track> albumTracks = trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumName(ALBUM_1);
         assertEquals(2, albumTracks.size());
         assertTrue(albumTracks.contains(trackRepository.findByName(TRACK_1)));
         assertTrue(albumTracks.contains(trackRepository.findByName(TRACK_2)));
@@ -120,7 +120,7 @@ class AlbumRestControllerTest {
     @Test
     @Disabled("Verdrahtung zu Controller und seinem Repository funktioniert nicht")
     void findTracksForAlbumFromController() {
-        List<Track> albumTracks = trackRestController.find(null, ALBUM_1, null, null, null, null).toList();
+        List<Track> albumTracks = trackRestController.find(null, ALBUM_1, null, null, null, null);
         assertEquals(2, albumTracks.size());
         assertTrue(albumTracks.contains(track1));
         assertTrue(albumTracks.contains(track2));
@@ -134,11 +134,11 @@ class AlbumRestControllerTest {
 
         Album findAlbum = albumRepository.findByName(ALBUM_1);
         assertNull(findAlbum);
-        List<Album> foundAlbums = albumRestController.getAll(albumRepository).toList();
+        List<Album> foundAlbums = albumRestController.getAll(albumRepository);
         assertFalse(foundAlbums.contains(album));
 
         assertEquals(trackCount-2, trackRepository.count());
-        List<Track> foundTracks = trackRestController.getAll(trackRepository).toList();
+        List<Track> foundTracks = trackRestController.getAll(trackRepository);
         assertFalse(foundTracks.contains(track1));
         assertFalse(foundTracks.contains(track2));
     }

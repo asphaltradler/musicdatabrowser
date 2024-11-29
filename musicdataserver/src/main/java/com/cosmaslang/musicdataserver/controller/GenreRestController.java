@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 @RestController
@@ -22,45 +23,45 @@ public class GenreRestController extends AbstractMusicDataRestController<Genre> 
     }
 
     @Override
-    protected Stream<Genre> find(String track, String album, String composer, String work, String genre, String artist) {
+    protected List<Genre> find(String track, String album, String composer, String work, String genre, String artist) {
         super.logCall(track, album, composer, work, genre, artist);
         if (track != null) {
-            return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(track));
+            return getMappedTracks(trackRepository.findByNameContainsIgnoreCaseOrderByName(track));
         } else if (album != null) {
-            return getMappedTracks(trackRepository.streamByAlbumNameContainsIgnoreCaseOrderByAlbumName(album));
+            return getMappedTracks(trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumName(album));
         } else if (composer != null) {
-            return getMappedTracks(trackRepository.streamByComposerNameContainsIgnoreCaseOrderByComposerNameAscAlbumNameAscId(composer));
+            return getMappedTracks(trackRepository.findByComposerNameContainsIgnoreCaseOrderByComposerNameAscAlbumNameAscId(composer));
         } else if (work != null) {
-            return getMappedTracks(trackRepository.streamByNameContainsIgnoreCaseOrderByName(work));
+            return getMappedTracks(trackRepository.findByNameContainsIgnoreCaseOrderByName(work));
         } else if (genre != null) {
-            return genreRepository.streamByNameContainsIgnoreCaseOrderByName(genre);
+            return genreRepository.findByNameContainsIgnoreCaseOrderByName(genre);
         } else if (artist != null) {
-            return getMappedTracks(trackRepository.streamDistinctByArtistsNameContainsIgnoreCaseOrderByArtistsNameAscAlbumNameAscId(artist));
+            return getMappedTracks(trackRepository.findDistinctByArtistsNameContainsIgnoreCaseOrderByArtistsNameAscAlbumNameAscId(artist));
         }
         return getAll(genreRepository);
     }
 
     @Override
-    public Stream<Genre> get(Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
+    public List<Genre> get(Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
         super.logCall(trackId, albumId, composerId, workId, genreId, artistId);
         if (trackId != null) {
-            return getMappedTracks(trackRepository.findById(trackId).stream());
+            return getMappedTracks(trackRepository.findById(trackId).stream().toList());
         } else if (albumId != null) {
-            return getMappedTracks(trackRepository.streamByAlbumId(albumId));
+            return getMappedTracks(trackRepository.findByAlbumId(albumId));
         } else if (composerId != null) {
-            return getMappedTracks(trackRepository.streamByComposerId(composerId));
+            return getMappedTracks(trackRepository.findByComposerId(composerId));
         } else if (workId != null) {
-            return getMappedTracks(trackRepository.streamByWorkId(workId));
+            return getMappedTracks(trackRepository.findByWorkId(workId));
         } else if (genreId != null) {
             return getEntitiesIfExists(genreId, genreRepository);
         } else if (artistId != null) {
-            return getMappedTracks(trackRepository.streamByArtistsId(artistId));
+            return getMappedTracks(trackRepository.findByArtistsId(artistId));
         }
 
         return getAll(genreRepository);
     }
 
-    private Stream<Genre> getMappedTracks(Stream<Track> tracks) {
+    private List<Genre> getMappedTracks(List<Track> tracks) {
         return getMappedByEntitySet(tracks, Track::getGenres);
     }
 }

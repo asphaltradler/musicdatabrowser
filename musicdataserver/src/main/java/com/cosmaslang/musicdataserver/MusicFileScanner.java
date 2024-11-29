@@ -189,13 +189,13 @@ public class MusicFileScanner {
                 }
                 str = tag.getFirst(FieldKey.COMPOSER);
                 if (StringUtils.isNotBlank(str)) {
-                    Composer composer = createOrUpdateEntity(Composer.class, musicdataserverStartupService.getcomposerRepository(), str);
-                    track.setcomposer(composer);
+                    Composer composer = createOrUpdateEntity(Composer.class, musicdataserverStartupService.getComposerRepository(), str);
+                    track.setComposer(composer);
                 }
                 str = tag.getFirst(Track.FIELDKEY_WORK);
                 if (StringUtils.isNotBlank(str)) {
-                    Work work = createOrUpdateEntity(Work.class, musicdataserverStartupService.getworkRepository(), str);
-                    track.setwork(work);
+                    Work work = createOrUpdateEntity(Work.class, musicdataserverStartupService.getWorkRepository(), str);
+                    track.setWork(work);
                 }
                 //ManyToMany Zuordnung
                 List<TagField> tagFields = tag.getFields(FieldKey.ARTIST);
@@ -205,7 +205,7 @@ public class MusicFileScanner {
                     for (TagField field : tagFields) {
                         str = field.toString();
                         if (StringUtils.isNotBlank(str)) {
-                            Artist artist = createOrUpdateEntity(Artist.class, musicdataserverStartupService.getartistRepository(), str);
+                            Artist artist = createOrUpdateEntity(Artist.class, musicdataserverStartupService.getArtistRepository(), str);
                             //track.addartist(artist);
                             artists.add(artist);
                         }

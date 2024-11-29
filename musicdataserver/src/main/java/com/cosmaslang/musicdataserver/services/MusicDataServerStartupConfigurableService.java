@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -92,7 +93,7 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     }
 
     @Override
-    public NamedEntityRepository<Artist> getartistRepository() {
+    public NamedEntityRepository<Artist> getArtistRepository() {
         return artistRepository;
     }
 
@@ -102,7 +103,7 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     }
 
     @Override
-    public NamedEntityRepository<Work> getworkRepository() {
+    public NamedEntityRepository<Work> getWorkRepository() {
         return workRepository;
     }
 
@@ -112,7 +113,7 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     }
 
     @Override
-    public NamedEntityRepository<Composer> getcomposerRepository() {
+    public NamedEntityRepository<Composer> getComposerRepository() {
         return composerRepository;
     }
 
