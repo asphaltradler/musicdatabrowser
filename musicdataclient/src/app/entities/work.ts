@@ -1,6 +1,6 @@
 import {AbstractEntity} from './abstractEntity';
 
-export class Werk extends AbstractEntity {
-  static override entityName = 'werk';
+export class Work extends AbstractEntity {
+  static override entityName = 'work';
   static override namePlural = 'Werke';
 }

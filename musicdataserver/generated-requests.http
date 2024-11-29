@@ -45,7 +45,7 @@ GET http://localhost:{{server.port}}/musik/track/get?album=John Williams Greates
 DELETE http://localhost:{{server.port}}/musik/album/remove?id=1
 
 
-### Komponist suchen containingIgnoreCase
+### Composer suchen containingIgnoreCase
 GET http://localhost:{{server.port}}/musik/composer/get?composer=ber
 
 ### Album mit mehreren Komponisten in Tracks => Liste mit distinct Komponisten
@@ -60,5 +60,5 @@ GET http://localhost:{{server.port}}/musik/composer/get?album=Klavier
 ### Alle Komponisten eines Genres
 GET http://localhost:{{server.port}}/musik/composer/get?genre=Piano
 
-### alle Genres die ein Komponist bedient hat
+### alle Genres die ein Composer bedient hat
 GET http://localhost:{{server.port}}/musik/genre/get?composer=Beethoven

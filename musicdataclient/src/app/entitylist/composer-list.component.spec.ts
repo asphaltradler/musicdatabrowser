@@ -1,26 +1,26 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {KomponistListComponent} from './komponist-list.component';
+import {ComposerListComponent} from './composer-list.component';
 import {provideHttpClient} from '@angular/common/http';
-import {KomponistService} from '../services/komponist.service';
+import {ComposerService} from '../services/composer.service';
 import {provideRouter} from '@angular/router';
 
-describe('KomponistListComponent', () => {
-  let component: KomponistListComponent;
-  let fixture: ComponentFixture<KomponistListComponent>;
+describe('ComposerListComponent', () => {
+  let component: ComposerListComponent;
+  let fixture: ComponentFixture<ComposerListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [KomponistListComponent],
+      imports: [ComposerListComponent],
       providers: [
-        KomponistService,
+        ComposerService,
         provideHttpClient(),
         provideRouter([])
       ],
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(KomponistListComponent);
+    fixture = TestBed.createComponent(ComposerListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

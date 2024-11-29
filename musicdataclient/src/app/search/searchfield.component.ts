@@ -3,10 +3,10 @@ import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular
 import {AbstractEntity} from '../entities/abstractEntity';
 import {Album} from '../entities/album';
 import {Track} from '../entities/track';
-import {Komponist} from '../entities/komponist';
-import {Werk} from '../entities/werk';
+import {Composer} from '../entities/composer';
+import {Work} from '../entities/work';
 import {Genre} from '../entities/genre';
-import {Interpret} from '../entities/interpret';
+import {Artist} from '../entities/artist';
 import {NgForOf} from '@angular/common';
 import {EntityListComponent} from '../entitylist/entity-list.component';
 
@@ -22,7 +22,7 @@ import {EntityListComponent} from '../entitylist/entity-list.component';
   styles: ['input.form-control {width:10%}']
 })
 export class SearchfieldComponent implements OnInit {
-  public static searchEntities: typeof AbstractEntity[] = [Album, Track, Komponist, Werk, Genre, Interpret];
+  public static searchEntities: typeof AbstractEntity[] = [Album, Track, Composer, Work, Genre, Artist];
   searchEntities = SearchfieldComponent.searchEntities;
 
   @Input({required:true})

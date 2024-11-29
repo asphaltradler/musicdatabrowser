@@ -1,16 +1,16 @@
 import {TestBed} from '@angular/core/testing';
-
-import {InterpretService} from './interpret.service';
 import {provideHttpClient} from '@angular/common/http';
+import {WorkService} from './work.service';
+import {Work} from '../entities/work';
 
-describe('InterpretService', () => {
-  let service: InterpretService;
+describe('WorkService', () => {
+  let service: WorkService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [InterpretService, provideHttpClient()]
+      providers: [Work, provideHttpClient()]
     });
-    service = TestBed.inject(InterpretService);
+    service = TestBed.inject(WorkService);
   });
 
   it('should be created', () => {

@@ -1,13 +1,13 @@
 import {Component} from '@angular/core';
-import {Komponist} from '../entities/komponist';
-import {KomponistService} from '../services/komponist.service';
-import {SearchfieldComponent} from '../search/searchfield.component';
 import {EntityListComponent} from './entity-list.component';
+import {Work} from '../entities/work';
+import {WorkService} from '../services/work.service';
+import {SearchfieldComponent} from '../search/searchfield.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgForOf} from '@angular/common';
 
 @Component({
-  selector: 'app-komponist-list',
+  selector: 'app-work-list',
   standalone: true,
   imports: [
     SearchfieldComponent,
@@ -16,8 +16,8 @@ import {NgForOf} from '@angular/common';
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'
 })
-export class KomponistListComponent extends EntityListComponent<Komponist> {
-  constructor(service: KomponistService, route: ActivatedRoute, router: Router) {
+export class WorkListComponent extends EntityListComponent<Work> {
+  constructor(service: WorkService, route: ActivatedRoute, router: Router) {
     super(service, route, router);
   }
 }

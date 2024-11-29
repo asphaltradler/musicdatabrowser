@@ -8,9 +8,9 @@
         <th scope="col">#</th>
         <th class="col-long" scope="col">Name</th>
         <th scope="col">{{ Album.namePlural }}</th>
-        <th scope="col">{{ Komponist.namePlural }}</th>
-        <th scope="col">{{ Interpret.namePlural }}</th>
-        <th scope="col">{{ Werk.namePlural }}</th>
+        <th scope="col">{{ Composer.namePlural }}</th>
+        <th scope="col">{{ Artist.namePlural }}</th>
+        <th scope="col">{{ Work.namePlural }}</th>
         <th scope="col">{{ Genre.namePlural }}</th>
         <th scope="col">Label</th>
         <th scope="col">Jahr</th>
@@ -30,25 +30,25 @@
           </a>
         </td>
         <td>
-          <div *ngIf="track.komponist">
-            <a (click)="navigateOtherEntityByItself(Komponist, track.komponist)"
-               title="Details für {{track.komponist.name}}">
-              {{ track.komponist.name }}
+          <div *ngIf="track.composer">
+            <a (click)="navigateOtherEntityByItself(Composer, track.composer)"
+               title="Details für {{track.composer.name}}">
+              {{ track.composer.name }}
             </a>
-            <a (click)="navigateOtherEntityBy(Album, Komponist, track.komponist)"
+            <a (click)="navigateOtherEntityBy(Album, Composer, track.composer)"
                class="btn-link"
-               title="{{ Album.namePlural}} für {{track.komponist.name}}">
+               title="{{ Album.namePlural}} für {{track.composer.name}}">
               [&nbsp;{{ Album.namePlural }}&nbsp;]
             </a>
           </div>
         </td>
         <td>
-          <div *ngFor="let i of track.interpreten">
-            <a (click)="navigateOtherEntityByItself(Interpret, i)"
+          <div *ngFor="let i of track.artists">
+            <a (click)="navigateOtherEntityByItself(Artist, i)"
               title="Details für {{i.name}}">
               {{ i.name }}
             </a>
-            <a (click)="navigateOtherEntityBy(Album, Interpret, i)"
+            <a (click)="navigateOtherEntityBy(Album, Artist, i)"
                class="btn-link"
                title="{{ Album.namePlural}} für {{i.name}}">
               [&nbsp;{{ Album.namePlural }}&nbsp;]
@@ -56,14 +56,14 @@
           </div>
         </td>
         <td>
-          <div *ngIf="track.werk">
-            <a (click)="navigateOtherEntityByItself(Werk, track.werk)"
-               title="Details für {{track.werk.name}}">
-              {{ track.werk.name }}
+          <div *ngIf="track.work">
+            <a (click)="navigateOtherEntityByItself(Work, track.work)"
+               title="Details für {{track.work.name}}">
+              {{ track.work.name }}
             </a>
-            <a (click)="navigateOtherEntityBy(Album, Werk, track.werk)"
+            <a (click)="navigateOtherEntityBy(Album, Work, track.work)"
                class="btn-link"
-               title="{{ Album.namePlural }} für {{ track.werk.name }}">
+               title="{{ Album.namePlural }} für {{ track.work.name }}">
               [&nbsp;{{ Album.namePlural }}&nbsp;]
             </a>
           </div>

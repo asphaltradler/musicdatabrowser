@@ -1,8 +1,8 @@
 import {AbstractEntity} from './abstractEntity';
 import {Album} from './album';
-import {Komponist} from './komponist';
-import {Interpret} from './interpret';
-import {Werk} from './werk';
+import {Composer} from './composer';
+import {Artist} from './artist';
+import {Work} from './work';
 import {Genre} from './genre';
 
 export class Track extends AbstractEntity {
@@ -16,10 +16,10 @@ export class Track extends AbstractEntity {
   publishedDate?: string;
   lengthInSeconds!: number;
   album?: Album;
-  komponist?: Komponist;
-  interpreten?: Interpret[];
+  composer?: Composer;
+  artists?: Artist[];
   genres?: Genre[];
-  werk?: Werk;
+  work?: Work;
 
   static getLastModificationSince(t: Track) {
     const now = new Date();

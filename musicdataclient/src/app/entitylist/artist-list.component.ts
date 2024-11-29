@@ -1,13 +1,13 @@
 import {Component} from '@angular/core';
 import {EntityListComponent} from './entity-list.component';
-import {Interpret} from '../entities/interpret';
-import {InterpretService} from '../services/interpret.service';
+import {Artist} from '../entities/artist';
+import {ArtistService} from '../services/artist.service';
 import {SearchfieldComponent} from '../search/searchfield.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgForOf} from '@angular/common';
 
 @Component({
-  selector: 'app-interpret-list',
+  selector: 'app-artist-list',
   standalone: true,
   imports: [
     SearchfieldComponent,
@@ -16,8 +16,8 @@ import {NgForOf} from '@angular/common';
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'
 })
-export class InterpretListComponent extends EntityListComponent<Interpret> {
-  constructor(interpretService: InterpretService, route: ActivatedRoute, router: Router) {
-    super(interpretService, route, router);
+export class ArtistListComponent extends EntityListComponent<Artist> {
+  constructor(artistService: ArtistService, route: ActivatedRoute, router: Router) {
+    super(artistService, route, router);
   }
 }

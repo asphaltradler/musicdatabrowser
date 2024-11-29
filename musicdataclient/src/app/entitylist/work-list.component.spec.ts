@@ -1,26 +1,26 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {WerkListComponent} from './werk-list.component';
+import {WorkListComponent} from './work-list.component';
 import {provideHttpClient} from '@angular/common/http';
-import {WerkService} from '../services/werk.service';
+import {WorkService} from '../services/work.service';
 import {provideRouter} from '@angular/router';
 
-describe('WerkListComponent', () => {
-  let component: WerkListComponent;
-  let fixture: ComponentFixture<WerkListComponent>;
+describe('WorkListComponent', () => {
+  let component: WorkListComponent;
+  let fixture: ComponentFixture<WorkListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WerkListComponent],
+      imports: [WorkListComponent],
       providers: [
-        WerkService,
+        WorkService,
         provideHttpClient(),
         provideRouter([])
       ],
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(WerkListComponent);
+    fixture = TestBed.createComponent(WorkListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

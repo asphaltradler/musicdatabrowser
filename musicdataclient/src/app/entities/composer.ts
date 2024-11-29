@@ -1,6 +1,6 @@
 import {AbstractEntity} from './abstractEntity';
 
-export class Komponist extends AbstractEntity {
-  static override entityName = 'komponist';
+export class Composer extends AbstractEntity {
+  static override entityName = 'composer';
   static override namePlural = 'Komponisten';
 }

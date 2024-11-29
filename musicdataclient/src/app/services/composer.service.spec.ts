@@ -1,16 +1,16 @@
 import {TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
-import {WerkService} from './werk.service';
-import {Werk} from '../entities/werk';
 
-describe('WerkService', () => {
-  let service: WerkService;
+import {ComposerService} from './composer.service';
+import {provideHttpClient} from '@angular/common/http';
+
+describe('ComposerService', () => {
+  let service: ComposerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [Werk, provideHttpClient()]
+      providers: [ComposerService, provideHttpClient()]
     });
-    service = TestBed.inject(WerkService);
+    service = TestBed.inject(ComposerService);
   });
 
   it('should be created', () => {

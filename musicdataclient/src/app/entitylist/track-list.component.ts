@@ -5,9 +5,9 @@ import {TrackService} from '../services/track.service';
 import {EntityListComponent} from './entity-list.component';
 import {Track} from '../entities/track';
 import {Album} from '../entities/album';
-import {Komponist} from '../entities/komponist';
-import {Interpret} from '../entities/interpret';
-import {Werk} from '../entities/werk';
+import {Composer} from '../entities/composer';
+import {Artist} from '../entities/artist';
+import {Work} from '../entities/work';
 import {Genre} from '../entities/genre';
 import {NgForOf, NgIf} from '@angular/common';
 
@@ -28,9 +28,9 @@ export class TrackListComponent extends EntityListComponent<Track> {
   }
 
   protected readonly Album = Album;
-  protected readonly Komponist = Komponist;
-  protected readonly Interpret = Interpret;
-  protected readonly Werk = Werk;
+  protected readonly Composer = Composer;
+  protected readonly Artist = Artist;
+  protected readonly Work = Work;
   protected readonly Genre = Genre;
   protected readonly Track = Track;
 }

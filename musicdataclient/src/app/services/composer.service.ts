@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Komponist} from '../entities/komponist';
+import {Composer} from '../entities/composer';
 import {AbstractEntityService} from './abstractEntityService';
 
 @Injectable({
   providedIn: 'root'
 })
-export class KomponistService extends AbstractEntityService<Komponist> {
+export class ComposerService extends AbstractEntityService<Composer> {
   constructor(http: HttpClient) {
-    super(http, Komponist);
+    super(http, Composer);
   }
 }

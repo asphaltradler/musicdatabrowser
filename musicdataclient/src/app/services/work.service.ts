@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {AbstractEntityService} from './abstractEntityService';
-import {Werk} from '../entities/werk';
+import {Work} from '../entities/work';
 import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
-export class WerkService extends AbstractEntityService<Werk>{
+export class WorkService extends AbstractEntityService<Work>{
   constructor(http: HttpClient) {
-    super(http, Werk);
+    super(http, Work);
   }
 }

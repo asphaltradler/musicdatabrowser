@@ -6,14 +6,14 @@ import {EntityListComponent} from './entity-list.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgForOf} from '@angular/common';
 import {Track} from '../entities/track';
-import {KomponistService} from '../services/komponist.service';
-import {Komponist} from '../entities/komponist';
-import {InterpretService} from '../services/interpret.service';
-import {WerkService} from '../services/werk.service';
+import {ComposerService} from '../services/composer.service';
+import {Composer} from '../entities/composer';
+import {ArtistService} from '../services/artist.service';
+import {WorkService} from '../services/work.service';
 import {GenreService} from '../services/genre.service';
 import {AbstractEntity} from '../entities/abstractEntity';
-import {Interpret} from '../entities/interpret';
-import {Werk} from '../entities/werk';
+import {Artist} from '../entities/artist';
+import {Work} from '../entities/work';
 import {Genre} from '../entities/genre';
 
 @Component({
@@ -28,22 +28,22 @@ import {Genre} from '../entities/genre';
 })
 export class AlbumListComponent extends EntityListComponent<Album> {
   constructor(service: AlbumService, route: ActivatedRoute, router: Router,
-              private komponistenService: KomponistService, private interpretenService: InterpretService,
-              private werkService: WerkService, private genreService: GenreService) {
+              private composersService: ComposerService, private artistsService: ArtistService,
+              private workService: WorkService, private genreService: GenreService) {
     super(service, route, router);
   }
 
   override fillData(data: Album[]) {
     super.fillData(data);
     this._entities.forEach((album: Album) => {
-      this.komponistenService.findByOtherId(Album, album.id).subscribe(data => {
-        album.komponisten = data;
+      this.composersService.findByOtherId(Album, album.id).subscribe(data => {
+        album.composers = data;
       });
-      this.interpretenService.findByOtherId(Album, album.id).subscribe(data => {
-        album.interpreten = data;
+      this.artistsService.findByOtherId(Album, album.id).subscribe(data => {
+        album.artists = data;
       });
-      this.werkService.findByOtherId(Album, album.id).subscribe(data => {
-        album.werke = data;
+      this.workService.findByOtherId(Album, album.id).subscribe(data => {
+        album.works = data;
       });
       this.genreService.findByOtherId(Album, album.id).subscribe(data => {
         album.genres = data;
@@ -57,12 +57,12 @@ export class AlbumListComponent extends EntityListComponent<Album> {
   }
 
   getEntityList(album: Album, entity: typeof AbstractEntity): AbstractEntity[] {
-    if (entity === Komponist) {
-      return album.komponisten || [];
-    } else if (entity === Interpret) {
-      return album.interpreten || [];
-    } else if (entity === Werk) {
-      return album.werke || [];
+    if (entity === Composer) {
+      return album.composers || [];
+    } else if (entity === Artist) {
+      return album.artists || [];
+    } else if (entity === Work) {
+      return album.works || [];
     } else if (entity === Genre) {
       return album.genres || [];
     }

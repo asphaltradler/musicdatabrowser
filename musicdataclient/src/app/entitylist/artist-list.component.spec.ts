@@ -1,25 +1,25 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideHttpClient} from '@angular/common/http';
-import {InterpretListComponent} from './interpret-list.component';
+import {ArtistListComponent} from './artist-list.component';
 import {provideRouter} from '@angular/router';
-import {InterpretService} from '../services/interpret.service';
+import {ArtistService} from '../services/artist.service';
 
-describe('InterpretListComponent', () => {
-  let component: InterpretListComponent;
-  let fixture: ComponentFixture<InterpretListComponent>;
+describe('ArtistListComponent', () => {
+  let component: ArtistListComponent;
+  let fixture: ComponentFixture<ArtistListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InterpretListComponent],
+      imports: [ArtistListComponent],
       providers: [
-        InterpretService,
+        ArtistService,
         provideHttpClient(),
         provideRouter([])
       ],
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(InterpretListComponent);
+    fixture = TestBed.createComponent(ArtistListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
