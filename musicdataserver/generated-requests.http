@@ -1,0 +1,64 @@
+### Hello
+GET http://localhost:{{server.port}}/music
+
+### Tracks
+GET http://localhost:{{server.port}}/music/track/id/2
+
+###
+GET http://localhost:{{server.port}}/music/track/get?genre=Kammermusic
+
+###
+GET http://localhost:{{server.port}}/music/track/get?album=Fragile
+
+###
+GET http://localhost:{{server.port}}/music/track/get?artist=John
+
+###
+DELETE http://localhost:{{server.port}}/music/track/remove?id=9652
+
+
+### Album
+GET http://localhost:{{server.port}}/music/album/get?genre=Kammermusic
+
+###
+GET http://localhost:{{server.port}}/music/album/get?album=Fragile
+
+###
+GET http://localhost:{{server.port}}/music/album/get?artist=Leipzig
+
+###
+GET http://localhost:{{server.port}}/music/album/get?composer=Beethoven
+
+###
+GET http://localhost:{{server.port}}/music/album/get?genre=Kammermusic
+
+### Album "John Williams Greatest Movie Hits"
+GET http://localhost:{{server.port}}/music/album/get?album=John Williams Greatest Movie Hits
+
+### mit Id 1
+GET http://localhost:{{server.port}}/music/album/get?id=1
+
+### Tracks dazu
+GET http://localhost:{{server.port}}/music/track/get?album=John Williams Greatest Movie Hits
+
+### Album entfernen => zugehörige Tracks werden cascading mit entfernt
+DELETE http://localhost:{{server.port}}/music/album/remove?id=1
+
+
+### Composer suchen containingIgnoreCase
+GET http://localhost:{{server.port}}/music/composer/get?composer=ber
+
+### Album mit mehreren Composeren in Tracks => Liste mit distinct Composeren
+GET http://localhost:{{server.port}}/music/composer/get?album=Klaviermusic Messiaen, Janacek, Prokofieff
+
+### mehrere Alben matchen
+GET http://localhost:{{server.port}}/music/album/get?album=Klavier
+
+### mehrere Alben matchen => Liste mit distinct Composeren
+GET http://localhost:{{server.port}}/music/composer/get?album=Klavier
+
+### Alle Composeren eines Genres
+GET http://localhost:{{server.port}}/music/composer/get?genre=Piano
+
+### alle Genres die ein Composer bedient hat
+GET http://localhost:{{server.port}}/music/genre/get?composer=Beethoven

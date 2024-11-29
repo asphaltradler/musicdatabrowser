@@ -1,0 +1,9 @@
+a {
+  cursor: pointer;
+}
+
+th.col-long, td.col-long {
+  width: 200px;
+  max-width: 240px;
+  overflow: clip;
+}

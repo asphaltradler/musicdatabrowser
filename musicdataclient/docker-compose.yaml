@@ -1,0 +1,18 @@
+services:
+  frontend:
+    # container_name: musicserver-client
+    build: ./ # Location of our Dockerfile
+    #volumes:
+    #  - frontend-volume:/
+    #  - './build:/usr/src/app'
+    ports:
+#      - '4202:4202'
+      - '80:80'
+    # überschreibt CMD in dockerfile
+    #bei lokaler Installation ist ng zugänglich über [build]/node_modules/.bin/ng serve
+    command: >
+      npm run start-prod -- --host 0.0.0.0 --port 80
+#nginx
+
+#volumes:
+#  frontend-volume:
