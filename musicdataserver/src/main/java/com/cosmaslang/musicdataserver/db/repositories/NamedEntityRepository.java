@@ -4,6 +4,7 @@ import com.cosmaslang.musicdataserver.db.entities.NamedEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -16,5 +17,5 @@ import java.util.stream.Stream;
 public interface NamedEntityRepository<ENTITY extends NamedEntity> extends JpaRepository<ENTITY, Long> {
     ENTITY findByName(String name);
 
-    Stream<ENTITY> streamByNameContainsIgnoreCaseOrderByName(String name);
+    List<ENTITY> findByNameContainsIgnoreCaseOrderByName(String name);
 }

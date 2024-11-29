@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -17,48 +18,48 @@ import java.util.stream.Stream;
 public class AlbumRestController extends AbstractMusicDataRestController<Album> {
     Pageable pageable = PageRequest.ofSize(10);
     @Override
-    public Stream<Album> find(String track, String album, String composer, String work, String genre, String artist) {
+    public List<Album> find(String track, String album, String composer, String work, String genre, String artist) {
         super.logCall(track, album, composer, work, genre, artist);
         if (track != null) {
             Page<Album> page = albumRepository.findDistinctByTracksNameContainsIgnoreCase(track, pageable);
             logger.info("Found %d albums on %d pages".formatted(page.getTotalElements(), page.getTotalPages()));
             //pageable = pageable.next();
-            return page.stream();
+            return page.stream().toList();
         } else if (album != null) {
-            return albumRepository.streamByNameContainsIgnoreCaseOrderByName(album);
+            return albumRepository.findByNameContainsIgnoreCaseOrderByName(album);
         } else if (composer != null) {
-            return albumRepository.streamDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(composer);
+            return albumRepository.findDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(composer);
         } else if (work != null) {
-            return albumRepository.streamDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(work);
+            return albumRepository.findDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(work);
         } else if (genre != null) {
             //"von Hand" wäre:
-            //Stream<Track> tracks = trackRepository.streamByGenreLike(genre);
+            //List<Track> tracks = trackRepository.findByGenreLike(genre);
             //return tracks.stream().map(Track::getAlbum).distinct().toList();
             //über spezielle Query:
-            return albumRepository.streamDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(genre);
+            return albumRepository.findDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(genre);
         } else if (artist != null) {
-            //Stream<Track> tracks = trackRepository.streamByArtistsLike(artist);
+            //List<Track> tracks = trackRepository.findByArtistsLike(artist);
             //return tracks.stream().map(Track::getAlbum).distinct().toList();
-            return albumRepository.streamDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(artist);
+            return albumRepository.findDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(artist);
         }
         return getAll(albumRepository);
     }
 
     @Override
-    public Stream<Album> get(Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
+    public List<Album> get(Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
         super.logCall(trackId, albumId, composerId, workId, genreId, artistId);
         if (albumId != null) {
             return getEntitiesIfExists(albumId, albumRepository);
         } else if (trackId != null) {
-            return albumRepository.streamByTracksId(trackId);
+            return albumRepository.findByTracksId(trackId);
         } else if (composerId != null) {
-            return albumRepository.streamDistinctByTracksComposerIdOrderByName(composerId);
+            return albumRepository.findDistinctByTracksComposerIdOrderByName(composerId);
         } else if (workId != null) {
-            return albumRepository.streamDistinctByTracksWorkIdOrderByName(workId);
+            return albumRepository.findDistinctByTracksWorkIdOrderByName(workId);
         } else if (genreId != null) {
-            return albumRepository.streamDistinctByTracksGenresIdOrderByName(genreId);
+            return albumRepository.findDistinctByTracksGenresIdOrderByName(genreId);
         } else if (artistId != null) {
-            return albumRepository.streamDistinctByTracksArtistsIdOrderByName(artistId);
+            return albumRepository.findDistinctByTracksArtistsIdOrderByName(artistId);
         }
 
         return getAll(albumRepository);

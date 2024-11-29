@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -13,42 +14,42 @@ import java.util.stream.Stream;
 @RequestMapping("/music/track")
 public class TrackRestController extends AbstractMusicDataRestController<Track> {
     @Override
-    public Stream<Track> find(String track, String album, String composer, String work, String genre, String artist) {
+    public List<Track> find(String track, String album, String composer, String work, String genre, String artist) {
         super.logCall(track, album, composer, work, genre, artist);
         if (track != null) {
-            return trackRepository.streamByNameContainsIgnoreCaseOrderByName(track);
+            return trackRepository.findByNameContainsIgnoreCaseOrderByName(track);
         } else if (album != null) {
-            return trackRepository.streamByAlbumNameContainsIgnoreCaseOrderByAlbumName(album);
+            return trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumName(album);
         } else if (composer != null) {
-            return trackRepository.streamByComposerNameContainsIgnoreCaseOrderByComposerNameAscAlbumNameAscId(composer);
+            return trackRepository.findByComposerNameContainsIgnoreCaseOrderByComposerNameAscAlbumNameAscId(composer);
         } else if (work != null) {
-            return trackRepository.streamByWorkNameContainsIgnoreCaseOrderByWorkNameAscAlbumNameAscId(work);
+            return trackRepository.findByWorkNameContainsIgnoreCaseOrderByWorkNameAscAlbumNameAscId(work);
         } else if (genre != null) {
-            //Stream<Genre> genres = genreRepository.findByNameContaining(genre);
-            return trackRepository.streamDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(genre); //.streamByGenresIsIn(new HashSet<>(genres));
+            //List<Genre> genres = genreRepository.findByNameContaining(genre);
+            return trackRepository.findDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(genre); //.findByGenresIsIn(new HashSet<>(genres));
         } else if (artist != null) {
-            //Stream<artist> artists = artistRepository.findByNameContaining(artist);
-            //return trackRepository.streamByArtistsIsIn(new HashSet<>(artists));
-            return trackRepository.streamDistinctByArtistsNameContainsIgnoreCaseOrderByArtistsNameAscAlbumNameAscId(artist);
+            //List<artist> artists = artistRepository.findByNameContaining(artist);
+            //return trackRepository.findByArtistsIsIn(new HashSet<>(artists));
+            return trackRepository.findDistinctByArtistsNameContainsIgnoreCaseOrderByArtistsNameAscAlbumNameAscId(artist);
         }
         return getAll(trackRepository);
     }
 
     @Override
-    public Stream<Track> get(Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
+    public List<Track> get(Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
         super.logCall(trackId, albumId, composerId, workId, genreId, artistId);
         if (trackId != null) {
             return getEntitiesIfExists(trackId, trackRepository);
         } else if (albumId != null) {
-            return trackRepository.streamByAlbumId(albumId);
+            return trackRepository.findByAlbumId(albumId);
         } else if (composerId != null) {
-            return trackRepository.streamByComposerId(composerId);
+            return trackRepository.findByComposerId(composerId);
         } else if (workId != null) {
-            return trackRepository.streamByWorkId(workId);
+            return trackRepository.findByWorkId(workId);
         } else if (genreId != null) {
-            return trackRepository.streamByGenresId(genreId);
+            return trackRepository.findByGenresId(genreId);
         } else if (artistId != null) {
-            return trackRepository.streamByArtistsId(artistId);
+            return trackRepository.findByArtistsId(artistId);
         }
 
         return getAll(trackRepository);

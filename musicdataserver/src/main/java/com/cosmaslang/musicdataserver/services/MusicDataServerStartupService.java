@@ -15,9 +15,9 @@ public interface MusicDataServerStartupService {
     void start();
 
     TrackRepository getTrackRepository();
-    NamedEntityRepository<Artist> getartistRepository();
+    NamedEntityRepository<Artist> getArtistRepository();
     NamedEntityRepository<Album> getAlbumRepository();
-    NamedEntityRepository<Work> getworkRepository();
+    NamedEntityRepository<Work> getWorkRepository();
     NamedEntityRepository<Genre> getGenreRepository();
-    NamedEntityRepository<Composer> getcomposerRepository();
+    NamedEntityRepository<Composer> getComposerRepository();
 }

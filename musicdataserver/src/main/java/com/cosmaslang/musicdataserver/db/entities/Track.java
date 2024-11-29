@@ -123,7 +123,7 @@ public class Track extends NamedEntity {
     /**
      * @param artist fügt einen einzelnen artists hinzu
      */
-    public void addartist(Artist artist) {
+    public void addArtist(Artist artist) {
         this.artists.add(artist);
         //nicht: sonst Endlosschleife
         //artist.addTrack(this);
@@ -136,11 +136,11 @@ public class Track extends NamedEntity {
         this.artists = artists;
     }
 
-    public Composer getcomposer() {
+    public Composer getComposer() {
         return composer;
     }
 
-    public void setcomposer(Composer composer) {
+    public void setComposer(Composer composer) {
         this.composer = composer;
     }
 
@@ -163,11 +163,11 @@ public class Track extends NamedEntity {
         this.genres = genres;
     }
 
-    public Work getwork() {
+    public Work getWork() {
         return work;
     }
 
-    public void setwork(Work work) {
+    public void setWork(Work work) {
         this.work = work;
         //work.addTrack(this);
     }

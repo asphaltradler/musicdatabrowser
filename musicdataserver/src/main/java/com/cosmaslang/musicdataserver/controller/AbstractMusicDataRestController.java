@@ -47,7 +47,7 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
 
     @RequestMapping(value = "/find", method = {RequestMethod.GET, RequestMethod.POST})
     @Transactional(readOnly = true)
-    protected abstract Stream<ENTITY> find(@RequestParam(required = false) String track,
+    protected abstract List<ENTITY> find(@RequestParam(required = false) String track,
                                 @RequestParam(required = false) String album,
                                 @RequestParam(required = false) String composer,
                                 @RequestParam(required = false) String work,
@@ -61,7 +61,7 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
 
     @RequestMapping(value = "/get", method = {RequestMethod.GET, RequestMethod.POST})
     @Transactional(readOnly = true)
-    protected abstract Stream<ENTITY> get(@RequestParam(required = false) Long trackId,
+    protected abstract List<ENTITY> get(@RequestParam(required = false) Long trackId,
                                @RequestParam(required = false) Long albumId,
                                @RequestParam(required = false) Long composerId,
                                @RequestParam(required = false) Long workId,
@@ -78,16 +78,16 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
      *
      * @param id ID der Entity. Falls fehlende => alle suchen
      */
-    protected Stream<ENTITY> get(Long id, NamedEntityRepository<ENTITY> entityRepository) {
+    protected List<ENTITY> get(Long id, NamedEntityRepository<ENTITY> entityRepository) {
         if (id != null) {
             return getEntitiesIfExists(id, entityRepository);
         }
         return getAll(entityRepository);
     }
 
-    protected Stream<ENTITY> getEntitiesIfExists(Long id, NamedEntityRepository<ENTITY> repository) {
+    protected List<ENTITY> getEntitiesIfExists(Long id, NamedEntityRepository<ENTITY> repository) {
         Optional<ENTITY> entity = repository.findById(id);
-        return entity.map(Collections::singletonList).orElse(Collections.emptyList()).stream();
+        return entity.map(Collections::singletonList).orElse(Collections.emptyList());
     }
 
     protected ENTITY getEntityIfExists(Long id, NamedEntityRepository<ENTITY> repository) {
@@ -98,18 +98,18 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);
     }
 
-    protected Stream<ENTITY> getAll(NamedEntityRepository<ENTITY> repository) {
+    protected List<ENTITY> getAll(NamedEntityRepository<ENTITY> repository) {
         Iterator<ENTITY> entityIt = repository.findAll().iterator();
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(entityIt, 0), false);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(entityIt, 0), false).toList();
     }
 
-    protected Stream<ENTITY> getMappedByEntitySet(Stream<Track> tracks,
+    protected List<ENTITY> getMappedByEntitySet(List<Track> tracks,
                                                 Function<Track, Set<ENTITY>> mapFunction) {
-        return tracks.map(mapFunction).flatMap(Collection::stream).filter(Objects::nonNull).distinct().sorted();
+        return tracks.stream().map(mapFunction).flatMap(Collection::stream).filter(Objects::nonNull).distinct().sorted().toList();
     }
 
-    protected Stream<ENTITY> getMappedByEntity(Stream<Track> tracks,
+    protected List<ENTITY> getMappedByEntity(List<Track> tracks,
                                              Function<Track, ENTITY> mapFunction) {
-        return tracks.map(mapFunction).filter(Objects::nonNull).distinct().sorted();
+        return tracks.stream().map(mapFunction).filter(Objects::nonNull).distinct().sorted().toList();
     }
 }
