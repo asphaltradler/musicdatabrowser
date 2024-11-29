@@ -6,14 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="musikdataserver" />
-        <module name="musikserverclient" />
+        <module name="musicdataserver" />
+        <module name="musicdataclient" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="musikdataserver" options="-parameters" />
+      <module name="musicdataserver" options="-parameters" />
       <module name="musikserver" options="-parameters" />
     </option>
   </component>
