@@ -1,5 +1,7 @@
-musicdataserver is a Java Spring Boot server which uses Hibernate/JPA to access a bundled
+## musicdataserver
+is a Java Spring Boot server which uses Hibernate/JPA to access a bundled
 PostgreSQL database.
+
 At startup a configurable directory tree is scanned for music files
 with tagged data: FLAC, mp3, ogg and so on.
 
