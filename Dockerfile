@@ -13,8 +13,10 @@ FROM eclipse-temurin:latest AS deps
 
 WORKDIR /build
 
-# Copy the mvnw wrapper with executable permissions.
-COPY --chmod=0755 mvnw mvnw
+# Copy the mvnw wrapper
+COPY mvnw mvnw.unix
+# repair windows line endings (from git perhaps) and set executable bit
+RUN sed 's/\r$//' mvnw.unix > mvnw && chmod 0755 mvnw
 COPY .mvn/ .mvn/
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
