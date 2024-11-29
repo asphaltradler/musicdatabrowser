@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
     <groupId>org.asphaltradler</groupId>
-    <artifactId>musikdataserver</artifactId>
+    <artifactId>musikdatabrowser</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>musikdataserver</name>
     <description>musikdataserver for Spring Boot</description>

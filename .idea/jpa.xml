@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JpaBuddyIdeaProjectConfig">
+    <option name="reLastEntityCreationPackage" value="src/main/java/com/cosmaslang/musikdataserver" />
+    <option name="reverseEngineeringLastDbConnectionId" value="b43af0a4-58ce-4a15-b9f5-ccbaff206250" />
+  </component>
+  <component name="JpaPluginProjectSettings">
+    <option name="entityNameTemplate" />
+    <option name="generateJpaOnGetter" value="true" />
+    <option name="useLazyOnToOneAssociations" value="true" />
+    <option name="scaffoldingLanguage" />
+  </component>
+</project>
