@@ -1,7 +1,7 @@
 package com.cosmaslang.musicdataserver.services;
 
-import com.cosmaslang.musicdataserver.MusikScanner;
-import com.cosmaslang.musicdataserver.configuration.MusikDataServerConfiguration;
+import com.cosmaslang.musicdataserver.MusicFileScanner;
+import com.cosmaslang.musicdataserver.configuration.MusicDataServerConfiguration;
 import com.cosmaslang.musicdataserver.db.entities.*;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
@@ -21,8 +21,8 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 @Component
-@Qualifier("musikdataserverStartup")
-public class MusikDataServerStartupConfigurableService implements MusikDataServerStartupService {
+@Qualifier("musicdataserverStartup")
+public class MusicDataServerStartupConfigurableService implements MusicDataServerStartupService {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @PersistenceContext
@@ -33,21 +33,21 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
     @Autowired
     TrackRepository trackRepository;
     @Autowired
-    NamedEntityRepository<Interpret> interpretRepository;
+    NamedEntityRepository<Artist> artistRepository;
     @Autowired
     NamedEntityRepository<Album> albumRepository;
     @Autowired
-    NamedEntityRepository<Werk> werkRepository;
+    NamedEntityRepository<Work> workRepository;
     @Autowired
     NamedEntityRepository<Genre> genreRepository;
     @Autowired
-    NamedEntityRepository<Komponist> komponistRepository;
+    NamedEntityRepository<Composer> composerRepository;
 
     private Path rootDirPath;
     private Path startDirPath;
 
     /**
-     * Wird von der {@link MusikDataServerConfiguration} gesetzt
+     * Wird von der {@link MusicDataServerConfiguration} gesetzt
      */
     @Override
     public void setMediaDirectories(String rootdir, String startdir) throws IOException {
@@ -66,24 +66,24 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
     public void init() {
         logger.info("init");
         try {
-            scanMusikdirectory();
+            scanMusicdirectory();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void scanMusikdirectory() throws IOException {
-        MusikScanner scanner = new MusikScanner(this);
+    private void scanMusicdirectory() throws IOException {
+        MusicFileScanner scanner = new MusicFileScanner(this);
         scanner.scan(rootDirPath, startDirPath);
     }
 
     @Override
     public void start() {
         logger.info(String.format("starting from dir %s", this.rootDirPath));
-        logger.info(String.format("MusikRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres, %d Interpreten\n",
-                trackRepository.count(), albumRepository.count(), komponistRepository.count(), werkRepository.count(), genreRepository.count(), interpretRepository.count()));
+        logger.info(String.format("MusicRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres, %d Interpreten\n",
+                trackRepository.count(), albumRepository.count(), composerRepository.count(), workRepository.count(), genreRepository.count(), artistRepository.count()));
         //listAllTracks();
-        //findAlbumWithInterpret("John");
+        //findAlbumWithartist("John");
     }
 
     @Override
@@ -92,8 +92,8 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
     }
 
     @Override
-    public NamedEntityRepository<Interpret> getInterpretRepository() {
-        return interpretRepository;
+    public NamedEntityRepository<Artist> getartistRepository() {
+        return artistRepository;
     }
 
     @Override
@@ -102,8 +102,8 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
     }
 
     @Override
-    public NamedEntityRepository<Werk> getWerkRepository() {
-        return werkRepository;
+    public NamedEntityRepository<Work> getworkRepository() {
+        return workRepository;
     }
 
     @Override
@@ -112,14 +112,14 @@ public class MusikDataServerStartupConfigurableService implements MusikDataServe
     }
 
     @Override
-    public NamedEntityRepository<Komponist> getKomponistRepository() {
-        return komponistRepository;
+    public NamedEntityRepository<Composer> getcomposerRepository() {
+        return composerRepository;
     }
 
-    public void findAlbumWithInterpret(String name) {
-        logger.info(String.format("Albums with interpret %s", name));
+    public void findAlbumWithartist(String name) {
+        logger.info(String.format("Albums with artist %s", name));
         Stream<?> albums = entityManager.createQuery(
-                        "select a from Album a join Track t on t.album = a where t in (select i.tracks from Interpret i where i.name ilike '%'||:name||'%')")
+                        "select a from Album a join Track t on t.album = a where t in (select i.tracks from Artist i where i.name ilike '%'||:name||'%')")
                 .setParameter("name", name)
                 .getResultStream();
         albums.forEach(a -> logger.info(a.toString()));

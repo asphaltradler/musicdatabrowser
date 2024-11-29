@@ -11,12 +11,12 @@ import java.util.stream.Stream;
 public interface AlbumRepository extends NamedEntityRepository<Album> {
     Page<Album> findDistinctByTracksNameContainsIgnoreCase(String track, Pageable pageable);
     Stream<Album> streamByTracksId(Long trackId);
-    Stream<Album> streamDistinctByTracksKomponistNameContainsIgnoreCaseOrderByName(String komponist);
-    Stream<Album> streamDistinctByTracksKomponistIdOrderByName(Long komponistId);
+    Stream<Album> streamDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(String composer);
+    Stream<Album> streamDistinctByTracksComposerIdOrderByName(Long composerId);
     Stream<Album> streamDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(String genre);
     Stream<Album> streamDistinctByTracksGenresIdOrderByName(Long genreId);
-    Stream<Album> streamDistinctByTracksInterpretenNameContainsIgnoreCaseOrderByName(String interpret);
-    Stream<Album> streamDistinctByTracksInterpretenIdOrderByName(Long interpretId);
-    Stream<Album> streamDistinctByTracksWerkNameContainsIgnoreCaseOrderByName(String werk);
-    Stream<Album> streamDistinctByTracksWerkIdOrderByName(Long werkId);
+    Stream<Album> streamDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(String artist);
+    Stream<Album> streamDistinctByTracksArtistsIdOrderByName(Long artistId);
+    Stream<Album> streamDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(String work);
+    Stream<Album> streamDistinctByTracksWorkIdOrderByName(Long workId);
 }

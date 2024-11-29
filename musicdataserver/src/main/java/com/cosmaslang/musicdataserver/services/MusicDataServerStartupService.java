@@ -6,7 +6,7 @@ import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
 
 import java.io.IOException;
 
-public interface MusikDataServerStartupService {
+public interface MusicDataServerStartupService {
 
     void setMediaDirectories(String rootDir, String startDir) throws IOException;
 
@@ -15,9 +15,9 @@ public interface MusikDataServerStartupService {
     void start();
 
     TrackRepository getTrackRepository();
-    NamedEntityRepository<Interpret> getInterpretRepository();
+    NamedEntityRepository<Artist> getartistRepository();
     NamedEntityRepository<Album> getAlbumRepository();
-    NamedEntityRepository<Werk> getWerkRepository();
+    NamedEntityRepository<Work> getworkRepository();
     NamedEntityRepository<Genre> getGenreRepository();
-    NamedEntityRepository<Komponist> getKomponistRepository();
+    NamedEntityRepository<Composer> getcomposerRepository();
 }

@@ -11,7 +11,7 @@ GET http://localhost:{{server.port}}/musik/track/get?genre=Kammermusik
 GET http://localhost:{{server.port}}/musik/track/get?album=Fragile
 
 ###
-GET http://localhost:{{server.port}}/musik/track/get?interpret=John
+GET http://localhost:{{server.port}}/musik/track/get?artist=John
 
 ###
 DELETE http://localhost:{{server.port}}/musik/track/remove?id=9652
@@ -24,10 +24,10 @@ GET http://localhost:{{server.port}}/musik/album/get?genre=Kammermusik
 GET http://localhost:{{server.port}}/musik/album/get?album=Fragile
 
 ###
-GET http://localhost:{{server.port}}/musik/album/get?interpret=Leipzig
+GET http://localhost:{{server.port}}/musik/album/get?artist=Leipzig
 
 ###
-GET http://localhost:{{server.port}}/musik/album/get?komponist=Beethoven
+GET http://localhost:{{server.port}}/musik/album/get?composer=Beethoven
 
 ###
 GET http://localhost:{{server.port}}/musik/album/get?genre=Kammermusik
@@ -46,19 +46,19 @@ DELETE http://localhost:{{server.port}}/musik/album/remove?id=1
 
 
 ### Komponist suchen containingIgnoreCase
-GET http://localhost:{{server.port}}/musik/komponist/get?komponist=ber
+GET http://localhost:{{server.port}}/musik/composer/get?composer=ber
 
 ### Album mit mehreren Komponisten in Tracks => Liste mit distinct Komponisten
-GET http://localhost:{{server.port}}/musik/komponist/get?album=Klaviermusik Messiaen, Janacek, Prokofieff
+GET http://localhost:{{server.port}}/musik/composer/get?album=Klaviermusik Messiaen, Janacek, Prokofieff
 
 ### mehrere Alben matchen
 GET http://localhost:{{server.port}}/musik/album/get?album=Klavier
 
 ### mehrere Alben matchen => Liste mit distinct Komponisten
-GET http://localhost:{{server.port}}/musik/komponist/get?album=Klavier
+GET http://localhost:{{server.port}}/musik/composer/get?album=Klavier
 
 ### Alle Komponisten eines Genres
-GET http://localhost:{{server.port}}/musik/komponist/get?genre=Piano
+GET http://localhost:{{server.port}}/musik/composer/get?genre=Piano
 
 ### alle Genres die ein Komponist bedient hat
-GET http://localhost:{{server.port}}/musik/genre/get?komponist=Beethoven
+GET http://localhost:{{server.port}}/musik/genre/get?composer=Beethoven

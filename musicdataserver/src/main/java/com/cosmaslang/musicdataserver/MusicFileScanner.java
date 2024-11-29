@@ -2,7 +2,7 @@ package com.cosmaslang.musicdataserver;
 
 import com.cosmaslang.musicdataserver.db.entities.*;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
-import com.cosmaslang.musicdataserver.services.MusikDataServerStartupService;
+import com.cosmaslang.musicdataserver.services.MusicDataServerStartupService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.PersistenceException;
 import org.jaudiotagger.audio.AudioFile;
@@ -31,12 +31,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-public class MusikScanner {
+public class MusicFileScanner {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     private final static List<String> audioFileExtensions = Stream.of(SupportedFileFormat.values()).map(SupportedFileFormat::getFilesuffix).toList();
 
-    private final MusikDataServerStartupService musikDataServerStartupService;
+    private final MusicDataServerStartupService musicdataserverStartupService;
 
     private int rootPathSteps;
     private long count = 0;
@@ -46,8 +46,8 @@ public class MusikScanner {
     private long updated = 0;
     private long failed = 0;
 
-    public MusikScanner(MusikDataServerStartupService service) {
-        this.musikDataServerStartupService = service;
+    public MusicFileScanner(MusicDataServerStartupService service) {
+        this.musicdataserverStartupService = service;
     }
 
     public void scan(Path rootPath, Path startPath) {
@@ -94,7 +94,7 @@ public class MusikScanner {
         Track track = createOrUpdateTrack(file);
         if (track != null) {
             //null markiert unveränderte Tracks, die nicht mehr gespeichert werden müssen
-            musikDataServerStartupService.getTrackRepository().save(track);
+            musicdataserverStartupService.getTrackRepository().save(track);
         }
         logger.info("processed " + file.getName());
     }
@@ -103,7 +103,7 @@ public class MusikScanner {
         Path filepath = file.toPath();
         //path unabhängig von Filesystem notieren, ausgehend von rootDir
         String pathString = filepath.subpath(rootPathSteps, filepath.getNameCount()).toString().replace('\\', '/');
-        Track track = musikDataServerStartupService.getTrackRepository().findByPath(pathString);
+        Track track = musicdataserverStartupService.getTrackRepository().findByPath(pathString);
         if (track == null) {
             track = new Track();
             //default
@@ -130,7 +130,7 @@ public class MusikScanner {
             header = audioFile.getAudioHeader();
             if (header != null) {
                 String hash = getHash(header, file.getName());
-                Track existingTrack = musikDataServerStartupService.getTrackRepository().findByHash(hash);
+                Track existingTrack = musicdataserverStartupService.getTrackRepository().findByHash(hash);
                 if (existingTrack != null) {
                     //wir übernehmen die Daten aus dem bisherigen Track
                     track = existingTrack;
@@ -183,34 +183,34 @@ public class MusikScanner {
                 }
                 str = tag.getFirst(FieldKey.ALBUM);
                 if (StringUtils.isNotBlank(str)) {
-                    Album album = createOrUpdateEntity(Album.class, musikDataServerStartupService.getAlbumRepository(), str);
+                    Album album = createOrUpdateEntity(Album.class, musicdataserverStartupService.getAlbumRepository(), str);
                     track.setAlbum(album);
                     //album.getTracks().add(track);
                 }
                 str = tag.getFirst(FieldKey.COMPOSER);
                 if (StringUtils.isNotBlank(str)) {
-                    Komponist komponist = createOrUpdateEntity(Komponist.class, musikDataServerStartupService.getKomponistRepository(), str);
-                    track.setKomponist(komponist);
+                    Composer composer = createOrUpdateEntity(Composer.class, musicdataserverStartupService.getcomposerRepository(), str);
+                    track.setcomposer(composer);
                 }
                 str = tag.getFirst(Track.FIELDKEY_WORK);
                 if (StringUtils.isNotBlank(str)) {
-                    Werk werk = createOrUpdateEntity(Werk.class, musikDataServerStartupService.getWerkRepository(), str);
-                    track.setWerk(werk);
+                    Work work = createOrUpdateEntity(Work.class, musicdataserverStartupService.getworkRepository(), str);
+                    track.setwork(work);
                 }
                 //ManyToMany Zuordnung
                 List<TagField> tagFields = tag.getFields(FieldKey.ARTIST);
                 if (tagFields != null) {
                     //alle als Liste setzen → dann ist kein teilweises update eines vorhandenen tracks möglich
-                    Set<Interpret> interpreten = new HashSet<>();
+                    Set<Artist> artists = new HashSet<>();
                     for (TagField field : tagFields) {
                         str = field.toString();
                         if (StringUtils.isNotBlank(str)) {
-                            Interpret interpret = createOrUpdateEntity(Interpret.class, musikDataServerStartupService.getInterpretRepository(), str);
-                            //track.addInterpret(interpret);
-                            interpreten.add(interpret);
+                            Artist artist = createOrUpdateEntity(Artist.class, musicdataserverStartupService.getartistRepository(), str);
+                            //track.addartist(artist);
+                            artists.add(artist);
                         }
                     }
-                    track.setInterpreten(interpreten);
+                    track.setArtists(artists);
                 }
                 //ManyToMany Zuordnung
                 tagFields = tag.getFields(FieldKey.GENRE);
@@ -219,7 +219,7 @@ public class MusikScanner {
                     for (TagField field : tagFields) {
                         str = field.toString();
                         if (StringUtils.isNotBlank(str)) {
-                            Genre genre = createOrUpdateEntity(Genre.class, musikDataServerStartupService.getGenreRepository(), str);
+                            Genre genre = createOrUpdateEntity(Genre.class, musicdataserverStartupService.getGenreRepository(), str);
                             //track.addGenre(genre);
                             genres.add(genre);
                         }

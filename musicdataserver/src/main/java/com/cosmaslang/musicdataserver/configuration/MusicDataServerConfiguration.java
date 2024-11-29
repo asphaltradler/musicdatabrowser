@@ -1,7 +1,7 @@
 package com.cosmaslang.musicdataserver.configuration;
 
-import com.cosmaslang.musicdataserver.services.MusikDataServerStartupConfigurableService;
-import com.cosmaslang.musicdataserver.services.MusikDataServerStartupService;
+import com.cosmaslang.musicdataserver.services.MusicDataServerStartupConfigurableService;
+import com.cosmaslang.musicdataserver.services.MusicDataServerStartupService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 //@ConfigurationPropertiesScan
 @ConfigurationProperties(prefix = "musicdataserver")
 //@EnableJpaRepositories("com.cosmaslang.musicdataserver.db.repositories")
-public class MusikDataServerConfiguration {
+public class MusicDataServerConfiguration {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private String rootdir;
     private String startdir;
@@ -35,8 +35,8 @@ public class MusikDataServerConfiguration {
 
     @Bean
     @Primary
-    MusikDataServerStartupService getService() throws IOException {
-        MusikDataServerStartupService service = new MusikDataServerStartupConfigurableService();
+    MusicDataServerStartupService getService() throws IOException {
+        MusicDataServerStartupService service = new MusicDataServerStartupConfigurableService();
         service.setMediaDirectories(rootdir, startdir);
         return service;
     }

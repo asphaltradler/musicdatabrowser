@@ -12,7 +12,7 @@
     <artifactId>musicdataserver</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>musicdataserver</name>
-    <description>musicdataserver for Spring Boot</description>
+    <description>Musicdataserver for Spring Boot</description>
     <properties>
         <java.version>21</java.version>
     </properties>

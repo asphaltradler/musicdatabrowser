@@ -23,7 +23,7 @@ import static org.springframework.web.cors.CorsConfiguration.ALL;
 @NoRepositoryBean
 //CORS
 @CrossOrigin(originPatterns = ALL)
-public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
+public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity> {
     protected Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Autowired
@@ -31,13 +31,13 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     @Autowired
     AlbumRepository albumRepository;
     @Autowired
-    NamedEntityRepository<Komponist> komponistRepository;
+    NamedEntityRepository<Composer> composerRepository;
     @Autowired
-    NamedEntityRepository<Werk> werkRepository;
+    NamedEntityRepository<Work> workRepository;
     @Autowired
     NamedEntityRepository<Genre> genreRepository;
     @Autowired
-    NamedEntityRepository<Interpret> interpretRepository;
+    NamedEntityRepository<Artist> artistRepository;
 
     @GetMapping("/id/{id}")
     protected abstract ENTITY getById(@PathVariable Long id);
@@ -49,28 +49,28 @@ public abstract class AbstractMusikRestController<ENTITY extends NamedEntity> {
     @Transactional(readOnly = true)
     protected abstract Stream<ENTITY> find(@RequestParam(required = false) String track,
                                 @RequestParam(required = false) String album,
-                                @RequestParam(required = false) String komponist,
-                                @RequestParam(required = false) String werk,
+                                @RequestParam(required = false) String composer,
+                                @RequestParam(required = false) String work,
                                 @RequestParam(required = false) String genre,
-                                @RequestParam(required = false) String interpret);
+                                @RequestParam(required = false) String artist);
 
-    protected void logCall(String track, String album, String komponist, String werk, String genre, String interpret) {
-        logger.info(MessageFormat.format("{0} find track={1}, album={2}, komponist={3}, werk={4}, genre={5}, interpret={6}", this.getClass().getName(),
-                track, album, komponist, werk, genre, interpret));
+    protected void logCall(String track, String album, String composer, String work, String genre, String artist) {
+        logger.info(MessageFormat.format("{0} find track={1}, album={2}, composer={3}, work={4}, genre={5}, artist={6}", this.getClass().getName(),
+                track, album, composer, work, genre, artist));
     }
 
     @RequestMapping(value = "/get", method = {RequestMethod.GET, RequestMethod.POST})
     @Transactional(readOnly = true)
     protected abstract Stream<ENTITY> get(@RequestParam(required = false) Long trackId,
                                @RequestParam(required = false) Long albumId,
-                               @RequestParam(required = false) Long komponistId,
-                               @RequestParam(required = false) Long werkId,
+                               @RequestParam(required = false) Long composerId,
+                               @RequestParam(required = false) Long workId,
                                @RequestParam(required = false) Long genreId,
-                               @RequestParam(required = false) Long interpretId);
+                               @RequestParam(required = false) Long artistId);
 
-    protected void logCall(Long trackId, Long albumId, Long komponistId, Long werkId, Long genreId, Long interpretId) {
-        logger.info(MessageFormat.format("{0} get trackId={1}, albumId={2}, komponistId={3}, werkId={4}, genreId={5}, interpretId={6}", this.getClass().getName(),
-                trackId, albumId, komponistId, werkId, genreId, interpretId));
+    protected void logCall(Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
+        logger.info(MessageFormat.format("{0} get trackId={1}, albumId={2}, composerId={3}, workId={4}, genreId={5}, artistId={6}", this.getClass().getName(),
+                trackId, albumId, composerId, workId, genreId, artistId));
     }
 
     /**

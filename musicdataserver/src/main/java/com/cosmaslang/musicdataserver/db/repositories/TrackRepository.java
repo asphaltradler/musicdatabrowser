@@ -15,19 +15,19 @@ public interface TrackRepository extends NamedEntityRepository<Track> {
         //identisch im Verhalten mit:
         //@Query("SELECT a.tracks FROM Album a WHERE a.name like %:album%")
     Stream<Track> streamByAlbumNameContainsIgnoreCaseOrderByAlbumName(String album);
-    //@Query("SELECT t FROM Track t WHERE t.komponist.name = :komponist")
-    Stream<Track> streamByKomponistNameContainsIgnoreCaseOrderByKomponistNameAscAlbumNameAscId(String komponist);
+    //@Query("SELECT t FROM Track t WHERE t.composer.name = :composer")
+    Stream<Track> streamByComposerNameContainsIgnoreCaseOrderByComposerNameAscAlbumNameAscId(String composer);
     @Query("select t from Track t join fetch t.genres g where g.name ilike %:genre%")
     Stream<Track> streamDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(String genre);
-    @Query("select t from Track t join fetch t.interpreten i where i.name ilike %:interpret%")
-    Stream<Track> streamDistinctByInterpretenNameContainsIgnoreCaseOrderByInterpretenNameAscAlbumNameAscId(String interpret);
-    //@Query("SELECT t FROM Track t WHERE t.werk.name ILIKE %:werk%")
-    Stream<Track> streamByWerkNameContainsIgnoreCaseOrderByWerkNameAscAlbumNameAscId(String werk);
+    @Query("select t from Track t join fetch t.artists i where i.name ilike %:artist%")
+    Stream<Track> streamDistinctByArtistsNameContainsIgnoreCaseOrderByArtistsNameAscAlbumNameAscId(String artist);
+    //@Query("SELECT t FROM Track t WHERE t.work.name ILIKE %:work%")
+    Stream<Track> streamByWorkNameContainsIgnoreCaseOrderByWorkNameAscAlbumNameAscId(String work);
 
     Stream<Track> streamByAlbumId(Long id);
-    Stream<Track> streamByKomponistId(Long id);
-    Stream<Track> streamByWerkId(Long id);
-    Stream<Track> streamByInterpretenId(Long id);
+    Stream<Track> streamByComposerId(Long id);
+    Stream<Track> streamByWorkId(Long id);
+    Stream<Track> streamByArtistsId(Long id);
     //@Query("select t from Track t join fetch t.genres g where g.id = :genreId")
     Stream<Track> streamByGenresId(Long id);
 }

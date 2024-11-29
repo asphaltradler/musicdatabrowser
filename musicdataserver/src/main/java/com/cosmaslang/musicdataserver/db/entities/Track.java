@@ -40,18 +40,18 @@ public class Track extends NamedEntity {
     //@JsonIdentityReference(alwaysAsId = true)
     private Album album;
     @ManyToOne(cascade = CascadeType.MERGE)
-    //@JoinColumn(name = "komponist_id")
-    private Komponist komponist;
+    //@JoinColumn(name = "composer_id")
+    private Composer composer;
     @ManyToOne(cascade = CascadeType.MERGE)
-    //@JoinColumn(name = "werk_id")
-    private Werk werk;
+    //@JoinColumn(name = "work_id")
+    private Work work;
     //statt EAGER laden wir lazy und definieren startup-Service als @Transactional
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable()
-            //name = "interpreten_tracks",
+            //name = "artists_tracks",
             //joinColumns = @JoinColumn(name = "track_id"),
-            //inverseJoinColumns = @JoinColumn(name = "interpret_id"))
-    private Set<Interpret> interpreten; // = new HashSet<>();
+            //inverseJoinColumns = @JoinColumn(name = "artist_id"))
+    private Set<Artist> artists; // = new HashSet<>();
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable()
             //name = "genre_tracks",
@@ -116,32 +116,32 @@ public class Track extends NamedEntity {
         this.album = album;
     }
 
-    public Set<Interpret> getInterpreten() {
-        return interpreten;
+    public Set<Artist> getArtists() {
+        return artists;
     }
 
     /**
-     * @param interpret fügt einen einzelnen Interpreten hinzu
+     * @param artist fügt einen einzelnen artists hinzu
      */
-    public void addInterpret(Interpret interpret) {
-        this.interpreten.add(interpret);
+    public void addartist(Artist artist) {
+        this.artists.add(artist);
         //nicht: sonst Endlosschleife
-        //interpret.addTrack(this);
+        //artist.addTrack(this);
     }
 
     /**
-     * Alle Interpreten als Liste setzen
+     * Alle artists als Liste setzen
      */
-    public void setInterpreten(Set<Interpret> interpreten) {
-        this.interpreten = interpreten;
+    public void setArtists(Set<Artist> artists) {
+        this.artists = artists;
     }
 
-    public Komponist getKomponist() {
-        return komponist;
+    public Composer getcomposer() {
+        return composer;
     }
 
-    public void setKomponist(Komponist komponist) {
-        this.komponist = komponist;
+    public void setcomposer(Composer composer) {
+        this.composer = composer;
     }
 
     public Set<Genre> getGenres() {
@@ -163,13 +163,13 @@ public class Track extends NamedEntity {
         this.genres = genres;
     }
 
-    public Werk getWerk() {
-        return werk;
+    public Work getwork() {
+        return work;
     }
 
-    public void setWerk(Werk werk) {
-        this.werk = werk;
-        //werk.addTrack(this);
+    public void setwork(Work work) {
+        this.work = work;
+        //work.addTrack(this);
     }
 
     public String getPublisher() {
@@ -271,7 +271,7 @@ public class Track extends NamedEntity {
     @Override
     public String toString() {
         return "Track [path=" + path + ", name=" + name + ", album=" + (album == null ? "NULL" : album.getName())
-                + ", interpreten=" + interpreten.stream().map(Interpret::toString).collect(Collectors.joining(","))
+                + ", artists=" + artists.stream().map(Artist::toString).collect(Collectors.joining(","))
                 + "]";
     }
 

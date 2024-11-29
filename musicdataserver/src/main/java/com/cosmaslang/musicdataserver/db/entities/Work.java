@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(indexes = @Index(columnList = "name", unique = true))
-public class Komponist extends NamedEntity {
+public class Work extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     long id;
