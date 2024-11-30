@@ -38,17 +38,17 @@ export class AlbumListComponent extends EntityListComponent<Album> {
 
   override fillData(data: Page<Album>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
     super.fillData(data, searchEntityType, searchId, searchString);
-    this.page.content.forEach((album: Album) => {
-      this.composersService.findByOtherId(Album, album.id, 0).subscribe(data => {
+    this.page?.content.forEach((album: Album) => {
+      this.composersService.findByOtherId(Album, album.id, 0, this.pageSize).subscribe(data => {
         album.composers = data.content;
       });
-      this.artistsService.findByOtherId(Album, album.id, 0).subscribe(data => {
+      this.artistsService.findByOtherId(Album, album.id, 0, this.pageSize).subscribe(data => {
         album.artists = data.content;
       });
-      this.workService.findByOtherId(Album, album.id, 0).subscribe(data => {
+      this.workService.findByOtherId(Album, album.id, 0, this.pageSize).subscribe(data => {
         album.works = data.content;
       });
-      this.genreService.findByOtherId(Album, album.id, 0).subscribe(data => {
+      this.genreService.findByOtherId(Album, album.id, 0, this.pageSize).subscribe(data => {
         album.genres = data.content;
       });
       /*
