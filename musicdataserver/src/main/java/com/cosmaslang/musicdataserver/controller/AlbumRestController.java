@@ -2,82 +2,70 @@ package com.cosmaslang.musicdataserver.controller;
 
 import com.cosmaslang.musicdataserver.db.entities.Album;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 @RestController
 @RequestMapping("/music/album")
 public class AlbumRestController extends AbstractMusicDataRestController<Album> {
-    Pageable pageable = PageRequest.ofSize(10);
     @Override
-    public List<Album> find(String track, String album, String composer, String work, String genre, String artist) {
-        super.logCall(track, album, composer, work, genre, artist);
+    public Page<Album> find(Integer pagenumber, Integer pagesize,
+                            String track, String album, String composer, String work, String genre, String artist) {
+        logCall(pagenumber, pagesize, track, album, composer, work, genre, artist);
+        Pageable pageable = getPageableOf(pagenumber, pagesize);
         if (track != null) {
-            Page<Album> page = albumRepository.findDistinctByTracksNameContainsIgnoreCase(track, pageable);
-            logger.info("Found %d albums on %d pages".formatted(page.getTotalElements(), page.getTotalPages()));
-            //pageable = pageable.next();
-            return page.stream().toList();
+            return albumRepository.findDistinctByTracksNameContainsIgnoreCase(track, pageable);
         } else if (album != null) {
-            return albumRepository.findByNameContainsIgnoreCaseOrderByName(album);
+            return albumRepository.findByNameContainsIgnoreCaseOrderByName(album, pageable);
         } else if (composer != null) {
-            return albumRepository.findDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(composer);
+            return albumRepository.findDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(composer, pageable);
         } else if (work != null) {
-            return albumRepository.findDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(work);
+            return albumRepository.findDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(work, pageable);
         } else if (genre != null) {
             //"von Hand" wäre:
-            //List<Track> tracks = trackRepository.findByGenreLike(genre);
-            //return tracks.stream().map(Track::getAlbum).distinct().toList();
+            //tracks = trackRepository.findByGenreLike(genre);
+            //tracks.stream().map(Track::getAlbum).distinct().toList();
             //über spezielle Query:
-            return albumRepository.findDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(genre);
+            return albumRepository.findDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(genre, pageable);
         } else if (artist != null) {
-            //List<Track> tracks = trackRepository.findByArtistsLike(artist);
-            //return tracks.stream().map(Track::getAlbum).distinct().toList();
-            return albumRepository.findDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(artist);
+            //tracks = trackRepository.findByArtistsLike(artist);
+            //tracks.stream().map(Track::getAlbum).distinct().toList();
+            return albumRepository.findDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(artist, pageable);
         }
-        return getAll(albumRepository);
+        return Page.empty();
     }
-
+    
     @Override
-    public List<Album> get(Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
-        super.logCall(trackId, albumId, composerId, workId, genreId, artistId);
+    public Page<Album> get(Integer pagenumber, Integer pagesize,
+                                   Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
+        logCall(pagenumber, pagesize, trackId, albumId, composerId, workId, genreId, artistId);
+        Pageable pageable = getPageableOf(pagenumber, pagesize);
         if (albumId != null) {
-            return getEntitiesIfExists(albumId, albumRepository);
+            return albumRepository.findById(albumId, pageable);
         } else if (trackId != null) {
-            return albumRepository.findByTracksId(trackId);
+            return albumRepository.findByTracksId(trackId, pageable);
         } else if (composerId != null) {
-            return albumRepository.findDistinctByTracksComposerIdOrderByName(composerId);
+            return albumRepository.findDistinctByTracksComposerIdOrderByName(composerId, pageable);
         } else if (workId != null) {
-            return albumRepository.findDistinctByTracksWorkIdOrderByName(workId);
+            return albumRepository.findDistinctByTracksWorkIdOrderByName(workId, pageable);
         } else if (genreId != null) {
-            return albumRepository.findDistinctByTracksGenresIdOrderByName(genreId);
+            return albumRepository.findDistinctByTracksGenresIdOrderByName(genreId, pageable);
         } else if (artistId != null) {
-            return albumRepository.findDistinctByTracksArtistsIdOrderByName(artistId);
+            return albumRepository.findDistinctByTracksArtistsIdOrderByName(artistId, pageable);
         }
-
-        return getAll(albumRepository);
+        return Page.empty();
     }
 
     @Override
     public Album getById(@PathVariable Long id) {
-        return getEntityIfExists(id, albumRepository);
+        return getById(id, albumRepository);
     }
 
     @Override
     public String remove(@RequestParam() Long id) {
-        //zugehörige Tracks entfernen erledigt Cascadierung
-        Optional<Album> album = albumRepository.findById(id);
-        if (album.isPresent()) {
-            albumRepository.delete(album.get());
-            return album + " removed";
-        }
-        return "album " + id + " not found!";
+        return remove(id, albumRepository);
     }
 }

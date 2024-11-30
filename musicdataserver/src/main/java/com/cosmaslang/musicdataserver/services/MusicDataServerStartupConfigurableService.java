@@ -17,9 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 @Component
 @Qualifier("musicdataserverStartup")
@@ -43,87 +41,64 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     NamedEntityRepository<Genre> genreRepository;
     @Autowired
     NamedEntityRepository<Composer> composerRepository;
+    @Autowired
+    MusicDataServerConfiguration musicDataServerConfiguration;
 
     private Path rootDirPath;
     private Path startDirPath;
 
-    /**
-     * Wird von der {@link MusicDataServerConfiguration} gesetzt
-     */
     @Override
-    public void setMediaDirectories(String rootdir, String startdir) throws IOException {
-        logger.info(MessageFormat.format("Setting root directory={0}, start directory={1}", rootdir, startdir));
-        rootDirPath = new File(rootdir).toPath();
-        startDirPath = new File(startdir).toPath();
+    public void configure() throws IOException {
+        logger.info("configure");
+        rootDirPath = new File(musicDataServerConfiguration.getRootdir()).toPath();
+        if (!rootDirPath.toFile().exists()) {
+            throw new FileNotFoundException(MessageFormat.format("Root directory {0} doesn't exist", rootDirPath));
+        }
+        startDirPath = new File(musicDataServerConfiguration.getStartdir()).toPath();
         if (!startDirPath.toFile().exists()) {
             throw new FileNotFoundException(MessageFormat.format("Start directory {0} doesn't exist", startDirPath));
         }
         if (!startDirPath.startsWith(rootDirPath)) {
-            throw new IOException(MessageFormat.format("Start directory {0} is not in {1}", startDirPath, rootDirPath));
+            throw new IOException(MessageFormat.format("Start directory {0} is not in root {1}", startDirPath, rootDirPath));
         }
     }
 
     @Override
     public void init() {
         logger.info("init");
-        try {
-            scanMusicdirectory();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void scanMusicdirectory() throws IOException {
         MusicFileScanner scanner = new MusicFileScanner(this);
         scanner.scan(rootDirPath, startDirPath);
     }
 
     @Override
     public void start() {
-        logger.info(String.format("starting from dir %s", this.rootDirPath));
+        logger.info(String.format("MusicRepository starting from %s", this.rootDirPath));
         logger.info(String.format("MusicRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres, %d Interpreten\n",
                 trackRepository.count(), albumRepository.count(), composerRepository.count(), workRepository.count(), genreRepository.count(), artistRepository.count()));
-        //listAllTracks();
-        //findAlbumWithartist("John");
     }
 
     @Override
     public TrackRepository getTrackRepository() {
         return trackRepository;
     }
-
     @Override
     public NamedEntityRepository<Artist> getArtistRepository() {
         return artistRepository;
     }
-
     @Override
     public NamedEntityRepository<Album> getAlbumRepository() {
         return albumRepository;
     }
-
     @Override
     public NamedEntityRepository<Work> getWorkRepository() {
         return workRepository;
     }
-
     @Override
     public NamedEntityRepository<Genre> getGenreRepository() {
         return genreRepository;
     }
-
     @Override
     public NamedEntityRepository<Composer> getComposerRepository() {
         return composerRepository;
     }
-
-    public void findAlbumWithartist(String name) {
-        logger.info(String.format("Albums with artist %s", name));
-        Stream<?> albums = entityManager.createQuery(
-                        "select a from Album a join Track t on t.album = a where t in (select i.tracks from Artist i where i.name ilike '%'||:name||'%')")
-                .setParameter("name", name)
-                .getResultStream();
-        albums.forEach(a -> logger.info(a.toString()));
-    }
-
 }
