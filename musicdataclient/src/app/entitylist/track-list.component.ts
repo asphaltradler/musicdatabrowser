@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {SearchfieldComponent} from '../search/searchfield.component';
+import {SearchfieldComponent} from '../controls/searchfield.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TrackService} from '../services/track.service';
 import {EntityListComponent} from './entity-list.component';
@@ -10,6 +10,7 @@ import {Artist} from '../entities/artist';
 import {Work} from '../entities/work';
 import {Genre} from '../entities/genre';
 import {NgForOf, NgIf} from '@angular/common';
+import {PagingComponent} from '../controls/paging.component';
 
 @Component({
   selector: 'app-track-list',
@@ -18,6 +19,7 @@ import {NgForOf, NgIf} from '@angular/common';
     SearchfieldComponent,
     NgForOf,
     NgIf,
+    PagingComponent,
   ],
   templateUrl: './track-list.component.html',
   styleUrls: ['./entity-list.component.css', './track-list.component.css']

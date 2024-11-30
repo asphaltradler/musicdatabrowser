@@ -1,0 +1,15 @@
+<div class="input-group paging">
+  <button class="btn btn-outline-primary"  [disabled]="!this.entityList.hasPreviousPage()" title="Zurück blättern" (click)="handlePrevious()">
+    << Zurück <<
+  </button>
+  <div class="center form-control">
+    <span>
+      <b>Seite {{this.entityList.page.number + 1}} von {{this.entityList.page.totalPages}}</b>
+    </span>
+  </div>
+  <button class="btn btn-outline-primary" [disabled]="!this.entityList.hasNextPage()" title="Weiter blättern" (click)="handleNext()">
+    >> Weiter >>
+  </button>
+</div>
+
+

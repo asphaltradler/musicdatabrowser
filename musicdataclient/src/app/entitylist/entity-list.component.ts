@@ -3,22 +3,27 @@ import {AbstractEntity} from '../entities/abstractEntity';
 import {ActivatedRoute, EventType, Params, Router} from '@angular/router';
 import {AbstractEntityService} from '../services/abstractEntityService';
 import {Subscription} from 'rxjs';
-import {SearchfieldComponent} from '../search/searchfield.component';
+import {SearchfieldComponent} from '../controls/searchfield.component';
+import {Page} from '../entities/page';
 
 @Object
 export abstract class EntityListComponent<E extends AbstractEntity> implements OnInit, OnDestroy {
   public static urlParamEntitySearchTitle = 'title';
   public static urlParamEntityName = 'searchby';
+  public static USE_LOCAL_FILTERING_INSTEAD_SEARCH = false;
 
   public entityType!: typeof AbstractEntity;
 
-  protected _entities: E[] = [];
+  page!: Page<E>;
   protected filter = '';
   protected titleFor = '';
   protected lastSearchNameForThis?: string = undefined;
 
   private changeSubscription: Subscription;
   private lastSearchSubscription?: Subscription;
+  private lastSearchEntityType?: typeof AbstractEntity;
+  private lastSearchId?: Number;
+  private lastSearchName?: string;
 
   protected _searchableEntities: typeof AbstractEntity[];
 
@@ -73,7 +78,8 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   }
 
   searchByEntityName(searchEntityType: typeof AbstractEntity, searchString: string) {
-    if (searchEntityType === this.entityType) {
+    if (EntityListComponent.USE_LOCAL_FILTERING_INSTEAD_SEARCH
+      && searchEntityType === this.entityType) {
       if (this.lastSearchNameForThis !== undefined && searchString.toLowerCase().includes(this.lastSearchNameForThis)) {
         this.filter = searchString.toLowerCase();
         console.log(`Keine neue Suche, da Suchtext '${searchString}' im vorherigen '${this.lastSearchNameForThis}' enthalten`);
@@ -81,30 +87,45 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
       }
       this.lastSearchNameForThis = searchString.toLowerCase();
     }
-    this.searchByEntityIdOrName(searchEntityType, undefined, searchString);
+    this.searchByEntityIdOrName(searchEntityType, 0, undefined, searchString);
   }
 
   searchByEntityId(searchEntityType: typeof AbstractEntity, id: number, searchString: string) {
-    this.searchByEntityIdOrName(searchEntityType, id, searchString);
+    this.searchByEntityIdOrName(searchEntityType, 0, id, searchString);
   }
 
-  private searchByEntityIdOrName(searchEntityType: typeof AbstractEntity, id?: Number, searchString?: string) {
+  private searchByEntityIdOrName(searchEntityType: typeof AbstractEntity, pageNumber: number, id?: Number, searchString?: string) {
     //falls noch eine Suche unterwegs ist: abbrechen
     this.lastSearchSubscription?.unsubscribe();
     console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'}`);
     const obs = id
-      ? this.service.findByOtherId(searchEntityType, id.valueOf())
-      : this.service.findByOtherNameLike(searchEntityType, searchString?.toLowerCase() || '');
+      ? this.service.findByOtherId(searchEntityType, id.valueOf(), pageNumber)
+      : this.service.findByOtherNameLike(searchEntityType, searchString?.toLowerCase() || '', pageNumber);
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(data => {
-      this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()} '${searchString}'` : 'insgesamt';
-      this.fillData(data);
+      this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()}='${searchString}'` : 'insgesamt';
+      this.fillData(data, searchEntityType, id, searchString);
       console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName} dauerte ${performance.now() - time}ms`);
     });
   }
 
-  fillData(data: E[]) {
-    this._entities = data;
+  fillData(data: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
+    this.page = data;
+    this.lastSearchEntityType = searchEntityType;
+    this.lastSearchId = searchId;
+    this.lastSearchName = searchString;
+  }
+
+  searchPreviousPage(): void {
+    if (this.lastSearchEntityType && this.hasPreviousPage()) {
+      this.searchByEntityIdOrName(this.lastSearchEntityType, this.page.number - 1, this.lastSearchId, this.lastSearchName);
+    }
+  }
+
+  searchNextPage(): void {
+    if (this.lastSearchEntityType && this.hasNextPage()) {
+      this.searchByEntityIdOrName(this.lastSearchEntityType, this.page.number + 1, this.lastSearchId, this.lastSearchName);
+    }
   }
 
   navigateOtherEntityByThis(entityType: typeof AbstractEntity, entity: AbstractEntity) {
@@ -142,18 +163,31 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   }
 
   get title() {
-    if (this.filter) {
-      const filteredCount = this._entities.filter((ent) => ent.name?.toLowerCase().includes(this.filter)).length;
-      return `${filteredCount} von ${this.entityType.getNumberDescription(this._entities.length)} ${this.titleFor}`;
+    const entityCount = this.entities.length;
+    let title;
+    if (this.filter && entityCount < this.page.numberOfElements) {
+      title = `${entityCount} von ${this.entityType.getNumberDescription(this.page.totalElements)}`;
     } else {
-      return `${this.entityType.getNumberDescription(this._entities.length)} ${this.titleFor}`;
+      const entityStart = this.page.number * this.page.size;
+      title = entityCount !== this.page.totalElements
+        ? `${this.entityType.getNumbersDescription(entityStart+1, this.page.numberOfElements + entityStart)} von ${this.page.totalElements}`
+        : this.entityType.getNumberDescription(this.page.totalElements);
     }
+    return `${title} ${this.titleFor}`;
   }
 
   get entities(): E[] {
     return this.filter
-      ? this._entities.filter((ent) => ent.name?.toLowerCase().includes(this.filter))
-      : this._entities;
+      ? this.page.content.filter((ent) => ent.name?.toLowerCase().includes(this.filter))
+      : this.page.content;
+  }
+
+  hasPreviousPage() {
+    return !this.page?.first;
+  }
+
+  hasNextPage() {
+    return !this.page?.last;
   }
 
   get searchableEntities() {

@@ -1,0 +1,13 @@
+.paging button {
+  flex-grow: 0.2;
+}
+
+.paging div.center {
+  display: flex;
+  flex-grow: 0.8;
+}
+
+.paging div.center span {
+  text-align: center;
+  width: 100%;
+}
