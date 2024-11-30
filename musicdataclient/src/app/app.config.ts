@@ -4,7 +4,7 @@ import {provideRouter} from '@angular/router';
 import {provideHttpClient} from '@angular/common/http';
 
 import {routes} from './app.routes';
-import {SearchfieldComponent} from './search/searchfield.component';
+import {SearchfieldComponent} from './controls/searchfield.component';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({eventCoalescing: true}),

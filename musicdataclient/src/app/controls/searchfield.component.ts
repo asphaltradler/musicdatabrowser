@@ -44,10 +44,12 @@ export class SearchfieldComponent implements OnInit {
 
   handleSelection() {
     this.clearSearchText();
-    if (this.searchForm.controls.entitySelector.value === this.entityList.entityType) {
-      this.searchForm.controls.filterField.disable();
-    } else {
-      this.searchForm.controls.filterField.enable();
+    if (EntityListComponent.USE_LOCAL_FILTERING_INSTEAD_SEARCH) {
+      if (this.searchForm.controls.entitySelector.value === this.entityList.entityType) {
+        this.searchForm.controls.filterField.disable();
+      } else {
+        this.searchForm.controls.filterField.enable();
+      }
     }
   }
 

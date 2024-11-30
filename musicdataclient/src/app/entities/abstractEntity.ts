@@ -19,4 +19,11 @@ export abstract class AbstractEntity {
       ? this.getNameSingular()
       : this.namePlural}`;
   }
+
+  static getNumbersDescription(from: number, to: number) {
+    if (from === to) {
+      return '1 ' + this.getNameSingular();
+    }
+    return `${this.namePlural} ${from}-${to}`;
+  }
 }

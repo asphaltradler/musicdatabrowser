@@ -1,4 +1,6 @@
 <app-searchfield [entityList]="this" [filterString]="filter"/>
+<app-paging [entityList]="this"/>
+
 <div class="card my-3">
   <div class="card-body small">
     <h4 class="card-title">{{title}}</h4>
@@ -42,3 +44,5 @@
     </table>
   </div>
 </div>
+
+<app-paging [entityList]="this"/>
