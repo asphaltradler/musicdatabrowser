@@ -9,6 +9,7 @@ import {Genre} from '../entities/genre';
 import {Artist} from '../entities/artist';
 import {NgForOf} from '@angular/common';
 import {EntityListComponent} from '../entitylist/entity-list.component';
+import {appDefaults} from '../../config/config';
 
 @Component({
   standalone: true,
@@ -29,22 +30,25 @@ export class SearchfieldComponent implements OnInit {
   entityList!: EntityListComponent<any>;
 
   @Input() filterString?: string;
+  //@Output() filterStringChange = new EventEmitter();
 
   searchForm = new FormGroup({
     entitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
+    pagesizeSelector: new FormControl(),
     searchField: new FormControl(''),
     filterField: new FormControl('')
   });
 
   ngOnInit() {
-    //default setzen
+    //defaults setzen
     this.searchForm.controls.entitySelector.setValue(this.entityList.entityType);
+    this.searchForm.controls.pagesizeSelector.setValue(this.entityList.pageSize);
     this.handleSelection();
   }
 
   handleSelection() {
     this.clearSearchText();
-    if (EntityListComponent.USE_LOCAL_FILTERING_INSTEAD_SEARCH) {
+    if (appDefaults.useLocalFilteringInsteadSearch) {
       if (this.searchForm.controls.entitySelector.value === this.entityList.entityType) {
         this.searchForm.controls.filterField.disable();
       } else {
@@ -65,6 +69,11 @@ export class SearchfieldComponent implements OnInit {
     }
   }
 
+  handlePageSize() {
+    this.entityList.setPageSize(this.searchForm.value.pagesizeSelector);
+    this.handleSubmit();
+  }
+
   clearFilter() {
     this.searchForm.controls.filterField.reset();
     this.handleFilter();
@@ -73,4 +82,6 @@ export class SearchfieldComponent implements OnInit {
   handleFilter() {
     this.entityList.setFilter(this.searchForm.value.filterField || '');
   }
+
+  protected readonly appDefaults = appDefaults;
 }

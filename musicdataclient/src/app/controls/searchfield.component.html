@@ -1,4 +1,4 @@
-<form [formGroup]="searchForm" (ngSubmit)="handleSubmit()">
+<form [formGroup]="searchForm">
   <div class="input-group my-3">
     <label for="searchfield" class="input-group-text">Suche nach:</label>
     <select class="form-control" formControlName="entitySelector" (change)="handleSelection()"
@@ -10,12 +10,17 @@
     <input class="form-control" formControlName="searchField" id="searchfield"
            type="text" (input)="handleSubmit()"
            placeholder="Suchtext" aria-label="Suchtext"/>
-    <button class="btn btn-secondary" type="button" (click)="clearSearchText();handleSubmit()">Reset</button>
+    <select class="form-control" formControlName="pagesizeSelector" (change)="handlePageSize()"
+            title="Ergebnisse pro Seite">
+      <option *ngFor="let num of appDefaults.pageSizes" [value]="num">
+        {{ num }} Erg./Seite
+      </option>
+    </select>
+    <button class="btn btn-secondary" title="Suche zurücksetzen" (click)="clearSearchText();handleSubmit()">Reset</button>
 
     <input class="form-control" formControlName="filterField" id="filterfield"
            type="text" (input)="handleFilter()"
-           [value]="filterString"
            placeholder="Filtere {{ entityList.entityType.namePlural}} nach" aria-label="Filter"/>
-    <button class="btn btn-primary" type="button" (click)="clearFilter()">Alle</button>
+    <button class="btn btn-primary" title="Suchfilter leeren" (click)="clearFilter()">Alle</button>
   </div>
 </form>

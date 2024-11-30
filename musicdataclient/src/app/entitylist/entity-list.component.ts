@@ -5,22 +5,24 @@ import {AbstractEntityService} from '../services/abstractEntityService';
 import {Subscription} from 'rxjs';
 import {SearchfieldComponent} from '../controls/searchfield.component';
 import {Page} from '../entities/page';
+import {appDefaults} from '../../config/config';
 
 @Object
 export abstract class EntityListComponent<E extends AbstractEntity> implements OnInit, OnDestroy {
   public static urlParamEntitySearchTitle = 'title';
-  public static urlParamEntityName = 'searchby';
-  public static USE_LOCAL_FILTERING_INSTEAD_SEARCH = false;
+  private static urlParamEntityName = 'searchby';
 
   public entityType!: typeof AbstractEntity;
+  public page?: Page<E>;
+  public pageSize = appDefaults.defaultPageSize;
 
-  page!: Page<E>;
   protected filter = '';
   protected titleFor = '';
   protected lastSearchNameForThis?: string = undefined;
 
   private changeSubscription: Subscription;
   private lastSearchSubscription?: Subscription;
+
   private lastSearchEntityType?: typeof AbstractEntity;
   private lastSearchId?: Number;
   private lastSearchName?: string;
@@ -78,7 +80,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   }
 
   searchByEntityName(searchEntityType: typeof AbstractEntity, searchString: string) {
-    if (EntityListComponent.USE_LOCAL_FILTERING_INSTEAD_SEARCH
+    if (appDefaults.useLocalFilteringInsteadSearch
       && searchEntityType === this.entityType) {
       if (this.lastSearchNameForThis !== undefined && searchString.toLowerCase().includes(this.lastSearchNameForThis)) {
         this.filter = searchString.toLowerCase();
@@ -99,8 +101,8 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     this.lastSearchSubscription?.unsubscribe();
     console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'}`);
     const obs = id
-      ? this.service.findByOtherId(searchEntityType, id.valueOf(), pageNumber)
-      : this.service.findByOtherNameLike(searchEntityType, searchString?.toLowerCase() || '', pageNumber);
+      ? this.service.findByOtherId(searchEntityType, id.valueOf(), pageNumber, this.pageSize)
+      : this.service.findByOtherNameLike(searchEntityType, searchString?.toLowerCase() || '', pageNumber, this.pageSize);
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(data => {
       this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()}='${searchString}'` : 'insgesamt';
@@ -116,15 +118,19 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     this.lastSearchName = searchString;
   }
 
+  setPageSize(value: number) {
+    this.pageSize = value;
+  }
+
   searchPreviousPage(): void {
     if (this.lastSearchEntityType && this.hasPreviousPage()) {
-      this.searchByEntityIdOrName(this.lastSearchEntityType, this.page.number - 1, this.lastSearchId, this.lastSearchName);
+      this.searchByEntityIdOrName(this.lastSearchEntityType, this.page!.number - 1, this.lastSearchId, this.lastSearchName);
     }
   }
 
   searchNextPage(): void {
     if (this.lastSearchEntityType && this.hasNextPage()) {
-      this.searchByEntityIdOrName(this.lastSearchEntityType, this.page.number + 1, this.lastSearchId, this.lastSearchName);
+      this.searchByEntityIdOrName(this.lastSearchEntityType, this.page!.number + 1, this.lastSearchId, this.lastSearchName);
     }
   }
 
@@ -163,8 +169,11 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   }
 
   get title() {
-    const entityCount = this.entities.length;
+    if (!this.page) {
+      return '';
+    }
     let title;
+    const entityCount = this.entities.length;
     if (this.filter && entityCount < this.page.numberOfElements) {
       title = `${entityCount} von ${this.entityType.getNumberDescription(this.page.totalElements)}`;
     } else {
@@ -177,6 +186,9 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   }
 
   get entities(): E[] {
+    if (!this.page) {
+      return [];
+    }
     return this.filter
       ? this.page.content.filter((ent) => ent.name?.toLowerCase().includes(this.filter))
       : this.page.content;
