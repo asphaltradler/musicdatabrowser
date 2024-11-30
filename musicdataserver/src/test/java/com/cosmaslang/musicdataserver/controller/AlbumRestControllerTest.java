@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
@@ -33,6 +34,7 @@ class AlbumRestControllerTest {
     TrackRepository trackRepository;
     AlbumRestController albumRestController;
     TrackRestController trackRestController;
+    Pageable pageable;
     Album album;
     Track track1;
     Track track2;
@@ -41,6 +43,7 @@ class AlbumRestControllerTest {
     void setUp() {
         albumRestController = new AlbumRestController();
         trackRestController = new TrackRestController();
+        pageable = Pageable.unpaged();
 
         if ((album = albumRepository.findByName(ALBUM_1)) == null) {
             album = new Album();
@@ -71,21 +74,21 @@ class AlbumRestControllerTest {
 
     @Test
     void findAllAlbumsFromController() {
-        List<Album> allAlbums = albumRestController.getAll(albumRepository);
+        List<Album> allAlbums = albumRestController.getAll(albumRepository, pageable).stream().toList();
         assertTrue(allAlbums.contains(album));
         assertEquals(albumRepository.count(), allAlbums.size());
     }
 
     @Test
     void findAlbumByName() {
-        List<Album> foundAlbums = albumRepository.findByNameContainsIgnoreCaseOrderByName(ALBUM_1);
+        List<Album> foundAlbums = albumRepository.findByNameContainsIgnoreCaseOrderByName(ALBUM_1, pageable).stream().toList();
         assertEquals(1, foundAlbums.size());
-        assertEquals(foundAlbums.get(0), album);
+        assertEquals(foundAlbums.getFirst(), album);
     }
 
     @Test
     void findAllTracksFromController() {
-        List<Track> allTracks = trackRestController.getAll(trackRepository);
+        List<Track> allTracks = trackRestController.getAll(trackRepository, pageable).stream().toList();
         assertEquals(trackRepository.count(), allTracks.size());
         assertTrue(allTracks.contains(track1));
         assertTrue(allTracks.contains(track2));
@@ -111,7 +114,7 @@ class AlbumRestControllerTest {
 
     @Test
     void findTracksForAlbum() {
-        List<Track> albumTracks = trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumName(ALBUM_1);
+        List<Track> albumTracks = trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumName(ALBUM_1, pageable).stream().toList();
         assertEquals(2, albumTracks.size());
         assertTrue(albumTracks.contains(trackRepository.findByName(TRACK_1)));
         assertTrue(albumTracks.contains(trackRepository.findByName(TRACK_2)));
@@ -120,7 +123,7 @@ class AlbumRestControllerTest {
     @Test
     @Disabled("Verdrahtung zu Controller und seinem Repository funktioniert nicht")
     void findTracksForAlbumFromController() {
-        List<Track> albumTracks = trackRestController.find(null, ALBUM_1, null, null, null, null);
+        List<Track> albumTracks = trackRestController.find(0, 0, null, ALBUM_1, null, null, null, null).stream().toList();
         assertEquals(2, albumTracks.size());
         assertTrue(albumTracks.contains(track1));
         assertTrue(albumTracks.contains(track2));
@@ -134,11 +137,11 @@ class AlbumRestControllerTest {
 
         Album findAlbum = albumRepository.findByName(ALBUM_1);
         assertNull(findAlbum);
-        List<Album> foundAlbums = albumRestController.getAll(albumRepository);
+        List<Album> foundAlbums = albumRestController.getAll(albumRepository, pageable).stream().toList();
         assertFalse(foundAlbums.contains(album));
 
         assertEquals(trackCount-2, trackRepository.count());
-        List<Track> foundTracks = trackRestController.getAll(trackRepository);
+        List<Track> foundTracks = trackRestController.getAll(trackRepository, pageable).stream().toList();
         assertFalse(foundTracks.contains(track1));
         assertFalse(foundTracks.contains(track2));
     }

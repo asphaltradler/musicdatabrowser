@@ -1,11 +1,10 @@
 package com.cosmaslang.musicdataserver.db.repositories;
 
 import com.cosmaslang.musicdataserver.db.entities.NamedEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Gemeinsames Interface für Repositories zu Datenbank-Tables,
@@ -16,6 +15,7 @@ import java.util.stream.Stream;
 @NoRepositoryBean
 public interface NamedEntityRepository<ENTITY extends NamedEntity> extends JpaRepository<ENTITY, Long> {
     ENTITY findByName(String name);
-
-    List<ENTITY> findByNameContainsIgnoreCaseOrderByName(String name);
+    Page<ENTITY> findByNameContainsIgnoreCaseOrderByName(String name, Pageable pageable);
+    Page<ENTITY> findById(long id, Pageable pageable);
 }
+

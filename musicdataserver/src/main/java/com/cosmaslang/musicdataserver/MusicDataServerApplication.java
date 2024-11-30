@@ -5,20 +5,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
-import java.util.logging.Logger;
+import java.io.IOException;
 
 @SpringBootApplication
 public class MusicDataServerApplication {
-
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ApplicationContext context = SpringApplication.run(MusicDataServerApplication.class);
         MusicDataServerStartupService service = context.getBean(MusicDataServerStartupService.class);
+        service.configure();
         if (args.length <= 0 || !args[args.length - 1].equals("-noreload")) {
             service.init();
         }
         service.start();
     }
-
 }

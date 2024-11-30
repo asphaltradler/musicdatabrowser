@@ -32,8 +32,8 @@ public class HelloController {
     public String get() {
         long count = trackRepository.count();
         if (count > 0) {
-            return String.format("MusicRepository enthält %d tracks mit %d Alben, %d Komponisten, %d artists, %d Werke, %d Genres",
-                    count, albumRepository.count(), composerRepository.count(), artistRepository.count(), workRepository.count(), genreRepository.count());
+            return String.format("MusicRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres, %d Interpreten\n",
+                    count, albumRepository.count(), composerRepository.count(), workRepository.count(), genreRepository.count(), artistRepository.count());
         } else {
             return "Service gestartet aber noch leer.";
         }
