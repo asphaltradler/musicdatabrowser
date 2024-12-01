@@ -18,6 +18,7 @@ import {Genre} from '../entities/genre';
 import {Page} from '../entities/page';
 import {PagingComponent} from '../controls/paging.component';
 import {ListHeaderComponent} from './list-header/list-header.component';
+import {appDefaults} from '../../config/config';
 
 @Component({
   selector: 'app-album-list',
@@ -41,16 +42,16 @@ export class AlbumListComponent extends EntityListComponent<Album> {
   override fillData(data: Page<Album>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
     super.fillData(data, searchEntityType, searchId, searchString);
     this.page?.content.forEach((album: Album) => {
-      this.composersService.findByOtherId(Album, album.id, 0, this.pageSize).subscribe(data => {
+      this.composersService.findByOtherId(Album, album.id, 0, appDefaults.maxPageSizeForLists).subscribe(data => {
         album.composers = data.content;
       });
-      this.artistsService.findByOtherId(Album, album.id, 0, this.pageSize).subscribe(data => {
+      this.artistsService.findByOtherId(Album, album.id, 0, appDefaults.maxPageSizeForLists).subscribe(data => {
         album.artists = data.content;
       });
-      this.workService.findByOtherId(Album, album.id, 0, this.pageSize).subscribe(data => {
+      this.workService.findByOtherId(Album, album.id, 0, appDefaults.maxPageSizeForLists).subscribe(data => {
         album.works = data.content;
       });
-      this.genreService.findByOtherId(Album, album.id, 0, this.pageSize).subscribe(data => {
+      this.genreService.findByOtherId(Album, album.id, 0, appDefaults.maxPageSizeForLists).subscribe(data => {
         album.genres = data.content;
       });
       /*
