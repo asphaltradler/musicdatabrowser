@@ -22,4 +22,11 @@ export class PagingComponent {
   handleNext() {
     this.entityList.searchNextPage();
   }
+
+  getPageTitle() {
+    if (this.entityList.page && !this.entityList.page.empty) {
+      return `Seite ${this.entityList.page.number + 1} von ${this.entityList.page.totalPages}`;
+    }
+    return "< Keine Ergebnisse >";
+  }
 }

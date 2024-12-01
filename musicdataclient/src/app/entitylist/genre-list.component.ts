@@ -6,6 +6,7 @@ import {Genre} from '../entities/genre';
 import {GenreService} from '../services/genre.service';
 import {NgForOf} from '@angular/common';
 import {PagingComponent} from '../controls/paging.component';
+import {ListHeaderComponent} from './list-header/list-header.component';
 
 @Component({
   selector: 'app-genre-list',
@@ -13,6 +14,7 @@ import {PagingComponent} from '../controls/paging.component';
   imports: [
     SearchfieldComponent,
     PagingComponent,
+    ListHeaderComponent,
     NgForOf,
   ],
   templateUrl: './entity-list.component.html',

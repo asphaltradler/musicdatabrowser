@@ -18,7 +18,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
 
   protected filter = '';
   protected titleFor = '';
-  protected lastSearchNameForThis?: string = undefined;
+  protected lastSearchNameForThis?: string;
 
   private changeSubscription: Subscription;
   private lastSearchSubscription?: Subscription;
@@ -26,6 +26,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
   private lastSearchEntityType?: typeof AbstractEntity;
   private lastSearchId?: Number;
   private lastSearchName?: string;
+  public lastSearchPerformance?: string;
 
   protected _searchableEntities: typeof AbstractEntity[];
 
@@ -104,15 +105,17 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
       ? this.service.findByOtherId(searchEntityType, id.valueOf(), pageNumber, this.pageSize)
       : this.service.findByOtherNameLike(searchEntityType, searchString?.toLowerCase() || '', pageNumber, this.pageSize);
     const time = performance.now();
-    this.lastSearchSubscription = obs.subscribe(data => {
+    this.lastSearchSubscription = obs.subscribe(page => {
       this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()}='${searchString}'` : 'insgesamt';
-      this.fillData(data, searchEntityType, id, searchString);
-      console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName} dauerte ${performance.now() - time}ms`);
+      this.fillData(page, searchEntityType, id, searchString);
+      const timeString = (performance.now() - time).toFixed(2);
+      this.lastSearchPerformance = `Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'} dauerte ${timeString}ms`;
+      console.log(this.lastSearchPerformance);
     });
   }
 
-  fillData(data: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
-    this.page = data;
+  fillData(page: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
+    this.page = page;
     this.lastSearchEntityType = searchEntityType;
     this.lastSearchId = searchId;
     this.lastSearchName = searchString;
