@@ -7,9 +7,9 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
 public interface TrackDependentRepository<ENTITY extends NamedEntity> extends NamedEntityRepository<ENTITY> {
-    Page<ENTITY> findDistinctByTracksNameContainsIgnoreCase(String track, Pageable pageable);
-    Page<ENTITY> findByTracksId(Long trackId, Pageable pageable);
-    Page<ENTITY> findDistinctByTracksAlbumNameContainsIgnoreCase(String track, Pageable pageable);
+    Page<ENTITY> findDistinctByTracksNameContainsIgnoreCaseOrderByName(String track, Pageable pageable);
+    Page<ENTITY> findDistinctByTracksIdOrderByName(Long trackId, Pageable pageable);
+    Page<ENTITY> findDistinctByTracksAlbumNameContainsIgnoreCaseOrderByName(String track, Pageable pageable);
     Page<ENTITY> findDistinctByTracksAlbumIdOrderByName(Long trackId, Pageable pageable);
     Page<ENTITY> findDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(String composer, Pageable pageable);
     Page<ENTITY> findDistinctByTracksComposerIdOrderByName(Long composerId, Pageable pageable);

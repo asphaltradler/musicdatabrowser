@@ -25,9 +25,9 @@ public abstract class TrackDependentRestController<ENTITY extends NamedEntity> e
         logCall(pagenumber, pagesize, track, album, composer, work, genre, artist);
         Pageable pageable = getPageableOf(pagenumber, pagesize);
         if (track != null) {
-            return getMyRepository().findDistinctByTracksNameContainsIgnoreCase(track, pageable);
+            return getMyRepository().findDistinctByTracksNameContainsIgnoreCaseOrderByName(track, pageable);
         } else if (album != null) {
-            return getMyRepository().findDistinctByTracksAlbumNameContainsIgnoreCase(album, pageable);
+            return getMyRepository().findDistinctByTracksAlbumNameContainsIgnoreCaseOrderByName(album, pageable);
         } else if (composer != null) {
             return getMyRepository().findDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(composer, pageable);
         } else if (work != null) {
@@ -46,7 +46,7 @@ public abstract class TrackDependentRestController<ENTITY extends NamedEntity> e
         logCall(pagenumber, pagesize, trackId, albumId, composerId, workId, genreId, artistId);
         Pageable pageable = getPageableOf(pagenumber, pagesize);
         if (trackId != null) {
-            return getMyRepository().findByTracksId(trackId, pageable);
+            return getMyRepository().findDistinctByTracksIdOrderByName(trackId, pageable);
         } else if (albumId != null) {
             return getMyRepository().findDistinctByTracksAlbumIdOrderByName(albumId, pageable);
         } else if (composerId != null) {
