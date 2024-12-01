@@ -4,5 +4,5 @@ import com.cosmaslang.musicdataserver.db.entities.Genre;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GenreRepository extends NamedEntityRepository<Genre> {
+public interface GenreRepository extends TrackDependentRepository<Genre> {
 }

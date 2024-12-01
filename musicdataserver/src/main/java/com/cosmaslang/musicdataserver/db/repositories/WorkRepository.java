@@ -4,5 +4,5 @@ import com.cosmaslang.musicdataserver.db.entities.Work;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WorkRepository extends NamedEntityRepository<Work> {
+public interface WorkRepository extends TrackDependentRepository<Work> {
 }

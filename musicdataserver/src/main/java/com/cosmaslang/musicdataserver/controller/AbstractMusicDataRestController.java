@@ -2,12 +2,11 @@ package com.cosmaslang.musicdataserver.controller;
 
 import com.cosmaslang.musicdataserver.configuration.MusicDataServerConfiguration;
 import com.cosmaslang.musicdataserver.db.entities.*;
-import com.cosmaslang.musicdataserver.db.repositories.AlbumRepository;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
+import com.cosmaslang.musicdataserver.db.repositories.TrackDependentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -17,8 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.text.MessageFormat;
-import java.util.*;
-import java.util.function.Function;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import static org.springframework.web.cors.CorsConfiguration.ALL;
@@ -32,17 +30,19 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
     @Autowired
     TrackRepository trackRepository;
     @Autowired
-    AlbumRepository albumRepository;
+    TrackDependentRepository<Album> albumRepository;
     @Autowired
-    NamedEntityRepository<Composer> composerRepository;
+    TrackDependentRepository<Composer> composerRepository;
     @Autowired
-    NamedEntityRepository<Work> workRepository;
+    TrackDependentRepository<Work> workRepository;
     @Autowired
-    NamedEntityRepository<Genre> genreRepository;
+    TrackDependentRepository<Genre> genreRepository;
     @Autowired
-    NamedEntityRepository<Artist> artistRepository;
+    TrackDependentRepository<Artist> artistRepository;
     @Autowired
     MusicDataServerConfiguration musicDataServerConfiguration;
+
+    protected abstract NamedEntityRepository<ENTITY> getMyRepository();
 
     @RequestMapping(value = "/find", method = {RequestMethod.GET, RequestMethod.POST})
     @Transactional(readOnly = true)
@@ -84,19 +84,15 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
     }
 
     @GetMapping("/id/{id}")
-    protected abstract ENTITY getById(@PathVariable Long id);
-
-    protected ENTITY getById(Long id, NamedEntityRepository<ENTITY> repository) {
-        Optional<ENTITY> entity = repository.findById(id);
+    public ENTITY getById(@PathVariable Long id) {
+        Optional<ENTITY> entity = getMyRepository().findById(id);
         if (entity.isPresent()) {
             return entity.get();
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);
     }
 
-    @DeleteMapping("/remove")
-    protected abstract String remove(@RequestParam() Long id);
-
+    @DeleteMapping("/remove/{id}")
     protected String remove(Long id, NamedEntityRepository<ENTITY> repository) {
         Optional<ENTITY> entity = repository.findById(id);
         //TODO was passiert mit Referenzen in artists_tracks usw.?
@@ -104,7 +100,7 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
             repository.delete(entity.get());
             return entity + " removed";
         }
-        return "Entity " + id + " not found!";
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);
     }
 
     protected Page<ENTITY> getAll(NamedEntityRepository<ENTITY> entityRepository, Pageable pageable) {
@@ -114,16 +110,5 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
     protected Pageable getPageableOf(Integer pagenumber, Integer pagesize) {
         return PageRequest.of(pagenumber == null ? 0 : pagenumber,
                 pagesize == null ? musicDataServerConfiguration.getPagesize() : pagesize);
-    }
-
-    protected Page<ENTITY> getMappedByEntitySet(Page<Track> tracks,
-                                                Function<Track, Set<ENTITY>> mapFunction) {
-        List<ENTITY> list = tracks.stream().map(mapFunction).flatMap(Collection::stream).filter(Objects::nonNull).distinct().sorted().toList();
-        return new PageImpl<>(list);
-    }
-
-    protected Page<ENTITY> getMappedByEntity(Page<Track> tracks,
-                                             Function<Track, ENTITY> mapFunction) {
-        return new PageImpl<>(tracks.stream().map(mapFunction).filter(Objects::nonNull).distinct().sorted().toList());
     }
 }

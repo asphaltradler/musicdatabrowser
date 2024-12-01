@@ -1,16 +1,20 @@
 package com.cosmaslang.musicdataserver.controller;
 
 import com.cosmaslang.musicdataserver.db.entities.Track;
+import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/music/track")
 public class TrackRestController extends AbstractMusicDataRestController<Track> {
+    @Override
+    protected NamedEntityRepository<Track> getMyRepository() {
+        return trackRepository;
+    }
+
     @Override
     public Page<Track> find(Integer pagenumber, Integer pagesize, String track, String album, String composer, String work, String genre, String artist) {
         logCall(pagenumber, pagesize, track, album, composer, work, genre, artist);
@@ -52,16 +56,6 @@ public class TrackRestController extends AbstractMusicDataRestController<Track> 
             return trackRepository.findByArtistsId(artistId, pageable);
         }
         return Page.empty();
-    }
-
-    @Override
-    public Track getById(@PathVariable Long id) {
-        return getById(id, trackRepository);
-    }
-
-    @Override
-    public String remove(@RequestParam() Long id) {
-        return remove(id, trackRepository);
     }
 }
 
