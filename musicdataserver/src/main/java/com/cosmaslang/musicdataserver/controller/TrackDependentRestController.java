@@ -33,17 +33,11 @@ public abstract class TrackDependentRestController<ENTITY extends NamedEntity> e
         } else if (work != null) {
             return getMyRepository().findDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(work, pageable);
         } else if (genre != null) {
-            //"von Hand" wäre:
-            //tracks = trackRepository.findByGenreLike(genre);
-            //tracks.stream().map(Track::getAlbum).distinct().toList();
-            //über spezielle Query:
             return getMyRepository().findDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(genre, pageable);
         } else if (artist != null) {
-            //tracks = trackRepository.findByArtistsLike(artist);
-            //tracks.stream().map(Track::getAlbum).distinct().toList();
             return getMyRepository().findDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(artist, pageable);
         }
-        return Page.empty();
+        return Page.empty(pageable);
     }
 
     @Override
@@ -64,10 +58,10 @@ public abstract class TrackDependentRestController<ENTITY extends NamedEntity> e
         } else if (artistId != null) {
             return getMyRepository().findDistinctByTracksArtistsIdOrderByName(artistId, pageable);
         }
-        return Page.empty();
+        return Page.empty(pageable);
     }
 
-    protected Page<ENTITY> getMappedPageByTracks(Page<Track> tracks,
+    public Page<ENTITY> getMappedPageByTracks(Page<Track> tracks,
                                                  Function<Track, Set<ENTITY>> mapFunction,
                                                  Pageable pageable) {
         //erst die Entities mappen und sortieren

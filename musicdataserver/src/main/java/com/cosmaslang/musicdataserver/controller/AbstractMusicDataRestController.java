@@ -83,6 +83,10 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
         return getAll(entityRepository, pageable);
     }
 
+    protected Page<ENTITY> getAll(NamedEntityRepository<ENTITY> entityRepository, Pageable pageable) {
+        return entityRepository.findAll(pageable);
+    }
+
     @GetMapping("/id/{id}")
     public ENTITY getById(@PathVariable Long id) {
         Optional<ENTITY> entity = getMyRepository().findById(id);
@@ -93,18 +97,14 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
     }
 
     @DeleteMapping("/remove/{id}")
-    protected String remove(Long id, NamedEntityRepository<ENTITY> repository) {
+    protected ENTITY remove(Long id, NamedEntityRepository<ENTITY> repository) {
         Optional<ENTITY> entity = repository.findById(id);
         //TODO was passiert mit Referenzen in artists_tracks usw.?
         if (entity.isPresent()) {
             repository.delete(entity.get());
-            return entity + " removed";
+            return entity.get();
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);
-    }
-
-    protected Page<ENTITY> getAll(NamedEntityRepository<ENTITY> entityRepository, Pageable pageable) {
-        return entityRepository.findAll(pageable);
     }
 
     protected Pageable getPageableOf(Integer pagenumber, Integer pagesize) {
