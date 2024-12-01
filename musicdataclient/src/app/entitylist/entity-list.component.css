@@ -2,8 +2,36 @@ a {
   cursor: pointer;
 }
 
+div.card {
+  overflow: hidden;
+}
+
+div.card-header {
+  display: flex;
+}
+
+div.card-header > * {
+  flex: 0.5;
+}
+
+h4, h5 {
+  user-select: none;
+}
+
 th.col-long, td.col-long {
-  width: 200px;
-  max-width: 240px;
+  width: 20%;
+  max-width: 200px;
   overflow: clip;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.footer-absolute {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.05em;
+  background-color: white;
 }

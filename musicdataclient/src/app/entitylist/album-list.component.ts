@@ -17,6 +17,7 @@ import {Work} from '../entities/work';
 import {Genre} from '../entities/genre';
 import {Page} from '../entities/page';
 import {PagingComponent} from '../controls/paging.component';
+import {ListHeaderComponent} from './list-header/list-header.component';
 
 @Component({
   selector: 'app-album-list',
@@ -25,6 +26,7 @@ import {PagingComponent} from '../controls/paging.component';
     SearchfieldComponent,
     PagingComponent,
     NgForOf,
+    ListHeaderComponent,
   ],
   templateUrl: './album-list.component.html',
   styleUrls: ['./entity-list.component.css', './album-list.component.css']

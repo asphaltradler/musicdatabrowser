@@ -2,30 +2,29 @@
 <app-paging [entityList]="this"/>
 
 <div class="card my-3">
-  <div class="card-body small">
-    <h4 class="card-title">{{title}}</h4>
-    <table class="table table-bordered table-striped table-hover table-responsive-sm">
-      <thead class="thead-dark">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th *ngFor="let cat of searchableEntities" scope="col" class="text-center">
-          {{ cat.namePlural }}
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let album of entities; trackBy: trackByItemId" class="align-middle">
-        <td>{{ album.id }}</td>
-        <td>{{ album.name }}</td>
-        <td *ngFor="let cat of searchableEntities" class="text-center">
-          @if (cat === Track) {
-            <button class="btn btn-link"
-                    title="{{ Track.getNumberDescription(album.tracks?.length) }} für {{album.name}}"
-                    (click)="navigateOtherEntityByThis(Track, album)">
-              {{ Track.getNumberDescription(album.tracks?.length) }}
-            </button>
-          } @else {
+  <app-list-header [title]="title" [lastSearchPerformance]="lastSearchPerformance"></app-list-header>
+  <table class="card-body small table table-bordered table-striped table-hover table-sm my-0">
+    <thead class="thead-dark">
+    <tr>
+      <th class="text-right">#</th>
+      <th>Name</th>
+      <th *ngFor="let cat of searchableEntities" class="text-center">
+        {{ cat.namePlural }}
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let album of entities; trackBy: trackByItemId" class="align-middle">
+      <td class="text-right">{{ album.id }}</td>
+      <td>{{ album.name }}</td>
+      <td *ngFor="let cat of searchableEntities" class="text-center">
+        @if (cat === Track) {
+          <button class="btn btn-link"
+                  title="{{ Track.getNumberDescription(album.tracks?.length) }} für {{album.name}}"
+                  (click)="navigateOtherEntityByThis(Track, album)">
+            {{ Track.getNumberDescription(album.tracks?.length) }}
+          </button>
+        } @else {
           <div *ngFor="let searchEntity of getEntityList(album, cat)">
             <a (click)="navigateOtherEntityByItself(cat, searchEntity)"
                title="Details für {{searchEntity.name}}">
@@ -37,12 +36,12 @@
               [&nbsp;{{ Album.namePlural }}&nbsp;]
             </a>
           </div>
-          }
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+        }
+      </td>
+    </tr>
+    </tbody>
+  </table>
 </div>
 
-<app-paging [entityList]="this"/>
+<div class="my-3">&nbsp;</div>
+<app-paging class="card footer-absolute" [entityList]="this"/>

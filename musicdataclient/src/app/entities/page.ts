@@ -2,9 +2,10 @@ import {AbstractEntity} from './abstractEntity';
 
 export class Page<E extends AbstractEntity> {
   content!: E[];
+  empty!: boolean;
 
-  first?: boolean;
-  last?: boolean;
+  first!: boolean;
+  last!: boolean;
   //pagenumber, leider nicht sehr sprechend
   number!: number;
   //wieviele Pages gibt es insgesamt?

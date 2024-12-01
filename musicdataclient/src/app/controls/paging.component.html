@@ -4,12 +4,10 @@
   </button>
   <div class="center form-control">
     <span *ngIf="entityList.page">
-      <b>Seite {{entityList.page.number + 1}} von {{entityList.page.totalPages}}</b>
+      <b>{{ getPageTitle() }}</b>
     </span>
   </div>
   <button class="btn btn-outline-primary" [disabled]="!entityList.hasNextPage()" title="Weiter blättern" (click)="handleNext()">
     >> Weiter >>
   </button>
 </div>
-
-

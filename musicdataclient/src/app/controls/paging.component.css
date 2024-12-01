@@ -1,10 +1,15 @@
 .paging button {
-  flex-grow: 0.2;
+  flex-grow: 0.1;
+  flex-direction: column;
+}
+.paging button:not(:hover) {
+  /* background-color: #f0f0f0; */
 }
 
 .paging div.center {
   display: flex;
   flex-grow: 0.8;
+  user-select: none;
 }
 
 .paging div.center span {

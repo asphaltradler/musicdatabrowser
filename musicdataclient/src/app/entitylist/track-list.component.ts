@@ -11,6 +11,7 @@ import {Work} from '../entities/work';
 import {Genre} from '../entities/genre';
 import {NgForOf, NgIf} from '@angular/common';
 import {PagingComponent} from '../controls/paging.component';
+import {ListHeaderComponent} from './list-header/list-header.component';
 
 @Component({
   selector: 'app-track-list',
@@ -20,6 +21,7 @@ import {PagingComponent} from '../controls/paging.component';
     NgForOf,
     NgIf,
     PagingComponent,
+    ListHeaderComponent,
   ],
   templateUrl: './track-list.component.html',
   styleUrls: ['./entity-list.component.css', './track-list.component.css']
