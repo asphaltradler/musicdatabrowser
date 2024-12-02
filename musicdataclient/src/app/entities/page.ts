@@ -6,7 +6,7 @@ export class Page<E extends AbstractEntity> {
 
   first!: boolean;
   last!: boolean;
-  //pagenumber, leider nicht sehr sprechend
+  //pageNumber, leider nicht sehr sprechend
   number!: number;
   //wieviele Pages gibt es insgesamt?
   totalPages!: number;

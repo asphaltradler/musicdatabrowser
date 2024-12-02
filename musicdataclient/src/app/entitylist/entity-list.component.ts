@@ -103,7 +103,9 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'}`);
     const obs = id
       ? this.service.findByOtherId(searchEntityType, id.valueOf(), pageNumber, this.pageSize)
-      : this.service.findByOtherNameLike(searchEntityType, searchString?.toLowerCase() || '', pageNumber, this.pageSize);
+      : searchEntityType === this.entityType
+        ? this.service.findNameLike(searchString?.toLowerCase() || '', pageNumber, this.pageSize)
+        : this.service.findByOtherNameLike(searchEntityType, searchString?.toLowerCase() || '', pageNumber, this.pageSize);
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(page => {
       this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()}='${searchString}'` : 'insgesamt';
