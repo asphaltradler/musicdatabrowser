@@ -1,26 +1,26 @@
 <form [formGroup]="searchForm">
   <div class="input-group my-3">
     <label for="searchfield" class="input-group-text">Suche nach:</label>
-    <select class="form-control" formControlName="entitySelector" (change)="handleSelection()"
-            title="Auswahl Suchkriterium">
+    <select class="form-control" formControlName="searchEntitySelector"
+            title="Auswahl Suchkriterium" (change)="updateSearchEntity()">
       <option *ngFor="let ent of searchEntities" [ngValue]="ent">
         {{ ent.namePlural }}
       </option>
     </select>
     <input class="form-control" formControlName="searchField" id="searchfield"
-           type="text" (input)="handleSubmit()"
+           type="text" (input)="updateSearchField()"
            placeholder="Suchtext" aria-label="Suchtext"/>
-    <select class="form-control" formControlName="pageSizeSelector" (change)="handlePageSize()"
-            title="Ergebnisse pro Seite">
+    <select class="form-control" formControlName="pageSizeSelector"
+            title="Ergebnisse pro Seite" (change)="updatePageSize()">
       <option *ngFor="let num of appDefaults.pageSizes" [value]="num">
         {{ num }} Erg./Seite
       </option>
     </select>
-    <button class="btn btn-secondary" title="Suche zurücksetzen" (click)="clearSearchText();handleSubmit()">Reset</button>
+    <button class="btn btn-secondary" title="Suche zurücksetzen" (click)="clearSearchText()">Reset</button>
 
     <input class="form-control" formControlName="filterField" id="filterfield"
-           type="text" (input)="handleFilter()"
-           placeholder="Filtere {{ entityList.entityType.namePlural}} nach" aria-label="Filter"/>
+           type="text" (input)="updateFilter()"
+           placeholder="Filtere {{ thisEntity?.namePlural}} nach" aria-label="Filter"/>
     <button class="btn btn-primary" title="Suchfilter leeren" (click)="clearFilter()">Alle</button>
   </div>
 </form>

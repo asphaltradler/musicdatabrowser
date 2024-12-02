@@ -8,7 +8,6 @@ import {Work} from '../entities/work';
 import {Genre} from '../entities/genre';
 import {Artist} from '../entities/artist';
 import {NgForOf} from '@angular/common';
-import {EntityListComponent} from '../entitylist/entity-list.component';
 import {appDefaults} from '../../config/config';
 
 @Component({
@@ -26,61 +25,65 @@ export class SearchfieldComponent implements OnInit {
   public static searchEntities: typeof AbstractEntity[] = [Album, Track, Composer, Work, Genre, Artist];
   searchEntities = SearchfieldComponent.searchEntities;
 
-  @Input({required:true})
-  entityList!: EntityListComponent<any>;
+  @Input({required:true}) thisEntity!: typeof AbstractEntity;
+
+  @Input({required:true}) searchEntity!: typeof AbstractEntity;
+  @Output() searchEntityChange = new EventEmitter<typeof AbstractEntity>();
+
+  @Input({required:true}) pageSize!: number;
+  @Output() pageSizeChange = new EventEmitter<number>();
+
+  @Input() searchString?: string;
+  @Output() searchStringChange = new EventEmitter<string>();
 
   @Input() filterString?: string;
   @Output() filterStringChange = new EventEmitter<string>();
 
   searchForm = new FormGroup({
-    entitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
-    pageSizeSelector: new FormControl(),
+    searchEntitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
+    pageSizeSelector: new FormControl<number>(0),
     searchField: new FormControl(''),
-    filterField: new FormControl('')
+    filterField: new FormControl(''),
   });
 
-  ngOnInit() {
-    //defaults setzen
-    this.searchForm.controls.entitySelector.setValue(this.entityList.entityType);
-    this.searchForm.controls.pageSizeSelector.setValue(this.entityList.pageSize);
-    this.handleSelection();
+  ngOnInit(): void {
+    this.searchForm.patchValue({
+      searchEntitySelector: this.searchEntity,
+      pageSizeSelector: this.pageSize,
+      searchField: this.searchString,
+      filterField: this.filterString
+    })
   }
 
-  handleSelection() {
+  updateSearchEntity() {
+    this.searchEntity = this.searchForm.value.searchEntitySelector || AbstractEntity;
+    this.searchEntityChange.emit(this.searchEntity);
     this.clearSearchText();
-    if (appDefaults.useLocalFilteringInsteadSearch) {
-      if (this.searchForm.controls.entitySelector.value === this.entityList.entityType) {
-        this.searchForm.controls.filterField.disable();
-      } else {
-        this.searchForm.controls.filterField.enable();
-      }
-    }
   }
 
   clearSearchText() {
     this.searchForm.controls.searchField.reset();
+    this.updateSearchField();
   }
 
-  handleSubmit() {
-    //this.searchText.emit(this.searchForm.value.searchField || '');
-    const entityType = this.searchForm.value.entitySelector;
-    if (entityType) {
-      this.entityList.searchByEntityName(entityType, this.searchForm.value.searchField || '');
-    }
-  }
-
-  handlePageSize() {
-    this.entityList.setPageSize(this.searchForm.value.pageSizeSelector);
-    this.handleSubmit();
+  updateSearchField() {
+    this.searchString = this.searchForm.value.searchField || '';
+    this.searchStringChange.emit(this.searchString);
   }
 
   clearFilter() {
     this.searchForm.controls.filterField.reset();
-    this.handleFilter();
+    this.updateFilter();
   }
 
-  handleFilter() {
-    this.entityList.setFilter(this.searchForm.value.filterField || '');
+  updateFilter() {
+    this.filterString = this.searchForm.value.filterField || '';
+    this.filterStringChange.emit(this.filterString);
+  }
+
+  updatePageSize() {
+    this.pageSize = this.searchForm.value.pageSizeSelector || 0;
+    this.pageSizeChange.emit(this.pageSize);
   }
 
   protected readonly appDefaults = appDefaults;

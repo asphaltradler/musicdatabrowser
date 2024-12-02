@@ -8,6 +8,4 @@ export const appDefaults = {
   pageSizes: [5, 10, 25, 50, 100, 250, 500, 1000],
   defaultPageSize: 10,
   maxPageSizeForLists: 100,
-
-  useLocalFilteringInsteadSearch: false
 }
