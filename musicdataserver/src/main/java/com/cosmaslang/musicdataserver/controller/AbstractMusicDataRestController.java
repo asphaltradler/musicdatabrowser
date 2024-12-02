@@ -54,9 +54,7 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
         Pageable pageable = getPageableOf(pageNumber, pageSize);
         long time = System.currentTimeMillis();
 
-        Page<ENTITY> page = (name == null || name.isEmpty())
-                ? getMyRepository().findAll(pageable)
-                : getMyRepository().findByNameContainsIgnoreCaseOrderByName(name, pageable);
+        Page<ENTITY> page = getMyRepository().findByNameContainsIgnoreCaseOrderByName(name, pageable);
 
         logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
         return page;
