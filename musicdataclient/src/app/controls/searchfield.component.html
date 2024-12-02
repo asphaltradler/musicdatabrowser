@@ -20,7 +20,7 @@
 
     <input class="form-control" formControlName="filterField" id="filterfield"
            type="text" (input)="updateFilter()"
-           placeholder="Filtere {{ thisEntity?.namePlural}} nach" aria-label="Filter"/>
+           placeholder="Filtere {{ thisEntity.namePlural}} nach" aria-label="Filter"/>
     <button class="btn btn-primary" title="Suchfilter leeren" (click)="clearFilter()">Alle</button>
   </div>
 </form>
