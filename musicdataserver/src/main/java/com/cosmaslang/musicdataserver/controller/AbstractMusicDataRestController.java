@@ -11,11 +11,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -45,30 +45,46 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
     protected abstract NamedEntityRepository<ENTITY> getMyRepository();
 
     @RequestMapping(value = "/find", method = {RequestMethod.GET, RequestMethod.POST})
-    @Transactional(readOnly = true)
-    protected abstract Page<ENTITY> find(
-            Integer pagenumber,
-            Integer pagesize,
+    protected Page<ENTITY> find(
+            @Nullable Integer pageNumber,
+            @Nullable Integer pageSize,
+            @Nullable String name) {
+        logger.info(String.format("find name=%s, page=%d pageSize=%d", name, pageNumber, pageSize));
+
+        Pageable pageable = getPageableOf(pageNumber, pageSize);
+        long time = System.currentTimeMillis();
+
+        Page<ENTITY> page = (name == null || name.isEmpty())
+                ? getMyRepository().findAll(pageable)
+                : getMyRepository().findByNameContainsIgnoreCaseOrderByName(name, pageable);
+
+        logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
+        return page;
+    }
+
+    @RequestMapping(value = "/findby", method = {RequestMethod.GET, RequestMethod.POST})
+    protected abstract Page<ENTITY> findBy(
+            Integer pageNumber,
+            Integer pageSize,
             String track, String album, String composer,
             String work, String genre, String artist);
 
-    protected void logCall(Integer pagenumber, Integer pagesize, String track, String album, String composer,
+    protected void logCall(Integer pageNumber, Integer pageSize, String track, String album, String composer,
                            String work, String genre, String artist) {
-        logger.info(MessageFormat.format("{0} find track={1}, album={2}, composer={3}, work={4}, genre={5}, artist={6} page={7} size={8}", this.getClass().getName(),
-                track, album, composer, work, genre, artist, pagenumber, pagesize));
+        logger.info(String.format("findby track=%s, album=%s, composer=%s, work=%s, genre=%s, artist=%s, page=%d pageSize=%d",
+                track, album, composer, work, genre, artist, pageNumber, pageSize));
     }
 
     @RequestMapping(value = "/get", method = {RequestMethod.GET, RequestMethod.POST})
-    @Transactional(readOnly = true)
     protected abstract Page<ENTITY> get(
-            Integer pagenumber,
-            Integer pagesize,
+            Integer pageNumber,
+            Integer pageSize,
             Long trackId, Long albumId, Long composerId,
             Long workId, Long genreId, Long artistId);
 
-    protected void logCall(Integer pagenumber, Integer pagesize, Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
-        logger.info(MessageFormat.format("{0} get trackId={1}, albumId={2}, composerId={3}, workId={4}, genreId={5}, artistId={6} page={7} size={8}", this.getClass().getName(),
-                trackId, albumId, composerId, workId, genreId, artistId, pagenumber, pagesize));
+    protected void logCall(Integer pageNumber, Integer pageSize, Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
+        logger.info(String.format("get trackId=%d, albumId=%d, composerId=%d, workId=%d, genreId=%d, artistId=%d, page=%d pageSize=%d",
+                trackId, albumId, composerId, workId, genreId, artistId, pageNumber, pageSize));
     }
 
     /**
@@ -96,6 +112,7 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);
     }
 
+    @Transactional
     @DeleteMapping("/remove/{id}")
     protected ENTITY remove(Long id, NamedEntityRepository<ENTITY> repository) {
         Optional<ENTITY> entity = repository.findById(id);
@@ -107,8 +124,8 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);
     }
 
-    protected Pageable getPageableOf(Integer pagenumber, Integer pagesize) {
-        return PageRequest.of(pagenumber == null ? 0 : pagenumber,
-                pagesize == null ? musicDataServerConfiguration.getPagesize() : pagesize);
+    protected Pageable getPageableOf(Integer pageNumber, Integer pageSize) {
+        return PageRequest.of(pageNumber == null ? 0 : pageNumber,
+                pageSize == null ? musicDataServerConfiguration.getPagesize() : pageSize);
     }
 }

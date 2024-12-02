@@ -19,7 +19,7 @@ public class MusicDataServerConfiguration {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     private String rootdir;
     private String startdir;
-    private int pagesize;
+    private int pageSize;
 
     /**
      * Automatisch gesetzt aus application.properties
@@ -42,13 +42,13 @@ public class MusicDataServerConfiguration {
         return startdir;
     }
 
-    public void setPagesize(int pagesize) {
-        logger.info(MessageFormat.format("setting pagesizeDefault={0} from config", pagesize));
-        this.pagesize = pagesize;
+    public void setPagesize(int pageSize) {
+        logger.info(MessageFormat.format("setting pageSizeDefault={0} from config", pageSize));
+        this.pageSize = pageSize;
     }
 
     public int getPagesize() {
-        return pagesize;
+        return pageSize;
     }
 
     @Bean

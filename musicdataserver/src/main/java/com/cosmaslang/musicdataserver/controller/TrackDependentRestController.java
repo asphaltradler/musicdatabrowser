@@ -20,45 +20,57 @@ public abstract class TrackDependentRestController<ENTITY extends NamedEntity> e
     protected abstract TrackDependentRepository<ENTITY> getMyRepository();
 
     @Override
-    public Page<ENTITY> find(Integer pagenumber, Integer pagesize,
-                            String track, String album, String composer, String work, String genre, String artist) {
-        logCall(pagenumber, pagesize, track, album, composer, work, genre, artist);
-        Pageable pageable = getPageableOf(pagenumber, pagesize);
+    public Page<ENTITY> findBy(Integer pageNumber, Integer pageSize,
+                               String track, String album, String composer, String work, String genre, String artist) {
+        logCall(pageNumber, pageSize, track, album, composer, work, genre, artist);
+
+        Pageable pageable = getPageableOf(pageNumber, pageSize);
+        Page<ENTITY> page = Page.empty(pageable);
+        long time = System.currentTimeMillis();
+
         if (track != null) {
-            return getMyRepository().findDistinctByTracksNameContainsIgnoreCaseOrderByName(track, pageable);
+            page = getMyRepository().findDistinctByTracksNameContainsIgnoreCaseOrderByName(track, pageable);
         } else if (album != null) {
-            return getMyRepository().findDistinctByTracksAlbumNameContainsIgnoreCaseOrderByName(album, pageable);
+            page = getMyRepository().findDistinctByTracksAlbumNameContainsIgnoreCaseOrderByName(album, pageable);
         } else if (composer != null) {
-            return getMyRepository().findDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(composer, pageable);
+            page = getMyRepository().findDistinctByTracksComposerNameContainsIgnoreCaseOrderByName(composer, pageable);
         } else if (work != null) {
-            return getMyRepository().findDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(work, pageable);
+            page = getMyRepository().findDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(work, pageable);
         } else if (genre != null) {
-            return getMyRepository().findDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(genre, pageable);
+            page = getMyRepository().findDistinctByTracksGenresNameContainsIgnoreCaseOrderByName(genre, pageable);
         } else if (artist != null) {
-            return getMyRepository().findDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(artist, pageable);
+            page = getMyRepository().findDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(artist, pageable);
         }
-        return Page.empty(pageable);
+
+        logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
+        return page;
     }
 
     @Override
-    public Page<ENTITY> get(Integer pagenumber, Integer pagesize,
+    public Page<ENTITY> get(Integer pageNumber, Integer pageSize,
                            Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
-        logCall(pagenumber, pagesize, trackId, albumId, composerId, workId, genreId, artistId);
-        Pageable pageable = getPageableOf(pagenumber, pagesize);
+        logCall(pageNumber, pageSize, trackId, albumId, composerId, workId, genreId, artistId);
+
+        Pageable pageable = getPageableOf(pageNumber, pageSize);
+        Page<ENTITY> page = Page.empty(pageable);
+        long time = System.currentTimeMillis();
+
         if (trackId != null) {
-            return getMyRepository().findDistinctByTracksIdOrderByName(trackId, pageable);
+            page = getMyRepository().findDistinctByTracksIdOrderByName(trackId, pageable);
         } else if (albumId != null) {
-            return getMyRepository().findDistinctByTracksAlbumIdOrderByName(albumId, pageable);
+            page = getMyRepository().findDistinctByTracksAlbumIdOrderByName(albumId, pageable);
         } else if (composerId != null) {
-            return getMyRepository().findDistinctByTracksComposerIdOrderByName(composerId, pageable);
+            page = getMyRepository().findDistinctByTracksComposerIdOrderByName(composerId, pageable);
         } else if (workId != null) {
-            return getMyRepository().findDistinctByTracksWorkIdOrderByName(workId, pageable);
+            page = getMyRepository().findDistinctByTracksWorkIdOrderByName(workId, pageable);
         } else if (genreId != null) {
-            return getMyRepository().findDistinctByTracksGenresIdOrderByName(genreId, pageable);
+            page = getMyRepository().findDistinctByTracksGenresIdOrderByName(genreId, pageable);
         } else if (artistId != null) {
-            return getMyRepository().findDistinctByTracksArtistsIdOrderByName(artistId, pageable);
+            page = getMyRepository().findDistinctByTracksArtistsIdOrderByName(artistId, pageable);
         }
-        return Page.empty(pageable);
+
+        logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
+        return page;
     }
 
     public Page<ENTITY> getMappedPageByTracks(Page<Track> tracks,

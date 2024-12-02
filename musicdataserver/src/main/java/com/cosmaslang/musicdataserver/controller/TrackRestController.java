@@ -16,46 +16,58 @@ public class TrackRestController extends AbstractMusicDataRestController<Track> 
     }
 
     @Override
-    public Page<Track> find(Integer pagenumber, Integer pagesize, String track, String album, String composer, String work, String genre, String artist) {
-        logCall(pagenumber, pagesize, track, album, composer, work, genre, artist);
-        Pageable pageable = getPageableOf(pagenumber, pagesize);
+    public Page<Track> findBy(Integer pageNumber, Integer pageSize, String track, String album, String composer, String work, String genre, String artist) {
+        logCall(pageNumber, pageSize, track, album, composer, work, genre, artist);
+
+        Pageable pageable = getPageableOf(pageNumber, pageSize);
+        Page<Track> page = Page.empty(pageable);
+        long time = System.currentTimeMillis();
+
         if (track != null) {
-            return trackRepository.findByNameContainsIgnoreCaseOrderByName(track, pageable);
+            page = trackRepository.findByNameContainsIgnoreCaseOrderByName(track, pageable);
         } else if (album != null) {
-            return trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumName(album, pageable);
+            page = trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumName(album, pageable);
         } else if (composer != null) {
-            return trackRepository.findByComposerNameContainsIgnoreCaseOrderByComposerNameAscAlbumNameAscId(composer, pageable);
+            page = trackRepository.findByComposerNameContainsIgnoreCaseOrderByComposerNameAscAlbumNameAscId(composer, pageable);
         } else if (work != null) {
-            return trackRepository.findByWorkNameContainsIgnoreCaseOrderByWorkNameAscAlbumNameAscId(work, pageable);
+            page = trackRepository.findByWorkNameContainsIgnoreCaseOrderByWorkNameAscAlbumNameAscId(work, pageable);
         } else if (genre != null) {
             //Page<Genre> genres = genreRepository.findByNameContaining(genre);
-            return trackRepository.findDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(genre, pageable); //.findByGenresIsIn(new HashSet<>(genres));
+            page = trackRepository.findDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(genre, pageable); //.findByGenresIsIn(new HashSet<>(genres));
         } else if (artist != null) {
             //Page<artist> artists = artistRepository.findByNameContaining(artist);
-            //return trackRepository.findByArtistsIsIn(new HashSet<>(artists));
-            return trackRepository.findDistinctByArtistsNameContainsIgnoreCaseOrderByArtistsNameAscAlbumNameAscId(artist, pageable);
+            //page = trackRepository.findByArtistsIsIn(new HashSet<>(artists));
+            page = trackRepository.findDistinctByArtistsNameContainsIgnoreCaseOrderByArtistsNameAscAlbumNameAscId(artist, pageable);
         }
-        return Page.empty();
+
+        logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
+        return page;
     }
 
     @Override
-    public Page<Track> get(Integer pagenumber, Integer pagesize, Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
-        logCall(pagenumber, pagesize, trackId, albumId, composerId, workId, genreId, artistId);
-        Pageable pageable = getPageableOf(pagenumber, pagesize);
+    public Page<Track> get(Integer pageNumber, Integer pageSize, Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
+        logCall(pageNumber, pageSize, trackId, albumId, composerId, workId, genreId, artistId);
+
+        Pageable pageable = getPageableOf(pageNumber, pageSize);
+        Page<Track> page = Page.empty(pageable);
+        long time = System.currentTimeMillis();
+
         if (trackId != null) {
-            return trackRepository.findById(trackId, pageable);
+            page = trackRepository.findById(trackId, pageable);
         } else if (albumId != null) {
-            return trackRepository.findByAlbumId(albumId, pageable);
+            page = trackRepository.findByAlbumId(albumId, pageable);
         } else if (composerId != null) {
-            return trackRepository.findByComposerId(composerId, pageable);
+            page = trackRepository.findByComposerId(composerId, pageable);
         } else if (workId != null) {
-            return trackRepository.findByWorkId(workId, pageable);
+            page = trackRepository.findByWorkId(workId, pageable);
         } else if (genreId != null) {
-            return trackRepository.findByGenresId(genreId, pageable);
+            page = trackRepository.findByGenresId(genreId, pageable);
         } else if (artistId != null) {
-            return trackRepository.findByArtistsId(artistId, pageable);
+            page = trackRepository.findByArtistsId(artistId, pageable);
         }
-        return Page.empty();
+
+        logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
+        return page;
     }
 }
 

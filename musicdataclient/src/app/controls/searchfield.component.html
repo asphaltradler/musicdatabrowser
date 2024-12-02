@@ -10,7 +10,7 @@
     <input class="form-control" formControlName="searchField" id="searchfield"
            type="text" (input)="handleSubmit()"
            placeholder="Suchtext" aria-label="Suchtext"/>
-    <select class="form-control" formControlName="pagesizeSelector" (change)="handlePageSize()"
+    <select class="form-control" formControlName="pageSizeSelector" (change)="handlePageSize()"
             title="Ergebnisse pro Seite">
       <option *ngFor="let num of appDefaults.pageSizes" [value]="num">
         {{ num }} Erg./Seite

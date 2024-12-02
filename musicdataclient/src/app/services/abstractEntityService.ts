@@ -7,11 +7,13 @@ import {Page} from '../entities/page';
 export abstract class AbstractEntityService<E extends AbstractEntity> {
   baseUrl = appDefaults.serverUrl;
   findUrl: string;
+  findByUrl: string;
   getUrl: string;
 
   protected constructor(protected http: HttpClient,
                         public entityType: typeof AbstractEntity) {
     this.findUrl = this.baseUrl + entityType.entityName + '/find';
+    this.findByUrl = this.baseUrl + entityType.entityName + '/findby';
     this.getUrl = this.baseUrl + entityType.entityName + '/get';
   }
 
@@ -20,11 +22,15 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
       .set(otherEntity.entityName, searchString)
       .set(appDefaults.serviceParamPageNumber, pageNumber)
       .set(appDefaults.serviceParamPageSize, pageSize);
-    return this.http.get<Page<E>>(this.findUrl, {params});
+    return this.http.get<Page<E>>(this.findByUrl, {params});
   }
 
   findNameLike(searchString: string, pageNumber: number, pageSize: number): Observable<Page<E>> {
-    return this.findByOtherNameLike(this.entityType, searchString, pageNumber, pageSize);
+    const params = new HttpParams()
+      .set(appDefaults.serviceParamName, searchString)
+      .set(appDefaults.serviceParamPageNumber, pageNumber)
+      .set(appDefaults.serviceParamPageSize, pageSize);
+    return this.http.get<Page<E>>(this.findUrl, {params});
   }
 
   findByOtherId(otherEntityType: typeof AbstractEntity, id: number, pageNumber: number, pageSize: number): Observable<Page<E>> {

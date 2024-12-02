@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {Album} from '../entities/album';
@@ -30,11 +30,11 @@ export class SearchfieldComponent implements OnInit {
   entityList!: EntityListComponent<any>;
 
   @Input() filterString?: string;
-  //@Output() filterStringChange = new EventEmitter();
+  @Output() filterStringChange = new EventEmitter<string>();
 
   searchForm = new FormGroup({
     entitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
-    pagesizeSelector: new FormControl(),
+    pageSizeSelector: new FormControl(),
     searchField: new FormControl(''),
     filterField: new FormControl('')
   });
@@ -42,7 +42,7 @@ export class SearchfieldComponent implements OnInit {
   ngOnInit() {
     //defaults setzen
     this.searchForm.controls.entitySelector.setValue(this.entityList.entityType);
-    this.searchForm.controls.pagesizeSelector.setValue(this.entityList.pageSize);
+    this.searchForm.controls.pageSizeSelector.setValue(this.entityList.pageSize);
     this.handleSelection();
   }
 
@@ -70,7 +70,7 @@ export class SearchfieldComponent implements OnInit {
   }
 
   handlePageSize() {
-    this.entityList.setPageSize(this.searchForm.value.pagesizeSelector);
+    this.entityList.setPageSize(this.searchForm.value.pageSizeSelector);
     this.handleSubmit();
   }
 
