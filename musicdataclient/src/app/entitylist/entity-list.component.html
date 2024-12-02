@@ -9,21 +9,17 @@
     <tr>
       <th class="text-right">#</th>
       <th>Name</th>
-      <th *ngFor="let cat of searchableEntities" class="text-center">
-        {{ cat.namePlural }}
-      </th>
+      <th *ngFor="let cat of searchableEntities">{{ cat.namePlural }}</th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let ent of entities; trackBy: trackByItemId" class="align-middle">
+    <tr *ngFor="let ent of entities; trackBy: trackByItemId">
       <td class="text-right">{{ ent.id }}</td>
       <td>{{ ent.name }}</td>
-      <td *ngFor="let cat of searchableEntities" class="text-center">
-        <button class="btn btn-link"
-                title="{{ cat.namePlural}} für {{ent.name}}"
-                (click)="navigateOtherEntityByThis(cat, ent)">
+      <td *ngFor="let cat of searchableEntities">
+        <a class="btn-link" (click)="navigateOtherEntityByThis(cat, ent)">
           {{ cat.namePlural }}
-        </button>
+        </a>
       </td>
     </tr>
     </tbody>

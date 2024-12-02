@@ -41,7 +41,7 @@ export class SearchfieldComponent implements OnInit {
 
   searchForm = new FormGroup({
     searchEntitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
-    pageSizeSelector: new FormControl<number>(0),
+    pageSizeSelector: new FormControl(0),
     searchField: new FormControl(''),
     filterField: new FormControl(''),
   });
@@ -52,7 +52,7 @@ export class SearchfieldComponent implements OnInit {
       pageSizeSelector: this.pageSize,
       searchField: this.searchString,
       filterField: this.filterString
-    })
+    }, { emitEvent: false });
   }
 
   updateSearchEntity() {

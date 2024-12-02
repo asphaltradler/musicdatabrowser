@@ -59,7 +59,7 @@ export class AlbumListComponent extends EntityListComponent<Album> {
         album.tracks = data;
       });
        */
-    })
+    });
   }
 
   getEntityList(album: Album, entity: typeof AbstractEntity): AbstractEntity[] {

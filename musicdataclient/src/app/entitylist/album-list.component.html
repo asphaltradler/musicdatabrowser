@@ -9,22 +9,21 @@
     <tr>
       <th class="text-right">#</th>
       <th>Name</th>
-      <th *ngFor="let cat of searchableEntities" class="text-center">
+      <th *ngFor="let cat of searchableEntities">
         {{ cat.namePlural }}
       </th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let album of entities; trackBy: trackByItemId" class="align-middle">
+    <tr *ngFor="let album of entities; trackBy: trackByItemId">
       <td class="text-right">{{ album.id }}</td>
       <td>{{ album.name }}</td>
-      <td *ngFor="let cat of searchableEntities" class="text-center">
+      <td *ngFor="let cat of searchableEntities">
         @if (cat === Track) {
-          <button class="btn btn-link"
-                  title="{{ Track.getNumberDescription(album.tracks?.length) }} für {{album.name}}"
-                  (click)="navigateOtherEntityByThis(Track, album)">
+          <a title="{{ Track.getNumberDescription(album.tracks?.length) }} für {{album.name}}"
+             (click)="navigateOtherEntityByThis(Track, album)">
             {{ Track.getNumberDescription(album.tracks?.length) }}
-          </button>
+          </a>
         } @else {
           <div *ngFor="let searchEntity of getEntityList(album, cat)">
             <a (click)="navigateOtherEntityByItself(cat, searchEntity)"

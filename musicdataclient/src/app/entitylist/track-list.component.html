@@ -22,12 +22,11 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let track of entities" class="align-middle">
+    <tr *ngFor="let track of entities">
       <td>{{ track.tracknumber }}</td>
       <td class="col-long">{{ track.name }}</td>
       <td class="col-long">
-        <a (click)="navigateOtherEntityByThis(Album, track)"
-           title="{{Album.namePlural}} für Track">
+        <a (click)="navigateOtherEntityByThis(Album, track)" title="{{Album.namePlural}} für Track">
           {{ track.album?.name }}
         </a>
       </td>
@@ -38,8 +37,7 @@
             {{ track.composer.name }}
           </a>
           <a (click)="navigateOtherEntityBy(Album, Composer, track.composer)"
-             class="btn-link"
-             title="{{ Album.namePlural}} für {{track.composer.name}}">
+             class="btn-link" title="{{ Album.namePlural}} für {{track.composer.name}}">
             [&nbsp;{{ Album.namePlural }}&nbsp;]
           </a>
         </div>
