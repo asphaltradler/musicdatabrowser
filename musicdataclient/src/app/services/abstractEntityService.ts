@@ -1,8 +1,9 @@
-import {Observable} from 'rxjs';
+import {Observable, tap} from 'rxjs';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {appDefaults} from '../../config/config';
 import {Page} from '../entities/page';
+import {EntityModel} from '../entitymodels/entity-model';
 
 export abstract class AbstractEntityService<E extends AbstractEntity> {
   baseUrl = appDefaults.serverUrl;
@@ -22,7 +23,7 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
       .set(otherEntity.entityName, searchString)
       .set(appDefaults.serviceParamPageNumber, pageNumber)
       .set(appDefaults.serviceParamPageSize, pageSize);
-    return this.http.get<Page<E>>(this.findByUrl, {params});
+    return this.getPage(this.findByUrl, params);
   }
 
   findNameLike(searchString: string, pageNumber: number, pageSize: number): Observable<Page<E>> {
@@ -30,7 +31,7 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
       .set(appDefaults.serviceParamName, searchString)
       .set(appDefaults.serviceParamPageNumber, pageNumber)
       .set(appDefaults.serviceParamPageSize, pageSize);
-    return this.http.get<Page<E>>(this.findUrl, {params});
+    return this.getPage(this.findUrl, params);
   }
 
   findByOtherId(otherEntityType: typeof AbstractEntity, id: number, pageNumber: number, pageSize: number): Observable<Page<E>> {
@@ -38,6 +39,14 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
       .set(otherEntityType.entityName + appDefaults.serviceParamSuffixId, id)
       .set(appDefaults.serviceParamPageNumber, pageNumber)
       .set(appDefaults.serviceParamPageSize, pageSize);
-    return this.http.get<Page<E>>(this.getUrl, {params});
+    return this.getPage(this.getUrl, params);
+  }
+
+  protected getPage(url: string, params: HttpParams): Observable<Page<E>> {
+    console.log("getPage", url, params);
+    return this.http.get<Page<E>>(url, {params}).pipe(tap(
+      page => {
+        page.modelContent = page.content.map(e => new EntityModel(e));
+      }));
   }
 }
