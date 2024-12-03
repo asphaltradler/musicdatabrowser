@@ -1,14 +1,15 @@
 import {OnDestroy} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
-import {ActivatedRoute, EventType, Params, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {AbstractEntityService} from '../services/abstractEntityService';
 import {Subscription} from 'rxjs';
 import {SearchfieldComponent} from '../controls/searchfield.component';
 import {Page} from '../entities/page';
 import {appDefaults} from '../../config/config';
+import {EntityModel} from '../entitymodels/entity-model';
 
 @Object
-export abstract class EntityListComponent<E extends AbstractEntity> implements OnDestroy {
+export abstract class EntityListComponent<E extends AbstractEntity> implements  OnDestroy {
   public static urlParamEntitySearchTitle = 'title';
   private static urlParamEntityName = 'searchby';
 
@@ -40,11 +41,9 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     this._searchableEntities = SearchfieldComponent.searchEntities.filter(
       (entity) => entity != this.entityType
     );
-    //default/Vorbelegung bei Aktivierung
-    this.changeSubscription = router.events.subscribe((event) => {
-      if (event.type === EventType.ActivationEnd) {
-        this.startSearchFromQuery();
-      }
+    //default/Vorbelegung bei Aktivierung oder Änderung der Query
+    this.changeSubscription = route.queryParams.subscribe(() => {
+      this.startSearchFromQuery();
     });
     console.log(`${this.entityType.getNameSingular()}List created`);
   }
@@ -102,7 +101,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     });
   }
 
-  fillData(page: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
+  private fillData(page: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
     this.page = page;
     this._searchEntityType = searchEntityType;
     this.lastSearchId = searchId;
@@ -147,8 +146,8 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     this.router.navigate([entityType.entityName], {queryParams: params});
   }
 
-  trackByItemId(_index: number, item: E): number {
-    return item.id;
+  trackByEntityId(_index: number, model: EntityModel<E>): number {
+    return model.entity.id;
   }
 
   get pageSize(): number {
@@ -190,7 +189,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
       return '';
     }
     let title;
-    const entityCount = this.entities.length;
+    const entityCount = this.getFilteredEntities().length;
     if (this._filter && entityCount < this.page.numberOfElements) {
       title = `${entityCount} von ${this.entityType.getNumberDescription(this.page.totalElements)}`;
     } else {
@@ -202,13 +201,13 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements O
     return `${title} ${this.titleFor}`;
   }
 
-  get entities(): E[] {
+  getFilteredEntities(): EntityModel<E>[] {
     if (!this.page) {
       return [];
     }
     return this._filter
-      ? this.page.content.filter((ent) => ent.name?.toLowerCase().includes(this._filter))
-      : this.page.content;
+      ? this.page.modelContent.filter(entModel => entModel.entity.name?.toLowerCase().includes(this._filter))
+      : this.page.modelContent;
   }
 
   hasPreviousPage() {

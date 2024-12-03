@@ -15,30 +15,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let album of entities; trackBy: trackByItemId">
-      <td class="text-right">{{ album.id }}</td>
-      <td>{{ album.name }}</td>
-      <td *ngFor="let cat of searchableEntities">
-        @if (cat === Track) {
-          <a title="{{ Track.getNumberDescription(album.tracks?.length) }} für {{album.name}}"
-             (click)="navigateOtherEntityByThis(Track, album)">
-            {{ Track.getNumberDescription(album.tracks?.length) }}
-          </a>
-        } @else {
-          <div *ngFor="let searchEntity of getEntityList(album, cat)">
-            <a (click)="navigateOtherEntityByItself(cat, searchEntity)"
-               title="Details für {{searchEntity.name}}">
-              {{ searchEntity.name }}
-            </a>
-            <a (click)="navigateOtherEntityBy(Album, cat, searchEntity)"
-               class="btn-link"
-               title="{{ Album.namePlural}} für {{searchEntity.name}}">
-              [&nbsp;{{ Album.namePlural }}&nbsp;]
-            </a>
-          </div>
-        }
-      </td>
-    </tr>
+      <tr app-album-row *ngFor="let albumModel of getFilteredEntities(); trackBy: trackByEntityId" [albumModel]="albumModel" [albumList]="this"></tr>
     </tbody>
   </table>
 </div>

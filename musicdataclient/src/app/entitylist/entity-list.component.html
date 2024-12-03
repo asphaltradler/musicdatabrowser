@@ -13,11 +13,11 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let ent of entities; trackBy: trackByItemId">
-      <td class="text-right">{{ ent.id }}</td>
-      <td>{{ ent.name }}</td>
+    <tr *ngFor="let entModel of getFilteredEntities(); trackBy: trackByEntityId">
+      <td class="text-right">{{ entModel.entity.id }}</td>
+      <td>{{ entModel.entity.name }}</td>
       <td *ngFor="let cat of searchableEntities">
-        <a class="btn-link" (click)="navigateOtherEntityByThis(cat, ent)">
+        <a class="btn-link" (click)="navigateOtherEntityByThis(cat, entModel.entity)">
           {{ cat.namePlural }}
         </a>
       </td>

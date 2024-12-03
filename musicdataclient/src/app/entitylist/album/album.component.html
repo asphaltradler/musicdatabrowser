@@ -1,0 +1,23 @@
+<td class="text-right">{{ albumModel.entity.id }}</td>
+<td>{{ albumModel.entity.name }}</td>
+<td *ngFor="let cat of albumList.searchableEntities">
+  @if (cat === Track) {
+    <a title="{{ Track.getNumberDescription(albumModel.entity.tracks?.length) }} für {{albumModel.entity.name}}"
+       (click)="albumList.navigateOtherEntityByThis(Track, albumModel.entity)">
+      {{ Track.getNumberDescription(albumModel.entity.tracks?.length) }}
+    </a>
+  } @else {
+    <div *ngFor="let searchEntity of albumModel.getSearchEntities(cat)">
+      <a (click)="albumList.navigateOtherEntityByItself(cat, searchEntity)"
+         title="Details für {{searchEntity.name}}">
+        {{ searchEntity.name }}
+      </a>
+      <a (click)="albumList.navigateOtherEntityBy(Album, cat, searchEntity)"
+         class="btn-link"
+         title="{{ Album.namePlural}} für {{searchEntity.name}}">
+        [&nbsp;{{ Album.namePlural }}&nbsp;]
+      </a>
+    </div>
+  }
+</td>
+
