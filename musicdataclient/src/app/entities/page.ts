@@ -1,9 +1,7 @@
 import {AbstractEntity} from './abstractEntity';
-import {EntityModel} from '../entitymodels/entity-model';
 
 export class Page<E extends AbstractEntity> {
   content!: E[];
-  modelContent!: EntityModel<E>[];
   empty!: boolean;
 
   first!: boolean;

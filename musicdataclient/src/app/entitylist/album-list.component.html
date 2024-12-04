@@ -15,7 +15,8 @@
     </tr>
     </thead>
     <tbody>
-      <tr app-album-row *ngFor="let albumModel of getFilteredEntities(); trackBy: trackByEntityId" [albumModel]="albumModel" [albumList]="this"></tr>
+      <tr app-album-row *ngFor="let entity of getEntities(); trackBy: trackByEntityId"
+          [entity]="entity" [entityList]="this" [hidden]="isEntityFiltered(entity)"></tr>
     </tbody>
   </table>
 </div>

@@ -11,15 +11,15 @@ import {WorkService} from '../services/work.service';
 import {GenreService} from '../services/genre.service';
 import {PagingComponent} from '../controls/paging.component';
 import {ListHeaderComponent} from './list-header/list-header.component';
-import {AlbumComponent} from './album/album.component';
+import {AlbumComponent} from './entity-component/album.component';
 
 @Component({
   selector: 'app-album-list',
   standalone: true,
   imports: [
+    NgForOf,
     SearchfieldComponent,
     PagingComponent,
-    NgForOf,
     ListHeaderComponent,
     AlbumComponent,
   ],
@@ -28,8 +28,8 @@ import {AlbumComponent} from './album/album.component';
 })
 export class AlbumListComponent extends EntityListComponent<Album> {
   constructor(service: AlbumService, route: ActivatedRoute, router: Router,
-              public composersService: ComposerService, public artistsService: ArtistService,
-              public workService: WorkService, public genreService: GenreService) {
-    super(service, route, router);
+              composersService: ComposerService, artistsService: ArtistService,
+              workService: WorkService, genreService: GenreService) {
+    super(service, route, router, composersService, artistsService, workService, genreService);
   }
 }

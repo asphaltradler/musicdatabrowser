@@ -1,0 +1,63 @@
+<td>{{ entity.tracknumber }}</td>
+<td class="col-long">{{ entity.name }}</td>
+<td class="col-long">
+  <a (click)="entityList.navigateOtherEntityByThis(Album, entity)" title="{{Album.namePlural}} für Track">
+    {{ entity.album?.name }}
+  </a>
+</td>
+<td>
+  <div *ngIf="entity.composer">
+    <a (click)="entityList.navigateOtherEntityByItself(Composer, entity.composer)"
+       title="Details für {{entity.composer.name}}">
+      {{ entity.composer.name }}
+    </a>
+    <a (click)="entityList.navigateOtherEntityBy(Album, Composer, entity.composer)"
+       class="btn-link" title="{{ Album.namePlural}} für {{entity.composer.name}}">
+      [&nbsp;{{ Album.namePlural }}&nbsp;]
+    </a>
+  </div>
+</td>
+<td>
+  <div *ngFor="let a of entity.artists">
+    <a (click)="entityList.navigateOtherEntityByItself(Artist, a)"
+       title="Details für {{a.name}}">
+      {{ a.name }}
+    </a>
+    <a (click)="entityList.navigateOtherEntityBy(Album, Artist, a)"
+       class="btn-link"
+       title="{{ Album.namePlural}} für {{a.name}}">
+      [&nbsp;{{ Album.namePlural }}&nbsp;]
+    </a>
+  </div>
+</td>
+<td>
+  <div *ngIf="entity.work">
+    <a (click)="entityList.navigateOtherEntityByItself(Work, entity.work)"
+       title="Details für {{entity.work.name}}">
+      {{ entity.work.name }}
+    </a>
+    <a (click)="entityList.navigateOtherEntityBy(Album, Work, entity.work)"
+       class="btn-link"
+       title="{{ Album.namePlural }} für {{ entity.work.name }}">
+      [&nbsp;{{ Album.namePlural }}&nbsp;]
+    </a>
+  </div>
+</td>
+<td>
+  <div *ngFor="let g of entity.genres">
+    <a (click)="entityList.navigateOtherEntityByItself(Genre, g)"
+       title="Details für {{g.name}}">
+      {{ g.name }}
+    </a>
+    <a (click)="entityList.navigateOtherEntityBy(Album, Genre, g)"
+       class="btn-link"
+       title="{{ Album.namePlural}} für {{g.name}}">
+      [&nbsp;{{ Album.namePlural }}&nbsp;]
+    </a>
+  </div>
+</td>
+<td>{{ entity.publisher }}</td>
+<td>{{ entity.publishedDate }}</td>
+<td class="text-right">{{ Track.getLength(entity) }}</td>
+<td class="col-long">{{ entity.path }}</td>
+<td>{{ Track.getLastModificationSince(entity) }}</td>
