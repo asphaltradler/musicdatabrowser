@@ -6,7 +6,10 @@ import {Subscription} from 'rxjs';
 import {SearchfieldComponent} from '../controls/searchfield.component';
 import {Page} from '../entities/page';
 import {appDefaults} from '../../config/config';
-import {EntityModel} from '../entitymodels/entity-model';
+import {ComposerService} from '../services/composer.service';
+import {ArtistService} from '../services/artist.service';
+import {WorkService} from '../services/work.service';
+import {GenreService} from '../services/genre.service';
 
 @Object
 export abstract class EntityListComponent<E extends AbstractEntity> implements  OnDestroy {
@@ -33,9 +36,10 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
   protected _searchableEntities: typeof AbstractEntity[];
 
   constructor(protected service: AbstractEntityService<E>,
-              protected route: ActivatedRoute,
-              protected router: Router) {
-    this.entityType = service.entityType;
+              protected route: ActivatedRoute, protected router: Router,
+              public composersService: ComposerService, public artistsService: ArtistService,
+              public workService: WorkService, public genreService: GenreService) {
+  this.entityType = service.entityType;
     this._searchEntityType = this.entityType;
     //eigenen Typ ausschließen in Darstellung
     this._searchableEntities = SearchfieldComponent.searchEntities.filter(
@@ -146,8 +150,8 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
     this.router.navigate([entityType.entityName], {queryParams: params});
   }
 
-  trackByEntityId(_index: number, model: EntityModel<E>): number {
-    return model.entity.id;
+  trackByEntityId(_index: number, model: E): number {
+    return model.id;
   }
 
   get pageSize(): number {
@@ -173,7 +177,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
   }
 
   set filter(value: string) {
-    this._filter = value?.toLowerCase();
+    this._filter = value.toLowerCase();
   }
 
   get searchEntityType(): typeof AbstractEntity {
@@ -189,7 +193,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
       return '';
     }
     let title;
-    const entityCount = this.getFilteredEntities().length;
+    const entityCount = this.getEntities().filter(e => this.isEntityShown(e)).length;
     if (this._filter && entityCount < this.page.numberOfElements) {
       title = `${entityCount} von ${this.entityType.getNumberDescription(this.page.totalElements)}`;
     } else {
@@ -201,13 +205,16 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
     return `${title} ${this.titleFor}`;
   }
 
-  getFilteredEntities(): EntityModel<E>[] {
-    if (!this.page) {
-      return [];
-    }
-    return this._filter
-      ? this.page.modelContent.filter(entModel => entModel.entity.name?.toLowerCase().includes(this._filter))
-      : this.page.modelContent;
+  getEntities(): E[] {
+    return this.page?.content || [];
+  }
+
+  isEntityFiltered(entity: AbstractEntity): boolean {
+    return !!this._filter && !entity.name?.toLowerCase().includes(this._filter);
+  }
+
+  isEntityShown(entity: AbstractEntity): boolean {
+    return !this.isEntityFiltered(entity);
   }
 
   hasPreviousPage() {

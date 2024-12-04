@@ -7,6 +7,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {NgForOf} from '@angular/common';
 import {PagingComponent} from '../controls/paging.component';
 import {ListHeaderComponent} from './list-header/list-header.component';
+import {EntityComponent} from './entity-component/entity.component';
+import {ComposerService} from '../services/composer.service';
+import {WorkService} from '../services/work.service';
+import {GenreService} from '../services/genre.service';
 
 @Component({
   selector: 'app-artist-list',
@@ -16,12 +20,15 @@ import {ListHeaderComponent} from './list-header/list-header.component';
     SearchfieldComponent,
     PagingComponent,
     ListHeaderComponent,
+    EntityComponent,
   ],
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'
 })
 export class ArtistListComponent extends EntityListComponent<Artist> {
-  constructor(artistService: ArtistService, route: ActivatedRoute, router: Router) {
-    super(artistService, route, router);
+  constructor(route: ActivatedRoute, router: Router,
+              composersService: ComposerService, artistsService: ArtistService,
+              workService: WorkService, genreService: GenreService) {
+    super(artistsService, route, router, composersService, artistsService, workService, genreService);
   }
 }

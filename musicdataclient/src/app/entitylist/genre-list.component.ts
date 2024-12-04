@@ -7,22 +7,28 @@ import {GenreService} from '../services/genre.service';
 import {NgForOf} from '@angular/common';
 import {PagingComponent} from '../controls/paging.component';
 import {ListHeaderComponent} from './list-header/list-header.component';
+import {EntityComponent} from './entity-component/entity.component';
+import {ComposerService} from '../services/composer.service';
+import {ArtistService} from '../services/artist.service';
+import {WorkService} from '../services/work.service';
 
 @Component({
   selector: 'app-genre-list',
   standalone: true,
   imports: [
+    NgForOf,
     SearchfieldComponent,
     PagingComponent,
     ListHeaderComponent,
-    NgForOf,
+    EntityComponent,
   ],
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'
 })
 export class GenreListComponent extends EntityListComponent<Genre> {
-  constructor(genreService: GenreService, route: ActivatedRoute, router: Router) {
-    super(genreService, route, router);
+  constructor(route: ActivatedRoute, router: Router,
+              composersService: ComposerService, artistsService: ArtistService,
+              workService: WorkService, genreService: GenreService) {
+    super(genreService, route, router, composersService, artistsService, workService, genreService);
   }
-
 }

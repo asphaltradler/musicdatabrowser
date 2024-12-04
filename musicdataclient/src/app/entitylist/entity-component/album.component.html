@@ -1,0 +1,22 @@
+<td class="text-right">{{ entity.id }}</td>
+<td>{{ entity.name }}</td>
+<td *ngFor="let cat of entityList.searchableEntities">
+  @if (cat === Track) {
+    <a title="{{ Track.getNumberDescription(entity.tracks?.length) }} für {{entity.name}}"
+       (click)="entityList.navigateOtherEntityByThis(Track, entity)">
+      {{ Track.getNumberDescription(entity.tracks?.length) }}
+    </a>
+  } @else {
+    <div *ngFor="let searchEntity of this.getSearchEntities(cat)">
+      <a (click)="entityList.navigateOtherEntityByItself(cat, searchEntity)"
+         title="Details für {{searchEntity.name}}">
+        {{ searchEntity.name }}
+      </a>
+      <a (click)="entityList.navigateOtherEntityBy(Album, cat, searchEntity)"
+         class="btn-link"
+         title="{{ Album.namePlural}} für {{searchEntity.name}}">
+        [&nbsp;{{ Album.namePlural }}&nbsp;]
+      </a>
+    </div>
+  }
+</td>

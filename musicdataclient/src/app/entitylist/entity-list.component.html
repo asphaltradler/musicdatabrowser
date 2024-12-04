@@ -13,15 +13,8 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let entModel of getFilteredEntities(); trackBy: trackByEntityId">
-      <td class="text-right">{{ entModel.entity.id }}</td>
-      <td>{{ entModel.entity.name }}</td>
-      <td *ngFor="let cat of searchableEntities">
-        <a class="btn-link" (click)="navigateOtherEntityByThis(cat, entModel.entity)">
-          {{ cat.namePlural }}
-        </a>
-      </td>
-    </tr>
+    <tr app-entity-row *ngFor="let entity of getEntities(); trackBy: trackByEntityId" [hidden]="isEntityFiltered(entity)"
+        [entity]="entity" [entityList]="this" ></tr>
     </tbody>
   </table>
 </div>

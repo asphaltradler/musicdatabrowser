@@ -33,10 +33,10 @@ export class SearchfieldComponent implements OnInit {
   @Input({required:true}) pageSize!: number;
   @Output() pageSizeChange = new EventEmitter<number>();
 
-  @Input() searchString?: string;
+  @Input() searchString: string = '';
   @Output() searchStringChange = new EventEmitter<string>();
 
-  @Input() filterString?: string;
+  @Input() filterString: string = '';
   @Output() filterStringChange = new EventEmitter<string>();
 
   searchForm = new FormGroup({

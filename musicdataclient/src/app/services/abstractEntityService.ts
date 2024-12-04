@@ -1,9 +1,8 @@
-import {Observable, tap} from 'rxjs';
+import {Observable} from 'rxjs';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {appDefaults} from '../../config/config';
 import {Page} from '../entities/page';
-import {EntityModel} from '../entitymodels/entity-model';
 
 export abstract class AbstractEntityService<E extends AbstractEntity> {
   baseUrl = appDefaults.serverUrl;
@@ -44,9 +43,6 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
 
   protected getPage(url: string, params: HttpParams): Observable<Page<E>> {
     console.log("getPage", url, params);
-    return this.http.get<Page<E>>(url, {params}).pipe(tap(
-      page => {
-        page.modelContent = page.content.map(e => new EntityModel(e));
-      }));
+    return this.http.get<Page<E>>(url, {params});
   }
 }
