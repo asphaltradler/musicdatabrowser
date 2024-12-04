@@ -15,8 +15,14 @@
     </tr>
     </thead>
     <tbody>
-      <tr app-album-row *ngFor="let entity of getEntities(); trackBy: trackByEntityId"
-          [entity]="entity" [entityList]="this" [hidden]="isEntityFiltered(entity)"></tr>
+      @for (entity of getEntities(); track entity.id) {
+        @defer (on viewport) {
+          <tr app-album-row
+              [entity]="entity" [entityList]="this" [hidden]="isEntityFiltered(entity)"></tr>
+        } @placeholder {
+        <tr><td colspan="99" class="text-center">... loading ...</td></tr>
+        }
+      }
     </tbody>
   </table>
 </div>

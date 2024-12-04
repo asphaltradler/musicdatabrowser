@@ -42,7 +42,7 @@ export abstract class AbstractEntityService<E extends AbstractEntity> {
   }
 
   protected getPage(url: string, params: HttpParams): Observable<Page<E>> {
-    console.log("getPage", url, params);
+    //console.log("getPage", url, params.get(appDefaults.serviceParamPageNumber));
     return this.http.get<Page<E>>(url, {params});
   }
 }

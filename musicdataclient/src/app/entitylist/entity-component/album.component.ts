@@ -30,7 +30,7 @@ export class AlbumComponent extends EntityComponent<Album> implements OnChanges 
   lazyLoad(composersService: ComposerService, artistsService: ArtistService,
            workService: WorkService, genreService: GenreService) {
     if (!this.initialized) {
-      console.log('lazy loading lists for', this.entity);
+      console.log('lazy loading lists for', this.entity.name);
       composersService.findByOtherId(Album, this.entity.id, 0, appDefaults.maxPageSizeForLists).subscribe(data => {
         this.composers = data.content;
       });
@@ -66,7 +66,7 @@ export class AlbumComponent extends EntityComponent<Album> implements OnChanges 
   }
 
   ngOnChanges(changes:SimpleChanges) {
-    console.log(changes);
+    //console.log(changes);
     const modelChange = changes['entity'];
     const prevEntity: Album = modelChange?.previousValue;
     const newEntity: Album = modelChange?.currentValue;
