@@ -12,14 +12,14 @@ import {WorkService} from '../services/work.service';
 import {GenreService} from '../services/genre.service';
 import {NgComponentOutlet} from '@angular/common';
 import {Album} from '../entities/album';
-import {TrackTableHeaderComponent} from './table-header/track-table-header.component';
 import {Track} from '../entities/track';
-import {TableHeaderComponent} from './table-header/table-header.component';
 import {ListHeaderComponent} from './list-header/list-header.component';
 import {PagingComponent} from '../controls/paging.component';
 import {TrackComponent} from './entity-component/track.component';
 import {AlbumComponent} from './entity-component/album.component';
 import {EntityComponent} from './entity-component/entity.component';
+import {TableHeaderComponent} from './table-header/table-header.component';
+import {TrackTableHeaderComponent} from './table-header/track-table-header.component';
 
 @Component({
   templateUrl: './entity-list.component.html',
@@ -70,21 +70,6 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
       this.startSearchFromQuery();
     });
     console.log(`${this.entityType.getNameSingular()}List created`);
-  }
-
-  getTableHeaderComponent() {
-    switch (this.entityType) {
-      case Track: return TrackTableHeaderComponent;
-      default: return TableHeaderComponent;
-    }
-  }
-
-  getTableRowComponent() {
-    switch (this.entityType) {
-      case Track: return TrackComponent;
-      case Album: return AlbumComponent;
-      default: return EntityComponent;
-    }
   }
 
   ngOnDestroy(): void {
@@ -185,8 +170,19 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
     this.router.navigate([entityType.entityName], {queryParams: params});
   }
 
-  trackByEntityId(_index: number, model: E): number {
-    return model.id;
+  getTableHeaderComponent() {
+    switch (this.entityType) {
+      case Track: return TrackTableHeaderComponent;
+      default: return TableHeaderComponent;
+    }
+  }
+
+  getTableRowComponent() {
+    switch (this.entityType) {
+      case Track: return TrackComponent;
+      case Album: return AlbumComponent;
+      default: return EntityComponent;
+    }
   }
 
   get pageSize(): number {
