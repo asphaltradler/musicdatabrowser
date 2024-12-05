@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {NgForOf} from '@angular/common';
 import {AbstractEntity} from '../../entities/abstractEntity';
 import {Album} from '../../entities/album';
@@ -10,10 +10,12 @@ import {Track} from '../../entities/track';
 import {EntityListComponent} from '../entity-list.component';
 
 @Component({
-  selector: '[app-entity-row]',
+  selector: 'tr.app-entity-row',
   standalone: true,
   imports: [NgForOf],
   templateUrl: './entity.component.html',
+  styleUrls: ['../entity-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntityComponent<ENTITY extends AbstractEntity> {
   @Input({required: true}) entity!: ENTITY;

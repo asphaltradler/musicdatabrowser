@@ -18,19 +18,6 @@
   </div>
 </td>
 <td>
-  <div *ngFor="let a of entity.artists">
-    <a (click)="entityList.navigateOtherEntityByItself(Artist, a)"
-       title="Details für {{a.name}}">
-      {{ a.name }}
-    </a>
-    <a (click)="entityList.navigateOtherEntityBy(Album, Artist, a)"
-       class="btn-link"
-       title="{{ Album.namePlural}} für {{a.name}}">
-      [&nbsp;{{ Album.namePlural }}&nbsp;]
-    </a>
-  </div>
-</td>
-<td>
   <div *ngIf="entity.work">
     <a (click)="entityList.navigateOtherEntityByItself(Work, entity.work)"
        title="Details für {{entity.work.name}}">
@@ -52,6 +39,19 @@
     <a (click)="entityList.navigateOtherEntityBy(Album, Genre, g)"
        class="btn-link"
        title="{{ Album.namePlural}} für {{g.name}}">
+      [&nbsp;{{ Album.namePlural }}&nbsp;]
+    </a>
+  </div>
+</td>
+<td>
+  <div *ngFor="let a of entity.artists">
+    <a (click)="entityList.navigateOtherEntityByItself(Artist, a)"
+       title="Details für {{a.name}}">
+      {{ a.name }}
+    </a>
+    <a (click)="entityList.navigateOtherEntityBy(Album, Artist, a)"
+       class="btn-link"
+       title="{{ Album.namePlural}} für {{a.name}}">
       [&nbsp;{{ Album.namePlural }}&nbsp;]
     </a>
   </div>

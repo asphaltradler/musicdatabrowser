@@ -5,7 +5,7 @@ import {Component, Input} from '@angular/core';
     standalone: true,
     imports: [],
     templateUrl: './list-header.component.html',
-    styleUrl: '../entity-list.component.css'
+    styleUrls: ['./list-header.component.css'],
 })
 export class ListHeaderComponent {
     @Input() title?: string;
