@@ -4,10 +4,9 @@ import {Work} from '../entities/work';
 import {WorkService} from '../services/work.service';
 import {SearchfieldComponent} from '../controls/searchfield.component';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgForOf} from '@angular/common';
+import {NgComponentOutlet} from '@angular/common';
 import {PagingComponent} from '../controls/paging.component';
 import {ListHeaderComponent} from './list-header/list-header.component';
-import {EntityComponent} from './entity-component/entity.component';
 import {ComposerService} from '../services/composer.service';
 import {ArtistService} from '../services/artist.service';
 import {GenreService} from '../services/genre.service';
@@ -16,11 +15,10 @@ import {GenreService} from '../services/genre.service';
   selector: 'app-work-list',
   standalone: true,
   imports: [
-    NgForOf,
+    NgComponentOutlet,
     SearchfieldComponent,
     PagingComponent,
-    ListHeaderComponent,
-    EntityComponent,
+    ListHeaderComponent
   ],
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.css'

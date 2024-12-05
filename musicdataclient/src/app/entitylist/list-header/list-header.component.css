@@ -1,0 +1,23 @@
+a {
+  cursor: pointer;
+}
+
+div.card {
+  overflow: hidden;
+}
+
+div.card-header {
+  display: flex;
+}
+
+div.card-header > * {
+  flex: 0.5;
+}
+
+h4, h5 {
+  user-select: none;
+}
+
+.text-right {
+  text-align: right;
+}

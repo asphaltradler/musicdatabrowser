@@ -9,10 +9,9 @@ import {Composer} from '../entities/composer';
 import {Artist} from '../entities/artist';
 import {Work} from '../entities/work';
 import {Genre} from '../entities/genre';
-import {NgForOf} from '@angular/common';
+import {NgComponentOutlet} from '@angular/common';
 import {PagingComponent} from '../controls/paging.component';
 import {ListHeaderComponent} from './list-header/list-header.component';
-import {TrackComponent} from './entity-component/track.component';
 import {ComposerService} from '../services/composer.service';
 import {ArtistService} from '../services/artist.service';
 import {WorkService} from '../services/work.service';
@@ -22,13 +21,13 @@ import {GenreService} from '../services/genre.service';
   selector: 'app-track-list',
   standalone: true,
   imports: [
-    NgForOf,
+    NgComponentOutlet,
     SearchfieldComponent,
     PagingComponent,
     ListHeaderComponent,
-    TrackComponent,
+
   ],
-  templateUrl: './track-list.component.html',
+  templateUrl: './entity-list.component.html',
   styleUrls: ['./entity-list.component.css', './track-list.component.css']
 })
 export class TrackListComponent extends EntityListComponent<Track> {

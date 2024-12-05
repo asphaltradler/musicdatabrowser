@@ -1,4 +1,4 @@
-import {OnDestroy} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {AbstractEntityService} from '../services/abstractEntityService';
@@ -10,8 +10,28 @@ import {ComposerService} from '../services/composer.service';
 import {ArtistService} from '../services/artist.service';
 import {WorkService} from '../services/work.service';
 import {GenreService} from '../services/genre.service';
+import {NgComponentOutlet} from '@angular/common';
+import {Album} from '../entities/album';
+import {TrackTableHeaderComponent} from './table-header/track-table-header.component';
+import {Track} from '../entities/track';
+import {TableHeaderComponent} from './table-header/table-header.component';
+import {ListHeaderComponent} from './list-header/list-header.component';
+import {PagingComponent} from '../controls/paging.component';
+import {TrackComponent} from './entity-component/track.component';
+import {AlbumComponent} from './entity-component/album.component';
+import {EntityComponent} from './entity-component/entity.component';
 
-@Object
+@Component({
+  templateUrl: './entity-list.component.html',
+  standalone: true,
+  imports: [
+    NgComponentOutlet,
+    SearchfieldComponent,
+    ListHeaderComponent,
+    PagingComponent,
+    TableHeaderComponent
+  ]
+})
 export abstract class EntityListComponent<E extends AbstractEntity> implements  OnDestroy {
   public static urlParamEntitySearchTitle = 'title';
   private static urlParamEntityName = 'searchby';
@@ -39,7 +59,7 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
               protected route: ActivatedRoute, protected router: Router,
               public composersService: ComposerService, public artistsService: ArtistService,
               public workService: WorkService, public genreService: GenreService) {
-  this.entityType = service.entityType;
+    this.entityType = service.entityType;
     this._searchEntityType = this.entityType;
     //eigenen Typ ausschließen in Darstellung
     this._searchableEntities = SearchfieldComponent.searchEntities.filter(
@@ -50,6 +70,21 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
       this.startSearchFromQuery();
     });
     console.log(`${this.entityType.getNameSingular()}List created`);
+  }
+
+  getTableHeaderComponent() {
+    switch (this.entityType) {
+      case Track: return TrackTableHeaderComponent;
+      default: return TableHeaderComponent;
+    }
+  }
+
+  getTableRowComponent() {
+    switch (this.entityType) {
+      case Track: return TrackComponent;
+      case Album: return AlbumComponent;
+      default: return EntityComponent;
+    }
   }
 
   ngOnDestroy(): void {

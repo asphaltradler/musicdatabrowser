@@ -1,20 +1,21 @@
-<app-searchfield  [thisEntity]="entityType" [(searchEntity)]="searchEntityType" [(pageSize)]="pageSize"
-                  [(searchString)]="searchName" [(filterString)]="filter"/>
+<app-searchfield [thisEntity]="entityType" [(searchEntity)]="searchEntityType" [(pageSize)]="pageSize"
+                 [(searchString)]="searchName" [(filterString)]="filter"/>
 <app-paging [entityList]="this"/>
 
 <div class="card my-3">
   <app-list-header [title]="title" [lastSearchPerformance]="lastSearchPerformance"></app-list-header>
   <table class="card-body small table table-bordered table-striped table-hover table-sm my-0">
     <thead class="thead-dark">
-    <tr>
-      <th class="text-right">#</th>
-      <th>Name</th>
-      <th *ngFor="let cat of searchableEntities">{{ cat.namePlural }}</th>
-    </tr>
+      <ng-container *ngComponentOutlet="getTableHeaderComponent(); inputs: {'entityList': this}"></ng-container>
     </thead>
     <tbody>
-    <tr app-entity-row *ngFor="let entity of getEntities(); trackBy: trackByEntityId" [hidden]="isEntityFiltered(entity)"
-        [entity]="entity" [entityList]="this" ></tr>
+    @for (entity of getEntities(); track entity.id) {
+      @defer (on viewport) {
+      <ng-container *ngComponentOutlet="getTableRowComponent(); inputs: {'entity': entity, 'entityList': this}" ></ng-container>
+      } @placeholder (minimum 100ms) {
+        <tr><td colspan="99" class="placeholder">... loading ...</td></tr>
+      }
+    }
     </tbody>
   </table>
 </div>

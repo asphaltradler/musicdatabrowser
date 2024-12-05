@@ -14,10 +14,12 @@ import {AbstractEntity} from '../../entities/abstractEntity';
 import {EntityComponent} from './entity.component';
 
 @Component({
-  selector: '[app-album-row]',
+  selector: 'tr.app-album-row',
   standalone: true,
   imports: [NgForOf],
   templateUrl: './album.component.html',
+  styleUrls: ['../entity-list.component.css'],
+  //changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlbumComponent extends EntityComponent<Album> implements OnChanges {
   composers?: Composer[];
@@ -49,6 +51,7 @@ export class AlbumComponent extends EntityComponent<Album> implements OnChanges 
       });
       */
       this.initialized = true;
+      //TODO push change
     }
   }
 
@@ -66,10 +69,10 @@ export class AlbumComponent extends EntityComponent<Album> implements OnChanges 
   }
 
   ngOnChanges(changes:SimpleChanges) {
-    //console.log(changes);
     const modelChange = changes['entity'];
     const prevEntity: Album = modelChange?.previousValue;
     const newEntity: Album = modelChange?.currentValue;
+    console.log('change on', newEntity);
     //gleiche Entities ignorieren
     if (newEntity !== prevEntity) {
       this.lazyLoad(
