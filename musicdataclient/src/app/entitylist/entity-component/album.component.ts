@@ -1,17 +1,20 @@
-import {Component, OnChanges, SimpleChanges} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnChanges,
+  SimpleChanges
+} from '@angular/core';
 import {Album} from '../../entities/album';
 import {NgForOf} from '@angular/common';
 import {Composer} from '../../entities/composer';
 import {Artist} from '../../entities/artist';
 import {Genre} from '../../entities/genre';
 import {Work} from '../../entities/work';
-import {ComposerService} from '../../services/composer.service';
-import {ArtistService} from '../../services/artist.service';
-import {WorkService} from '../../services/work.service';
-import {GenreService} from '../../services/genre.service';
-import {appDefaults} from '../../../config/config';
 import {AbstractEntity} from '../../entities/abstractEntity';
 import {EntityComponent} from './entity.component';
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'tr.app-album-row',
@@ -19,7 +22,7 @@ import {EntityComponent} from './entity.component';
   imports: [NgForOf],
   templateUrl: './album.component.html',
   styleUrls: ['../entity-list.component.css'],
-  //changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlbumComponent extends EntityComponent<Album> implements OnChanges {
   composers?: Composer[];
@@ -29,29 +32,30 @@ export class AlbumComponent extends EntityComponent<Album> implements OnChanges 
 
   initialized = false;
 
-  lazyLoad(composersService: ComposerService, artistsService: ArtistService,
-           workService: WorkService, genreService: GenreService) {
+  constructor(hostElement: ElementRef, private ref: ChangeDetectorRef) {
+    super(hostElement);
+  }
+
+  lazyLoadLists() {
     if (!this.initialized) {
-      console.log('lazy loading lists for', this.entity.name);
-      composersService.findByOtherId(Album, this.entity.id, 0, appDefaults.maxPageSizeForLists).subscribe(data => {
-        this.composers = data.content;
+      console.log(`${this.entity.name} start lazy loading lists`);
+
+      //alle zusammen füllen, wenn vorhanden, um zu viel Flackern zu vermeiden
+      forkJoin({
+        composers: this.getOtherEntitiesByThisId(Composer),
+        works: this.getOtherEntitiesByThisId(Work),
+        genres: this.getOtherEntitiesByThisId(Genre),
+        artists: this.getOtherEntitiesByThisId(Artist)
+      }).subscribe(data => {
+        this.composers = data.composers.content;
+        this.works = data.works.content;
+        this.genres = data.genres.content;
+        this.artists = data.artists.content;
+        console.log(`=> ${this.entity.name} loaded:`, data);
+        //erst jetzt für Änderung markieren, so dass View aktualisiert wird
+        this.ref.markForCheck();
+        this.initialized = true;
       });
-      artistsService.findByOtherId(Album, this.entity.id, 0, appDefaults.maxPageSizeForLists).subscribe(data => {
-        this.artists = data.content;
-      });
-      workService.findByOtherId(Album, this.entity.id, 0, appDefaults.maxPageSizeForLists).subscribe(data => {
-        this.works = data.content;
-      });
-      genreService.findByOtherId(Album, this.entity.id, 0, appDefaults.maxPageSizeForLists).subscribe(data => {
-        this.genres = data.content;
-      });
-      /*
-      trackService.findBy(Album, this.entity.id).subscribe(data => {
-        this.entity.tracks = data;
-      });
-      */
-      this.initialized = true;
-      //TODO push change
     }
   }
 
@@ -72,12 +76,11 @@ export class AlbumComponent extends EntityComponent<Album> implements OnChanges 
     const modelChange = changes['entity'];
     const prevEntity: Album = modelChange?.previousValue;
     const newEntity: Album = modelChange?.currentValue;
-    console.log('change on', newEntity);
     //gleiche Entities ignorieren
     if (newEntity !== prevEntity) {
-      this.lazyLoad(
-        this.entityList.composersService, this.entityList.artistsService,
-        this.entityList.workService, this.entityList.genreService);
+      this.lazyLoadLists();
+    } else {
+      console.log(`change on ${newEntity} ignored`);
     }
   }
 }

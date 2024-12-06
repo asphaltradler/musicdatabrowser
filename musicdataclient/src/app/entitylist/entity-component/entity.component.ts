@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Input} from '@angular/core';
 import {NgForOf} from '@angular/common';
 import {AbstractEntity} from '../../entities/abstractEntity';
 import {Album} from '../../entities/album';
@@ -8,6 +8,7 @@ import {Work} from '../../entities/work';
 import {Genre} from '../../entities/genre';
 import {Track} from '../../entities/track';
 import {EntityListComponent} from '../entity-list.component';
+import {appDefaults} from "../../../config/config";
 
 @Component({
   selector: 'tr.app-entity-row',
@@ -20,6 +21,20 @@ import {EntityListComponent} from '../entity-list.component';
 export class EntityComponent<ENTITY extends AbstractEntity> {
   @Input({required: true}) entity!: ENTITY;
   @Input({required: true}) entityList!: EntityListComponent<ENTITY>;
+  //TODO muss das wirklich so kompliziert sein? wieso kann ich das nicht mit [hidden] setzen?
+  @Input() set hidden(hide: boolean) {
+    if (hide) {
+      this.hostElement.nativeElement.setAttribute('hidden', '');
+    } else {
+      this.hostElement.nativeElement.removeAttribute('hidden');
+    }
+  }
+
+  constructor(private hostElement: ElementRef) {}
+
+  getOtherEntitiesByThisId(otherEntityType: typeof AbstractEntity) {
+    return this.entityList.service.findByOtherId(otherEntityType, this.entityList.entityType, this.entity.id, 0, appDefaults.maxPageSizeForLists);
+  }
 
   protected readonly Album = Album;
   protected readonly Composer = Composer;

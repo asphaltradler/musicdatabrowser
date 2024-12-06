@@ -1,5 +1,5 @@
 <td class="text-right">{{ entity.id }}</td>
-<td>{{ entity.name }}</td>
+<td [hidden]="hidden">{{ entity.name }}</td>
 <td *ngFor="let cat of entityList.searchableEntities">
   <a class="btn-link" (click)="entityList.navigateOtherEntityByThis(cat, entity)">
     {{ cat.namePlural }}

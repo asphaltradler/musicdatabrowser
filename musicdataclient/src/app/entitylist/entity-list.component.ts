@@ -1,15 +1,11 @@
 import {Component, OnDestroy} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {AbstractEntityService} from '../services/abstractEntityService';
+import {EntityService} from '../services/entity.service';
 import {Subscription} from 'rxjs';
 import {SearchfieldComponent} from '../controls/searchfield.component';
 import {Page} from '../entities/page';
 import {appDefaults} from '../../config/config';
-import {ComposerService} from '../services/composer.service';
-import {ArtistService} from '../services/artist.service';
-import {WorkService} from '../services/work.service';
-import {GenreService} from '../services/genre.service';
 import {NgComponentOutlet} from '@angular/common';
 import {Album} from '../entities/album';
 import {Track} from '../entities/track';
@@ -23,20 +19,19 @@ import {TrackTableHeaderComponent} from './table-header/track-table-header.compo
 
 @Component({
   templateUrl: './entity-list.component.html',
+  styleUrls: ['./entity-list.component.css'],
   standalone: true,
   imports: [
     NgComponentOutlet,
     SearchfieldComponent,
     ListHeaderComponent,
     PagingComponent,
-    TableHeaderComponent
   ]
 })
-export abstract class EntityListComponent<E extends AbstractEntity> implements  OnDestroy {
+export class EntityListComponent<E extends AbstractEntity> implements OnDestroy {
   public static urlParamEntitySearchTitle = 'title';
   private static urlParamEntityName = 'searchby';
 
-  public entityType!: typeof AbstractEntity;
   public page?: Page<E>;
   private _pageSize = appDefaults.defaultPageSize;
 
@@ -52,14 +47,16 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
   private _searchName = '';
 
   public lastSearchPerformance?: string;
-
   protected _searchableEntities: typeof AbstractEntity[];
 
-  constructor(protected service: AbstractEntityService<E>,
-              protected route: ActivatedRoute, protected router: Router,
-              public composersService: ComposerService, public artistsService: ArtistService,
-              public workService: WorkService, public genreService: GenreService) {
-    this.entityType = service.entityType;
+  public entityType: typeof AbstractEntity;
+
+  constructor(protected route: ActivatedRoute, protected router: Router,
+              public service: EntityService) {
+    const data = this.route.snapshot.data;
+    //EntityTyp aus Router übergeben
+    this.entityType = data[0];
+    //mit eigenem Typ selbst anfangen als Suchkriterium
     this._searchEntityType = this.entityType;
     //eigenen Typ ausschließen in Darstellung
     this._searchableEntities = SearchfieldComponent.searchEntities.filter(
@@ -111,10 +108,10 @@ export abstract class EntityListComponent<E extends AbstractEntity> implements  
     this.lastSearchSubscription?.unsubscribe();
     console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'}`);
     const obs = id
-      ? this.service.findByOtherId(searchEntityType, id.valueOf(), pageNumber, this._pageSize)
+      ? this.service.findByOtherId(this.entityType, searchEntityType, id.valueOf(), pageNumber, this._pageSize)
       : searchEntityType === this.entityType
-        ? this.service.findNameLike(searchString?.toLowerCase() || '', pageNumber, this._pageSize)
-        : this.service.findByOtherNameLike(searchEntityType, searchString?.toLowerCase() || '', pageNumber, this._pageSize);
+        ? this.service.findNameLike(this.entityType, searchString?.toLowerCase() || '', pageNumber, this._pageSize)
+        : this.service.findByOtherNameLike(this.entityType, searchEntityType, searchString?.toLowerCase() || '', pageNumber, this._pageSize);
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(page => {
       this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()}='${searchString}'` : 'insgesamt';
