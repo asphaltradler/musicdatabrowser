@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Input} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input} from '@angular/core';
 import {NgForOf} from '@angular/common';
 import {AbstractEntity} from '../../entities/abstractEntity';
 import {Album} from '../../entities/album';
@@ -8,7 +8,7 @@ import {Work} from '../../entities/work';
 import {Genre} from '../../entities/genre';
 import {Track} from '../../entities/track';
 import {EntityListComponent} from '../entity-list.component';
-import {appDefaults} from "../../../config/config";
+import {appDefaults} from '../../../config/config';
 
 @Component({
   selector: 'tr.app-entity-row',
@@ -30,7 +30,7 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
     }
   }
 
-  constructor(private hostElement: ElementRef) {}
+  constructor(protected hostElement: ElementRef, protected changeRef: ChangeDetectorRef) {}
 
   getOtherEntitiesByThisId(otherEntityType: typeof AbstractEntity) {
     return this.entityList.service.findByOtherId(otherEntityType, this.entityList.entityType, this.entity.id, 0, appDefaults.maxPageSizeForLists);

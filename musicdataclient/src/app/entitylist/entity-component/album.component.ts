@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  OnChanges,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef} from '@angular/core';
 import {Album} from '../../entities/album';
 import {NgForOf} from '@angular/common';
 import {Composer} from '../../entities/composer';
@@ -24,39 +17,41 @@ import {forkJoin} from "rxjs";
   styleUrls: ['../entity-list.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AlbumComponent extends EntityComponent<Album> implements OnChanges {
+export class AlbumComponent extends EntityComponent<Album> {
   composers?: Composer[];
   artists?: Artist[];
   genres?: Genre[];
   works?: Work[];
+  obs: IntersectionObserver;
 
-  initialized = false;
+  constructor(hostElement: ElementRef, changeRef: ChangeDetectorRef) {
+    super(hostElement, changeRef);
 
-  constructor(hostElement: ElementRef, private ref: ChangeDetectorRef) {
-    super(hostElement);
+    this.obs = new IntersectionObserver(entries => entries.filter(
+        e => e.isIntersecting).forEach(() => this.lazyLoadLists()));
+    this.obs.observe(this.hostElement.nativeElement);
   }
 
   lazyLoadLists() {
-    if (!this.initialized) {
-      console.log(`${this.entity.name} start lazy loading lists`);
+    console.log(`${this.entity.name} start lazy loading lists`);
 
-      //alle zusammen füllen, wenn vorhanden, um zu viel Flackern zu vermeiden
-      forkJoin({
-        composers: this.getOtherEntitiesByThisId(Composer),
-        works: this.getOtherEntitiesByThisId(Work),
-        genres: this.getOtherEntitiesByThisId(Genre),
-        artists: this.getOtherEntitiesByThisId(Artist)
-      }).subscribe(data => {
-        this.composers = data.composers.content;
-        this.works = data.works.content;
-        this.genres = data.genres.content;
-        this.artists = data.artists.content;
-        console.log(`=> ${this.entity.name} loaded:`, data);
-        //erst jetzt für Änderung markieren, so dass View aktualisiert wird
-        this.ref.markForCheck();
-        this.initialized = true;
-      });
-    }
+    //alle zusammen füllen, wenn vorhanden, um zu viel Flackern zu vermeiden
+    forkJoin({
+      composers: this.getOtherEntitiesByThisId(Composer),
+      works: this.getOtherEntitiesByThisId(Work),
+      genres: this.getOtherEntitiesByThisId(Genre),
+      artists: this.getOtherEntitiesByThisId(Artist)
+    }).subscribe(data => {
+      this.composers = data.composers.content;
+      this.works = data.works.content;
+      this.genres = data.genres.content;
+      this.artists = data.artists.content;
+      console.log(`=> ${this.entity.name} loaded:`, data);
+      //erst jetzt für Änderung markieren, so dass View aktualisiert wird
+      this.changeRef.markForCheck();
+    });
+    //keine weitere Observierung mehr nötig nach Initiierung des Ladens
+    this.obs.disconnect();
   }
 
   getSearchEntities(entity: typeof AbstractEntity): AbstractEntity[] | undefined {
@@ -70,17 +65,5 @@ export class AlbumComponent extends EntityComponent<Album> implements OnChanges 
       return this.genres;
     }
     return [];
-  }
-
-  ngOnChanges(changes:SimpleChanges) {
-    const modelChange = changes['entity'];
-    const prevEntity: Album = modelChange?.previousValue;
-    const newEntity: Album = modelChange?.currentValue;
-    //gleiche Entities ignorieren
-    if (newEntity !== prevEntity) {
-      this.lazyLoadLists();
-    } else {
-      console.log(`change on ${newEntity} ignored`);
-    }
   }
 }
