@@ -12,12 +12,13 @@ table tr > * {
 
 th.albumart, td.albumart {
   text-align: center;
-  width: 180px;
-  height: 160px;
+  width: 160px;
+  height: 140px;
+  padding: 0
 }
 
 td.albumart img {
-  width: 180px;
+  width: 160px;
 }
 
 th.col-long, td.col-long {
