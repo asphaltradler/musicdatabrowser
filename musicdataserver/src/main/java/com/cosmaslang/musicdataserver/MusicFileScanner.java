@@ -4,6 +4,7 @@ import com.cosmaslang.musicdataserver.db.entities.*;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musicdataserver.services.MusicDataServerStartupService;
 import io.micrometer.common.util.StringUtils;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.PersistenceException;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -14,6 +15,8 @@ import org.jaudiotagger.audio.generic.Utils;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.images.Artwork;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -37,6 +37,9 @@ public class MusicFileScanner {
     private final static List<String> audioFileExtensions = Stream.of(SupportedFileFormat.values()).map(SupportedFileFormat::getFilesuffix).toList();
 
     private final MusicDataServerStartupService musicdataserverStartupService;
+
+    private final static List<String> imageExts = Arrays.asList("jpg", "png", "gif");
+    private final static List<String> bookletExts = Arrays.asList("pdf", "pub");
 
     private int rootPathSteps;
     private long count = 0;
@@ -50,12 +53,12 @@ public class MusicFileScanner {
         this.musicdataserverStartupService = service;
     }
 
-    public void scan(Path rootPath, Path startPath) {
+    public void scan(Path rootPath, Path startPath) throws IOException {
         rootPathSteps = rootPath.getNameCount();
         logger.info(MessageFormat.format("Scanning {0} from start {1}", rootPath, startPath));
 
         long startTime = System.currentTimeMillis();
-        scanDirectory(startPath);
+        scanDirectory(startPath.toFile());
         long endTime = System.currentTimeMillis() - startTime;
 
         logger.info(String.format("Found %d tracks in %ds", count, endTime / 1000));
@@ -63,40 +66,78 @@ public class MusicFileScanner {
                 created, updated, unchanged, reused, failed));
     }
 
-    private void scanDirectory(final Path dir) {
-        try (Stream<Path> audioPaths = Files.list(dir)) {
-            //nicht .parallel(): Parallelisierung führt zu Problemen bei lazy initialization
-            audioPaths.forEach(this::processPath);
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Unable to read dir: " + dir);
-        }
-    }
+    private void scanDirectory(final File dir) throws IOException {
+        if (dir.isDirectory()) {
+            try (Stream<Path> paths = Files.list(dir.toPath())) {
+                //erst alle Unterverzeichnisse nach unten steigen
+                paths.map(Path::toFile).filter(File::isDirectory).forEach(
+                        f -> {
+                            try {
+                                scanDirectory(f);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+            }
 
-    @Transactional
-    protected void processPath(Path path) {
-        if (Files.isDirectory(path)) {
-            scanDirectory(path);
-        } else {
-            String ext = Utils.getExtension(path.toFile()).toLowerCase();
-            if (audioFileExtensions.contains(ext)) {
-                count++;
-                try {
-                    processAudioFile(path.toFile());
-                } catch (Throwable t) {
-                    failed++;
-                    logger.log(Level.WARNING, "Unable to read file: " + path, t);
-                }
+            final Document albumArt = getDocument(getDocumentFile(dir, imageExts));
+            final Document booklet = getDocument(getDocumentFile(dir, bookletExts));
+
+            try (Stream<Path> paths = Files.list(dir.toPath())) {
+                Stream<Track> tracks = paths.map(Path::toFile).filter(
+                                f -> audioFileExtensions.contains(Utils.getExtension(f).toLowerCase()))
+                        .map(this::processAudioFile).filter(Objects::nonNull);
+
+                tracks.forEach(track -> {
+                    //könnte schon eins embedded gesetzt sein
+                    if (track.getAlbumart() == null) {
+                        track.setAlbumart(albumArt);
+                    }
+                    track.setBooklet(booklet);
+                    musicdataserverStartupService.getTrackRepository().save(track);
+                });
             }
         }
     }
 
-    protected void processAudioFile(File file) {
-        Track track = createOrUpdateTrack(file);
-        if (track != null) {
+    private Document getDocument(File file) {
+        Document document = null;
+        if (file != null && file.exists()) {
+            document = new Document(file);
+            Optional<Document> optional = musicdataserverStartupService.getDocumentRepository().findOne(Example.of(document));
+            if (optional.isPresent()) {
+                document = optional.get();
+            } else {
+                document = musicdataserverStartupService.getDocumentRepository().save(document);
+            }
+        }
+        return document;
+    }
+
+    @Nullable
+    private static File getDocumentFile(File dir, List<String> extensions) throws IOException {
+        try (Stream<Path> paths = Files.list(dir.toPath())) {
+            return paths.map(Path::toFile).filter(
+                    f -> extensions.contains(Utils.getExtension(f))
+            ).findFirst().orElse(null);
+        }
+    }
+
+    @Transactional
+    @Nullable
+    protected Track processAudioFile(File file) {
+        count++;
+        Track track = null;
+        try {
+            track = createOrUpdateTrack(file);
             //null markiert unveränderte Tracks, die nicht mehr gespeichert werden müssen
-            musicdataserverStartupService.getTrackRepository().save(track);
+            //TODO jetzt nicht mehr möglich, da Image und Booklet noch gesetzt werden müssen
+        } catch (Throwable t) {
+            failed++;
+            logger.log(Level.WARNING, "Unable to read file: " + file, t);
         }
         logger.info("processed " + file.getName());
+        return track;
     }
 
     private Track createOrUpdateTrack(File file) {
@@ -114,14 +155,16 @@ public class MusicFileScanner {
             logger.info("-   skipping unchanged track " + pathString);
             unchanged++;
             //muss nicht nochmal gespeichert werden
-            return null;
+            //TODO leider können wir das wg. Image und Booklet nicht mehr mit Sicherheit sagen
+            //return null
+            return track;
         }
         else {
             logger.info("-   update track " + pathString);
             updated++;
         }
 
-        Tag tag = null;
+        Tag tag;
         AudioHeader header = null;
         try {
             AudioFile audioFile = AudioFileIO.read(file);
@@ -160,6 +203,8 @@ public class MusicFileScanner {
         } catch (Throwable t) {
             logger.log(Level.WARNING, MessageFormat.format("error when processing track {0} with header {1}", pathString, header == null ? "NULL" : header),
                     t);
+            failed++;
+            return null;
         }
 
         //Daten direkt aus File
@@ -186,6 +231,15 @@ public class MusicFileScanner {
                     Album album = createOrUpdateEntity(Album.class, musicdataserverStartupService.getAlbumRepository(), str);
                     track.setAlbum(album);
                     //album.getTracks().add(track);
+                }
+                Artwork artwork = tag.getFirstArtwork();
+                if (artwork != null) {
+                    Document document = new Document(artwork.getBinaryData(), artwork.getMimeType());
+                    if (StringUtils.isNotBlank(artwork.getDescription())) {
+                        document.setName(artwork.getDescription());
+                    }
+                    musicdataserverStartupService.getDocumentRepository().save(document);
+                    track.setAlbumart(document);
                 }
                 str = tag.getFirst(FieldKey.COMPOSER);
                 if (StringUtils.isNotBlank(str)) {
@@ -238,6 +292,8 @@ public class MusicFileScanner {
             } catch (Throwable t) {
                 logger.log(Level.WARNING, "error when processing track " + pathString
                         + " with tag " + tag, t);
+                failed++;
+                return null;
             }
         }
 

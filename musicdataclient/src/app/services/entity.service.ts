@@ -10,9 +10,11 @@ import {Injectable} from '@angular/core';
 )
 export class EntityService {
   baseUrl = appDefaults.serverUrl;
-  findUrl = this.baseUrl + '{}' + '/find';
-  findByUrl = this.baseUrl + '{}' + '/findby';
-  getUrl = this.baseUrl + '{}' + '/get';
+  findUrl = this.baseUrl + '/{}/find';
+  findByUrl = this.baseUrl + '/{}/findby';
+  getUrl = this.baseUrl + '/{}/get';
+  documentUrl = this.baseUrl + '/document/content/';
+  entityDocumentUrl = this.baseUrl + '/{0}/id/{1}/albumart';
 
   constructor(private httpClient: HttpClient) {}
 
@@ -43,5 +45,17 @@ export class EntityService {
   protected getPage(url: string, entityType: typeof AbstractEntity, params: HttpParams): Observable<Page<any>> {
     //console.log("getPage", url, params.get(appDefaults.serviceParamPageNumber));
     return this.httpClient.get<Page<any>>(url.replace('{}', entityType.entityName), {params});
+  }
+
+  findDocumentById(id: number) {
+    return this.httpClient.get<ImageBitmap>(this.getDocumentUrl(id));
+  }
+
+  getDocumentUrl(id: number) {
+    return this.documentUrl + id;
+  }
+
+  getDocumentUrlForEntity(entityType: typeof AbstractEntity, entity: AbstractEntity) {
+    return this.entityDocumentUrl.replace('{0}', entityType.entityName).replace('{1}', `${entity.id}`);
   }
 }

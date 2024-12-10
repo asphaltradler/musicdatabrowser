@@ -4,6 +4,7 @@ import {Composer} from './composer';
 import {Artist} from './artist';
 import {Work} from './work';
 import {Genre} from './genre';
+import {Document} from './document';
 
 export class Track extends AbstractEntity {
   static override entityName = 'track';
@@ -20,6 +21,8 @@ export class Track extends AbstractEntity {
   artists?: Artist[];
   genres?: Genre[];
   work?: Work;
+  albumart?: Document;
+  booklet?: Document;
 
   static getLastModificationSince(t: Track) {
     const now = new Date();

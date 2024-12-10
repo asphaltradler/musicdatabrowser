@@ -1,7 +1,7 @@
 import {InjectionToken} from '@angular/core';
 
 export const appDefaults = {
-  serverUrl: 'http://' + window.location.hostname + ':8081/music/',
+  serverUrl: 'http://' + window.location.hostname + ':8081/music',
   serviceParamSuffixId: 'Id',
   serviceParamName: 'name',
   serviceParamPageNumber: 'pageNumber',

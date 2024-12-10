@@ -1,6 +1,6 @@
 package com.cosmaslang.musicdataserver.db.entities;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -12,7 +12,7 @@ import java.util.Set;
 public class Album extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    long id;
+    private long id;
 
     //muss man leider hier drin definieren, sonst wird es nicht gefunden
     @Column(nullable = false)
@@ -20,8 +20,8 @@ public class Album extends NamedEntity {
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.MERGE, fetch = FetchType.LAZY, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    //@JsonBackReference
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonBackReference
+    //@JsonIdentityReference(alwaysAsId = true)
     private Set<Track> tracks;
 
     @Override

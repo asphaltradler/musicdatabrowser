@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Input} from '@angular/core';
 import {NgForOf} from '@angular/common';
 import {AbstractEntity} from '../../entities/abstractEntity';
 import {Album} from '../../entities/album';
@@ -30,7 +30,7 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
     }
   }
 
-  constructor(protected hostElement: ElementRef, protected changeRef: ChangeDetectorRef) {}
+  constructor(protected hostElement: ElementRef) {}
 
   getOtherEntitiesByThisId(otherEntityType: typeof AbstractEntity) {
     return this.entityList.service.findByOtherId(otherEntityType, this.entityList.entityType, this.entity.id, 0, appDefaults.maxPageSizeForLists);

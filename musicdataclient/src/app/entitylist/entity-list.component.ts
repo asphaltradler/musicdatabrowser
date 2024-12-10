@@ -16,6 +16,7 @@ import {AlbumComponent} from './entity-component/album.component';
 import {EntityComponent} from './entity-component/entity.component';
 import {TableHeaderComponent} from './table-header/table-header.component';
 import {TrackTableHeaderComponent} from './table-header/track-table-header.component';
+import {AlbumTableHeaderComponent} from './table-header/album-table-header.component';
 
 @Component({
   templateUrl: './entity-list.component.html',
@@ -60,7 +61,7 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
     this._searchEntityType = this.entityType;
     //eigenen Typ ausschließen in Darstellung
     this._searchableEntities = SearchfieldComponent.searchEntities.filter(
-      (entity) => entity != this.entityType
+      entity => entity != this.entityType
     );
     //default/Vorbelegung bei Aktivierung oder Änderung der Query
     this.changeSubscription = route.queryParams.subscribe(() => {
@@ -169,6 +170,7 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
 
   getTableHeaderComponent() {
     switch (this.entityType) {
+      case Album: return AlbumTableHeaderComponent;
       case Track: return TrackTableHeaderComponent;
       default: return TableHeaderComponent;
     }
@@ -176,8 +178,8 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
 
   getTableRowComponent() {
     switch (this.entityType) {
-      case Track: return TrackComponent;
       case Album: return AlbumComponent;
+      case Track: return TrackComponent;
       default: return EntityComponent;
     }
   }

@@ -3,6 +3,7 @@ package com.cosmaslang.musicdataserver.services;
 import com.cosmaslang.musicdataserver.MusicFileScanner;
 import com.cosmaslang.musicdataserver.configuration.MusicDataServerConfiguration;
 import com.cosmaslang.musicdataserver.db.entities.*;
+import com.cosmaslang.musicdataserver.db.repositories.DocumentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
 import jakarta.persistence.EntityManager;
@@ -42,6 +43,8 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     @Autowired
     NamedEntityRepository<Composer> composerRepository;
     @Autowired
+    DocumentRepository fileContentRepository;
+    @Autowired
     MusicDataServerConfiguration musicDataServerConfiguration;
 
     private Path rootDirPath;
@@ -64,7 +67,7 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     }
 
     @Override
-    public void init() {
+    public void init() throws IOException {
         logger.info("init");
         MusicFileScanner scanner = new MusicFileScanner(this);
         scanner.scan(rootDirPath, startDirPath);
@@ -100,5 +103,9 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     @Override
     public NamedEntityRepository<Composer> getComposerRepository() {
         return composerRepository;
+    }
+    @Override
+    public DocumentRepository getDocumentRepository() {
+        return fileContentRepository;
     }
 }

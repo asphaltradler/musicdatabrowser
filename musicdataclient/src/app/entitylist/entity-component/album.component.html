@@ -1,10 +1,13 @@
+<td class="albumart">
+  <img src="{{ getAlbumartUrl() }}" alt="{{ entity.name }}" title="{{ entity.name }}">
+</td>
 <td class="text-right">{{ entity.id }}</td>
 <td>{{ entity.name }}</td>
 <td *ngFor="let cat of entityList.searchableEntities">
   @if (cat === Track) {
-    <a title="{{ Track.getNumberDescription(entity.tracks?.length) }} für {{entity.name}}"
-       (click)="entityList.navigateOtherEntityByThis(Track, entity)">
-      {{ Track.getNumberDescription(entity.tracks?.length) }}
+    <a (click)="entityList.navigateOtherEntityByThis(Track, entity)"
+       class="btn-link"  title="{{ Track.namePlural }}">
+      {{ Track.namePlural }}
     </a>
   } @else {
     <div *ngFor="let searchEntity of this.getSearchEntities(cat)">
@@ -13,8 +16,7 @@
         {{ searchEntity.name }}
       </a>
       <a (click)="entityList.navigateOtherEntityBy(Album, cat, searchEntity)"
-         class="btn-link"
-         title="{{ Album.namePlural}} für {{searchEntity.name}}">
+         class="btn-link" title="{{ Album.namePlural}} für {{searchEntity.name}}">
         [&nbsp;{{ Album.namePlural }}&nbsp;]
       </a>
     </div>

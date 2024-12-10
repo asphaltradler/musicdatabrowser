@@ -2,7 +2,7 @@ import {InjectionToken} from '@angular/core';
 import {AbstractEntity} from '../app/entities/abstractEntity';
 
 export const appDefaults = {
-  serverUrl: 'http://' + window.location.hostname + ':8080/music/',
+  serverUrl: 'http://' + window.location.hostname + ':8080/music',
   serviceParamSuffixId: 'Id',
   serviceParamName: 'name',
   serviceParamPageNumber: 'pageNumber',

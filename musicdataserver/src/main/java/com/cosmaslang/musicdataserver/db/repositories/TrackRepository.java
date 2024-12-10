@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface TrackRepository extends NamedEntityRepository<Track> {
     Track findByPath(String path);
@@ -30,4 +32,6 @@ public interface TrackRepository extends NamedEntityRepository<Track> {
     Page<Track> findByArtistsId(Long id, Pageable pageable);
     //@Query("select t from Track t join fetch t.genres g where g.id = :genreId")
     Page<Track> findByGenresId(Long id, Pageable pageable);
+
+    Optional<Track> findFirstByAlbumId(Long id);
 }

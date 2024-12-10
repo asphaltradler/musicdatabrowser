@@ -10,7 +10,7 @@ import java.util.Set;
 public class Composer extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    long id;
+    private long id;
 
     //muss man leider hier drin definieren, sonst wird es nicht gefunden
     @Column(nullable = false)

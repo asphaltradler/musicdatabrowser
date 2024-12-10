@@ -2,6 +2,7 @@ package com.cosmaslang.musicdataserver.controller;
 
 import com.cosmaslang.musicdataserver.configuration.MusicDataServerConfiguration;
 import com.cosmaslang.musicdataserver.db.entities.*;
+import com.cosmaslang.musicdataserver.db.repositories.DocumentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackDependentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
@@ -39,6 +40,8 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
     TrackDependentRepository<Genre> genreRepository;
     @Autowired
     TrackDependentRepository<Artist> artistRepository;
+    @Autowired
+    DocumentRepository documentRepository;
     @Autowired
     MusicDataServerConfiguration musicDataServerConfiguration;
 
@@ -104,10 +107,7 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
     @GetMapping("/id/{id}")
     public ENTITY getById(@PathVariable Long id) {
         Optional<ENTITY> entity = getMyRepository().findById(id);
-        if (entity.isPresent()) {
-            return entity.get();
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);
+        return entity.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @Transactional

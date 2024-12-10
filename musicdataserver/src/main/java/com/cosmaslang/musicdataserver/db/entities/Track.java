@@ -1,6 +1,7 @@
 package com.cosmaslang.musicdataserver.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
@@ -26,7 +27,7 @@ public class Track extends NamedEntity {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    long id;
+    private long id;
 
     //tag data
     private Integer tracknumber;
@@ -35,9 +36,7 @@ public class Track extends NamedEntity {
     //Bei den ManyToOne dürfen wir NICHT Lazy kaskadieren!!!
     @ManyToOne(cascade = CascadeType.MERGE /*, fetch = FetchType.LAZY*/)
     //@JoinColumn(name = "album_id")
-    //@JsonManagedReference
-    //@JsonIgnore
-    //@JsonIdentityReference(alwaysAsId = true)
+    @JsonManagedReference
     private Album album;
     @ManyToOne(cascade = CascadeType.MERGE)
     //@JoinColumn(name = "composer_id")
@@ -78,6 +77,29 @@ public class Track extends NamedEntity {
     private Integer bitsPerSample;
     @Column(nullable = false)
     private String hash;
+
+    //additional data
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private Document albumart;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private Document booklet;
+
+    public Document getAlbumart() {
+        return albumart;
+    }
+
+    public void setAlbumart(Document albumArt) {
+        this.albumart = albumArt;
+    }
+
+    public Document getBooklet() {
+        return booklet;
+    }
+
+    public void setBooklet(Document booklet) {
+        this.booklet = booklet;
+    }
 
     public String getPath() {
         return path;

@@ -7,7 +7,7 @@ import {Genre} from '../../entities/genre';
 import {Work} from '../../entities/work';
 import {AbstractEntity} from '../../entities/abstractEntity';
 import {EntityComponent} from './entity.component';
-import {forkJoin} from "rxjs";
+import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'tr.app-album-row',
@@ -24,8 +24,8 @@ export class AlbumComponent extends EntityComponent<Album> {
   works?: Work[];
   obs: IntersectionObserver;
 
-  constructor(hostElement: ElementRef, changeRef: ChangeDetectorRef) {
-    super(hostElement, changeRef);
+  constructor(hostElement: ElementRef, private changeRef: ChangeDetectorRef) {
+    super(hostElement);
 
     this.obs = new IntersectionObserver(entries => entries.filter(
         e => e.isIntersecting).forEach(() => this.lazyLoadLists()));
@@ -52,6 +52,10 @@ export class AlbumComponent extends EntityComponent<Album> {
     });
     //keine weitere Observierung mehr nötig nach Initiierung des Ladens
     this.obs.disconnect();
+  }
+
+  getAlbumartUrl() {
+    return this.entityList.service.getDocumentUrlForEntity(Album, this.entity);
   }
 
   getSearchEntities(entity: typeof AbstractEntity): AbstractEntity[] | undefined {

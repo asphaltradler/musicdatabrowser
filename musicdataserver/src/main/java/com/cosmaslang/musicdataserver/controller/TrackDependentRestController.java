@@ -1,5 +1,6 @@
 package com.cosmaslang.musicdataserver.controller;
 
+import com.cosmaslang.musicdataserver.db.entities.Document;
 import com.cosmaslang.musicdataserver.db.entities.NamedEntity;
 import com.cosmaslang.musicdataserver.db.entities.Track;
 import com.cosmaslang.musicdataserver.db.repositories.TrackDependentRepository;
@@ -7,11 +8,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @NoRepositoryBean
@@ -82,5 +91,19 @@ public abstract class TrackDependentRestController<ENTITY extends NamedEntity> e
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), allEntitiesForTracks.size());
         return new PageImpl<>(allEntitiesForTracks.subList(start, end), pageable, allEntitiesForTracks.size());
+    }
+
+    protected static ResponseEntity<? extends Serializable> getResponseEntity(Document doc) {
+        if (doc == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf(doc.getMimeType()))
+                    .cacheControl(CacheControl.maxAge(10, TimeUnit.DAYS))
+                    .body(doc.getContent());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }

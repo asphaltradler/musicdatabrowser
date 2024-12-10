@@ -10,6 +10,16 @@ table tr > * {
   vertical-align: top;
 }
 
+th.albumart, td.albumart {
+  text-align: center;
+  width: 180px;
+  height: 160px;
+}
+
+td.albumart img {
+  width: 180px;
+}
+
 th.col-long, td.col-long {
   width: 20%;
   max-width: 200px;
