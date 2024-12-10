@@ -3,11 +3,12 @@ package com.cosmaslang.musicdataserver.db.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
 @Table(indexes = @Index(columnList = "name", unique = true))
-public class Artist extends NamedEntity {
+public class Artist extends TrackDependentEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private long id;
@@ -35,6 +36,7 @@ public class Artist extends NamedEntity {
         this.name = name;
     }
 
+    @Override
     public Set<Track> getTracks() {
         return tracks;
     }

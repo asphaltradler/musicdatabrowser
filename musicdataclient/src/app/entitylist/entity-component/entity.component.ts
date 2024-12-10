@@ -36,6 +36,13 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
     return this.entityList.service.findByOtherId(otherEntityType, this.entityList.entityType, this.entity.id, 0, appDefaults.maxPageSizeForLists);
   }
 
+  getAlbumartUrl() {
+    if (this.entity.albumartId) {
+      return this.entityList.service.getDocumentUrl(this.entity.albumartId.valueOf());
+    }
+    return "";
+  }
+
   protected readonly Album = Album;
   protected readonly Composer = Composer;
   protected readonly Artist = Artist;

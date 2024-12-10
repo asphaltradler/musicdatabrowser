@@ -1,8 +1,8 @@
 package com.cosmaslang.musicdataserver.controller;
 
 import com.cosmaslang.musicdataserver.db.entities.Document;
-import com.cosmaslang.musicdataserver.db.entities.NamedEntity;
 import com.cosmaslang.musicdataserver.db.entities.Track;
+import com.cosmaslang.musicdataserver.db.entities.TrackDependentEntity;
 import com.cosmaslang.musicdataserver.db.repositories.TrackDependentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @NoRepositoryBean
-public abstract class TrackDependentRestController<ENTITY extends NamedEntity> extends AbstractMusicDataRestController<ENTITY> {
+public abstract class TrackDependentRestController<ENTITY extends TrackDependentEntity> extends AbstractMusicDataRestController<ENTITY> {
 
     protected abstract TrackDependentRepository<ENTITY> getMyRepository();
 

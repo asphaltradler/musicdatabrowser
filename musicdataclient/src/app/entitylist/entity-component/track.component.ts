@@ -11,10 +11,4 @@ import {EntityComponent} from './entity.component';
   styleUrls: ['../entity-list.component.css'],
 })
 export class TrackComponent extends EntityComponent<Track> {
-  getAlbumartUrl() {
-    if (this.entity.albumart) {
-      return this.entityList.service.getDocumentUrl(this.entity.albumart.id);
-    }
-    return "";
-  }
 }

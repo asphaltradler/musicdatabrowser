@@ -1,9 +1,8 @@
 package com.cosmaslang.musicdataserver.db.entities;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import org.springframework.lang.Nullable;
 
 import java.util.Date;
 import java.util.Objects;
@@ -80,27 +79,48 @@ public class Track extends NamedEntity {
 
     //additional data
     @ManyToOne(cascade = CascadeType.MERGE)
+    @JsonBackReference
+    @Nullable
     private Document albumart;
 
     @ManyToOne(cascade = CascadeType.MERGE)
+    @JsonBackReference
+    @Nullable
     private Document booklet;
 
+    @Nullable
     public Document getAlbumart() {
         return albumart;
     }
 
-    public void setAlbumart(Document albumArt) {
+    /** Statt des kompletten Dokuments übermitteln wir nur die ID, falls gegeben */
+    @Nullable
+    @JsonProperty
+    public Long getAlbumartId() {
+        return albumart == null ? null : albumart.getId();
+    }
+
+    public void setAlbumart(@Nullable Document albumArt) {
         this.albumart = albumArt;
     }
 
+    @Nullable
+    @JsonProperty
     public Document getBooklet() {
         return booklet;
     }
 
-    public void setBooklet(Document booklet) {
+    @Nullable
+    @JsonProperty
+    public Long getBookletId() {
+        return booklet == null ? null : booklet.getId();
+    }
+
+    public void setBooklet(@Nullable Document booklet) {
         this.booklet = booklet;
     }
 
+    @JsonProperty
     public String getPath() {
         return path;
     }
@@ -109,6 +129,7 @@ public class Track extends NamedEntity {
         this.path = file;
     }
 
+    @JsonProperty
     public Integer getTracknumber() {
         return tracknumber;
     }
@@ -117,10 +138,12 @@ public class Track extends NamedEntity {
         this.tracknumber = tracknumber;
     }
 
+    @JsonProperty
     public String getName() {
         return name;
     }
 
+    @JsonProperty
     @Override
     public long getId() {
         return id;
@@ -136,10 +159,6 @@ public class Track extends NamedEntity {
 
     public void setAlbum(Album album) {
         this.album = album;
-    }
-
-    public Set<Artist> getArtists() {
-        return artists;
     }
 
     /**
@@ -166,10 +185,6 @@ public class Track extends NamedEntity {
         this.composer = composer;
     }
 
-    public Set<Genre> getGenres() {
-        return genres;
-    }
-
     /**
      * @param genre fügt ein einzelnes Genre hinzu
      */
@@ -194,6 +209,7 @@ public class Track extends NamedEntity {
         //work.addTrack(this);
     }
 
+    @JsonProperty
     public String getPublisher() {
         return publisher;
     }
@@ -202,6 +218,7 @@ public class Track extends NamedEntity {
         this.publisher = publisher;
     }
 
+    @JsonProperty
     public String getPublishedDate() {
         return publishedDate;
     }
@@ -210,6 +227,7 @@ public class Track extends NamedEntity {
         this.publishedDate = publishedDate;
     }
 
+    @JsonProperty
     public String getComment() {
         return comment;
     }
@@ -218,6 +236,7 @@ public class Track extends NamedEntity {
         this.comment = comment;
     }
 
+    @JsonProperty
     public Integer getLengthInSeconds() {
         return lengthInSeconds;
     }
@@ -226,6 +245,7 @@ public class Track extends NamedEntity {
         this.lengthInSeconds = lengthInSeconds;
     }
 
+    @JsonProperty
     public String getEncoding() {
         return encoding;
     }
@@ -234,6 +254,7 @@ public class Track extends NamedEntity {
         this.encoding = encoding;
     }
 
+    @JsonProperty
     public Integer getSamplerate() {
         return samplerate;
     }
@@ -242,6 +263,7 @@ public class Track extends NamedEntity {
         this.samplerate = samplerate;
     }
 
+    @JsonProperty
     public Long getBitrate() {
         return bitrate;
     }
@@ -250,6 +272,7 @@ public class Track extends NamedEntity {
         this.bitrate = bitrate;
     }
 
+    @JsonProperty
     public Integer getBitsPerSample() {
         return bitsPerSample;
     }
@@ -258,6 +281,7 @@ public class Track extends NamedEntity {
         this.bitsPerSample = bitrate;
     }
 
+    @JsonProperty
     public Long getNoOfSamples() {
         return noOfSamples;
     }
@@ -266,6 +290,7 @@ public class Track extends NamedEntity {
         this.noOfSamples = noOfSamples;
     }
 
+    @JsonProperty
     public Long getSize() {
         return size;
     }
@@ -274,6 +299,7 @@ public class Track extends NamedEntity {
         this.size = length;
     }
 
+    @JsonProperty
     public Date getLastModifiedDate() {
         return lastModifiedDate;
     }
@@ -282,6 +308,7 @@ public class Track extends NamedEntity {
         this.lastModifiedDate = lastModifiedDate;
     }
 
+    @JsonProperty
     public String getHash() {
         return hash;
     }

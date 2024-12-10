@@ -19,18 +19,19 @@ public class AlbumRestController extends TrackDependentRestController<Album> {
         return albumRepository;
     }
 
-
     @GetMapping("/id/{id}/albumart")
-    public ResponseEntity<?> getAlbumArt(@PathVariable Long id) {
-        Document doc = trackRepository.findFirstByAlbumId(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getAlbumart();
+    public ResponseEntity<?> getAlbumart(@PathVariable Long id) {
+        Document doc = albumRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .getAlbumart().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return getResponseEntity(doc);
     }
 
     @GetMapping("/id/{id}/booklet")
     public ResponseEntity<?> getBooklet(@PathVariable Long id) {
-        Document doc = trackRepository.findFirstByAlbumId(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getBooklet();
+        Document doc = albumRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .getBooklet().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return getResponseEntity(doc);
     }
 }

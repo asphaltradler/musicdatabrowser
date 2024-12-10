@@ -54,8 +54,11 @@ export class AlbumComponent extends EntityComponent<Album> {
     this.obs.disconnect();
   }
 
-  getAlbumartUrl() {
-    return this.entityList.service.getDocumentUrlForEntity(Album, this.entity);
+  getBookletUrl() {
+    if (this.entity.bookletId) {
+      return this.entityList.service.getDocumentUrl(this.entity.bookletId.valueOf());
+    }
+    return "";
   }
 
   getSearchEntities(entity: typeof AbstractEntity): AbstractEntity[] | undefined {
