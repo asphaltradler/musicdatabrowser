@@ -100,6 +100,12 @@ public class Track extends NamedEntity {
         return albumart == null ? null : albumart.getId();
     }
 
+    @Nullable
+    @JsonProperty
+    public String getAlbumartName() {
+        return albumart == null ? null : albumart.getName();
+    }
+
     public void setAlbumart(@Nullable Document albumArt) {
         this.albumart = albumArt;
     }

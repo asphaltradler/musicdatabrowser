@@ -1,10 +1,11 @@
 <td class="albumart">
-  <img src="{{ getAlbumartUrl() }}" alt="{{ entity.name }}" title="{{ entity.name }}">
+  <img src="{{ getAlbumartUrl() }}" alt="{{ entity.albumartName }}" title="{{ entity.albumartName }}">
 </td>
 <td>{{ entity.tracknumber }}</td>
 <td class="col-long">{{ entity.name }}</td>
 <td class="col-long">
-  <a (click)="entityList.navigateOtherEntityByThis(Album, entity)" title="{{Album.namePlural}} für Track">
+  <a (click)="entityList.navigateOtherEntityByThis(Album, entity)"
+     class="btn-link" title="{{ Album.getNameSingular() }} für Track">
     {{ entity.album?.name }}
   </a>
 </td>

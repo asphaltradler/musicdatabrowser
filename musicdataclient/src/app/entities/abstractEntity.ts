@@ -2,6 +2,7 @@ export abstract class AbstractEntity {
   id!: number;
   name!: string;
   albumartId?: Number;
+  albumartName?: string;
 
   static entityName: string;
   static namePlural: string;

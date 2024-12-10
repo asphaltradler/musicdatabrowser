@@ -23,4 +23,10 @@ public abstract class TrackDependentEntity extends NamedEntity{
     public Long getAlbumartId() {
         return getAlbumart().map(Document::getId).orElse(null);
     }
+
+    @Nullable
+    @JsonProperty
+    public String getAlbumartName() {
+        return getAlbumart().map(Document::getName).orElse(null);
+    }
 }
