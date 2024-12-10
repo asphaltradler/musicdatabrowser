@@ -161,6 +161,11 @@ public class Track extends NamedEntity {
         this.album = album;
     }
 
+    @JsonProperty
+    public Set<Artist> getArtists() {
+        return artists;
+    }
+
     /**
      * @param artist fügt einen einzelnen artists hinzu
      */
@@ -177,12 +182,18 @@ public class Track extends NamedEntity {
         this.artists = artists;
     }
 
+    @JsonProperty
     public Composer getComposer() {
         return composer;
     }
 
     public void setComposer(Composer composer) {
         this.composer = composer;
+    }
+
+    @JsonProperty
+    public Set<Genre> getGenres() {
+        return this.genres;
     }
 
     /**
