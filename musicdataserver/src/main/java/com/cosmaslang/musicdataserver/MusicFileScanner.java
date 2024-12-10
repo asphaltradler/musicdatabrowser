@@ -38,6 +38,7 @@ public class MusicFileScanner {
 
     private final MusicDataServerStartupService musicdataserverStartupService;
 
+    private final static List<String> imageNames = Arrays.asList("folder", "cover");
     private final static List<String> imageExts = Arrays.asList("jpg", "png", "gif");
     private final static List<String> bookletExts = Arrays.asList("pdf", "pub");
 
@@ -80,8 +81,8 @@ public class MusicFileScanner {
                         });
             }
 
-            final Document albumArt = getDocument(getDocumentFile(dir, imageExts));
-            final Document booklet = getDocument(getDocumentFile(dir, bookletExts));
+            final Document albumArt = getDocument(getDocumentFile(dir, imageExts, imageNames));
+            final Document booklet = getDocument(getDocumentFile(dir, bookletExts, null));
 
             try (Stream<Path> paths = Files.list(dir.toPath())) {
                 Stream<Track> tracks = paths.map(Path::toFile).filter(
@@ -115,14 +116,27 @@ public class MusicFileScanner {
     }
 
     @Nullable
-    private static File getDocumentFile(File dir, List<String> extensions) throws IOException {
+    private static File getDocumentFile(File dir, List<String> extensions, List<String> names) throws IOException {
         try (Stream<Path> paths = Files.list(dir.toPath())) {
             return paths.map(Path::toFile).filter(
-                    f -> extensions.contains(Utils.getExtension(f))
-            ).findFirst().orElse(null);
+                    f -> extensions.contains(Utils.getExtension(f)))
+                    .filter(f -> MusicFileScanner.filenameContainedIn(f.getName(), names))
+                    .findFirst().orElse(null);
         }
     }
 
+    private static boolean filenameContainedIn(String filename, List<String> names) {
+        if (names== null || names.isEmpty()) {
+            return true;
+        } else {
+            int idx = filename.lastIndexOf('.');
+            if (idx == -1) {
+                idx = filename.length();
+            }
+            String name = filename.substring(0, idx);
+            return names.contains(name);
+        }
+    }
     @Transactional
     @Nullable
     protected Track processAudioFile(File file) {
