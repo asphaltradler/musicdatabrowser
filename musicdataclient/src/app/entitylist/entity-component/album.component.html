@@ -1,7 +1,6 @@
 <td class="albumart">
   <img src="{{ getAlbumartUrl() }}" alt="{{ entity.name }}" title="{{ entity.name }}">
 </td>
-<td class="text-right">{{ entity.id }}</td>
 <td>{{ entity.name }}</td>
 <td *ngFor="let cat of entityList.searchableEntities">
   @if (cat === Track) {
