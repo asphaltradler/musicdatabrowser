@@ -2,6 +2,8 @@ package com.cosmaslang.musicdataserver.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.MediaType;
 
 import java.io.File;
@@ -9,14 +11,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Date;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Document extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private long id;
     @Column(nullable = false)
     private String name;
+
+    @LastModifiedDate
+    @JsonIgnore
+    private Date lastModified;
 
     private String mimeType;
 
@@ -61,6 +69,11 @@ public class Document extends NamedEntity {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Date getLastModified() {
+        return lastModified;
     }
 
     @JsonIgnore

@@ -1,13 +1,18 @@
 package com.cosmaslang.musicdataserver.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
 @Table(indexes = @Index(columnList = "name", unique = true))
+@EntityListeners(AuditingEntityListener.class)
 public class Composer extends TrackDependentEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
@@ -16,6 +21,10 @@ public class Composer extends TrackDependentEntity implements Serializable {
     //muss man leider hier drin definieren, sonst wird es nicht gefunden
     @Column(nullable = false)
     private String name;
+
+    @LastModifiedDate
+    @JsonIgnore
+    private Date lastModified;
 
     @OneToMany(mappedBy = "composer", fetch = FetchType.LAZY)
     @JsonBackReference
@@ -34,6 +43,11 @@ public class Composer extends TrackDependentEntity implements Serializable {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Date getLastModified() {
+        return lastModified;
     }
 
     @Override

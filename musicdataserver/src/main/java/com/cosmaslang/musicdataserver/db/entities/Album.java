@@ -1,17 +1,22 @@
 package com.cosmaslang.musicdataserver.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.lang.Nullable;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
 @Entity
 @Table(indexes = @Index(columnList = "name", unique = true))
+@EntityListeners(AuditingEntityListener.class)
 public class Album extends TrackDependentEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
@@ -20,6 +25,10 @@ public class Album extends TrackDependentEntity {
     //muss man leider hier drin definieren, sonst wird es nicht gefunden
     @Column(nullable = false)
     private String name;
+
+    @LastModifiedDate
+    @JsonIgnore
+    private Date lastModified;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.MERGE, fetch = FetchType.LAZY, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -42,6 +51,11 @@ public class Album extends TrackDependentEntity {
     }
 
     @Override
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    @Override
     public Set<Track> getTracks() {
         return tracks;
     }
@@ -50,7 +64,7 @@ public class Album extends TrackDependentEntity {
         this.tracks = tracks;
     }
 
-    @JsonBackReference
+    @JsonIgnore
     public Optional<Document> getBooklet() {
         return Optional.ofNullable(getTracks().stream().findFirst().orElseThrow().getBooklet());
     }

@@ -1,19 +1,11 @@
 package com.cosmaslang.musicdataserver.controller;
 
-import com.cosmaslang.musicdataserver.db.entities.Document;
 import com.cosmaslang.musicdataserver.db.entities.Track;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import static com.cosmaslang.musicdataserver.controller.TrackDependentRestController.getResponseEntity;
 
 @RestController
 @RequestMapping("/music/track")
@@ -76,22 +68,6 @@ public class TrackRestController extends AbstractMusicDataRestController<Track> 
 
         logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
         return page;
-    }
-
-    @GetMapping("/id/{id}/albumart")
-    public ResponseEntity<?> getAlbumArt(@PathVariable Long id) {
-        Document doc = trackRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                .getAlbumart();
-        return getResponseEntity(doc);
-    }
-
-    @GetMapping("/id/{id}/booklet")
-    public ResponseEntity<?> getBooklet(@PathVariable Long id) {
-        Document doc = trackRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                .getBooklet();
-        return getResponseEntity(doc);
     }
 }
 

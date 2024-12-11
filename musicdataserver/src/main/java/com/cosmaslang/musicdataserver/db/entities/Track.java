@@ -2,6 +2,8 @@ package com.cosmaslang.musicdataserver.db.entities;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.lang.Nullable;
 
 import java.util.Date;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
+@EntityListeners(AuditingEntityListener.class)
 public class Track extends NamedEntity {
     public static final String FIELDKEY_ORGANIZATION = "ORGANIZATION";
     public static final String FIELDKEY_WORK = "WORK";
@@ -27,6 +30,10 @@ public class Track extends NamedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private long id;
+
+    @LastModifiedDate
+    @JsonIgnore
+    private Date lastModified;
 
     //tag data
     private Integer tracknumber;
@@ -79,12 +86,12 @@ public class Track extends NamedEntity {
 
     //additional data
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JsonBackReference
+    @JsonIgnore
     @Nullable
     private Document albumart;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JsonBackReference
+    @JsonIgnore
     @Nullable
     private Document booklet;
 
@@ -157,6 +164,11 @@ public class Track extends NamedEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Date getLastModified() {
+        return lastModified;
     }
 
     public Album getAlbum() {

@@ -1,18 +1,21 @@
 package com.cosmaslang.musicdataserver.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.lang.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+@NoRepositoryBean
 public abstract class TrackDependentEntity extends NamedEntity{
     @JsonBackReference
     public abstract Set<Track> getTracks();
 
-    @JsonBackReference
+    @JsonIgnore
     public Optional<Document> getAlbumart() {
         return getTracks().stream().map(Track::getAlbumart).filter(Objects::nonNull).findFirst();
     }
