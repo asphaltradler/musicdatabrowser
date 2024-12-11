@@ -6,30 +6,24 @@ import com.cosmaslang.musicdataserver.db.entities.*;
 import com.cosmaslang.musicdataserver.db.repositories.DocumentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
-@Component
-@Qualifier("musicdataserverStartup")
+@Service
 public class MusicDataServerStartupConfigurableService implements MusicDataServerStartupService {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Autowired
-    ConfigurableApplicationContext context;
+    MusicDataServerConfiguration musicDataServerConfiguration;
+    @Autowired
+    ApplicationContext context;
     @Autowired
     TrackRepository trackRepository;
     @Autowired
@@ -43,21 +37,16 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     @Autowired
     NamedEntityRepository<Composer> composerRepository;
     @Autowired
-    DocumentRepository fileContentRepository;
-    @Autowired
-    MusicDataServerConfiguration musicDataServerConfiguration;
-
-    private Path rootDirPath;
-    private Path startDirPath;
+    DocumentRepository documentRepository;
 
     @Override
     public void configure() throws IOException {
         logger.info("configure");
-        rootDirPath = new File(musicDataServerConfiguration.getRootdir()).toPath();
+        Path rootDirPath = musicDataServerConfiguration.getRootPath();
         if (!rootDirPath.toFile().exists()) {
             throw new FileNotFoundException(MessageFormat.format("Root directory {0} doesn't exist", rootDirPath));
         }
-        startDirPath = new File(musicDataServerConfiguration.getStartdir()).toPath();
+        Path startDirPath = musicDataServerConfiguration.getStartPath();
         if (!startDirPath.toFile().exists()) {
             throw new FileNotFoundException(MessageFormat.format("Start directory {0} doesn't exist", startDirPath));
         }
@@ -69,43 +58,24 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     @Override
     public void init() throws IOException {
         logger.info("init");
-        MusicFileScanner scanner = new MusicFileScanner(this);
-        scanner.scan(rootDirPath, startDirPath);
+        MusicFileScanner scanner = context.getBean(MusicFileScanner.class);
+        scanner.start();
     }
 
     @Override
     public void start() {
-        logger.info(String.format("MusicRepository starting from %s", this.rootDirPath));
-        logger.info(String.format("MusicRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres, %d Interpreten\n",
-                trackRepository.count(), albumRepository.count(), composerRepository.count(), workRepository.count(), genreRepository.count(), artistRepository.count()));
+        logger.info(String.format("MusicRepository starting from %s", musicDataServerConfiguration.getRootPath()));
+        logger.info(getInfo());
     }
 
     @Override
-    public TrackRepository getTrackRepository() {
-        return trackRepository;
-    }
-    @Override
-    public NamedEntityRepository<Artist> getArtistRepository() {
-        return artistRepository;
-    }
-    @Override
-    public NamedEntityRepository<Album> getAlbumRepository() {
-        return albumRepository;
-    }
-    @Override
-    public NamedEntityRepository<Work> getWorkRepository() {
-        return workRepository;
-    }
-    @Override
-    public NamedEntityRepository<Genre> getGenreRepository() {
-        return genreRepository;
-    }
-    @Override
-    public NamedEntityRepository<Composer> getComposerRepository() {
-        return composerRepository;
-    }
-    @Override
-    public DocumentRepository getDocumentRepository() {
-        return fileContentRepository;
+    public String getInfo() {
+        long count = trackRepository.count();
+        if (count > 0) {
+            return String.format("MusicRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres, %d Interpreten, %d Dokumente\n",
+                    count, albumRepository.count(), composerRepository.count(), workRepository.count(), genreRepository.count(), artistRepository.count(), documentRepository.count());
+        } else {
+            return "Service gestartet aber noch leer.";
+        }
     }
 }

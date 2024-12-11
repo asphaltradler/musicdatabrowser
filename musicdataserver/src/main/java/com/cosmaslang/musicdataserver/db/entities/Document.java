@@ -6,10 +6,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.MediaType;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -30,19 +26,19 @@ public class Document extends NamedEntity {
 
     @JsonIgnore
     public byte[] embeddedDocument;
-    public File   externalDocument;
+    public String externalDocument;
 
     public Document() {
     }
 
     public Document(byte[] content, String mimeType) {
-        this.setContent(content);
+        this.setEmbeddedDocument(content);
         this.mimeType = mimeType;
     }
 
-    public Document(File externalDocument) {
-        this.setContent(externalDocument);
-        String ext = name.substring(name.lastIndexOf(".") + 1);
+    public Document(String externalDocumentPath) {
+        this.setExternalDocument(externalDocumentPath);
+        String ext = name.substring(name.lastIndexOf('.') + 1);
         if ("pdf".equalsIgnoreCase(ext)) {
             mimeType = MediaType.APPLICATION_PDF.toString();
         } else if ("jpg".equalsIgnoreCase(ext) || "jpeg".equalsIgnoreCase(ext)) {
@@ -76,26 +72,14 @@ public class Document extends NamedEntity {
         return lastModified;
     }
 
-    @JsonIgnore
-    public byte[] getContent() throws IOException {
-        if (embeddedDocument != null) {
-            return embeddedDocument;
-        } else if (externalDocument != null) {
-            //TODO caching von Images?
-            return Files.readAllBytes(externalDocument.toPath());
-        }
-        return null;
-    }
-
-    public void setContent(byte[] content) {
+    public void setEmbeddedDocument(byte[] content) {
         this.embeddedDocument = content;
-        this.name = Long.toHexString(Arrays.hashCode(content));
+        this.name = "Embedded #" + Long.toHexString(Arrays.hashCode(content)).toUpperCase();
     }
 
-    public void setContent(File file) {
-        this.externalDocument = file;
-        Path path = file.toPath();
-        this.name = path.subpath(path.getNameCount() - 2, path.getNameCount()).toString()
-                .replace('\\', '/');
+    public void setExternalDocument(String path) {
+        this.externalDocument = path.replace('\\', '/');
+        int secondLastIndex = externalDocument.lastIndexOf('/', externalDocument.lastIndexOf('/') - 1);
+        this.name = externalDocument.substring(secondLastIndex + 1);
     }
 }

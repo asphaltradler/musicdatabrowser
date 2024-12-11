@@ -2,7 +2,6 @@ package com.cosmaslang.musicdataserver.controller;
 
 import com.cosmaslang.musicdataserver.configuration.MusicDataServerConfiguration;
 import com.cosmaslang.musicdataserver.db.entities.*;
-import com.cosmaslang.musicdataserver.db.repositories.DocumentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackDependentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -41,9 +41,9 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
     @Autowired
     TrackDependentRepository<Artist> artistRepository;
     @Autowired
-    DocumentRepository documentRepository;
-    @Autowired
     MusicDataServerConfiguration musicDataServerConfiguration;
+    @Autowired
+    HttpResponseHelper httpResponseHelper;
 
     protected abstract NamedEntityRepository<ENTITY> getMyRepository();
 
@@ -88,26 +88,16 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
                 trackId, albumId, composerId, workId, genreId, artistId, pageNumber, pageSize));
     }
 
-    /**
-     * Default getter nach id
-     *
-     * @param id ID der Entity. Falls fehlende => alle suchen
-     */
-    protected Page<ENTITY> get(Long id, NamedEntityRepository<ENTITY> entityRepository, Pageable pageable) {
-        if (id != null) {
-            return entityRepository.findById(id, pageable);
-        }
-        return getAll(entityRepository, pageable);
-    }
-
-    protected Page<ENTITY> getAll(NamedEntityRepository<ENTITY> entityRepository, Pageable pageable) {
-        return entityRepository.findAll(pageable);
+    @RequestMapping(value = "/getall", method = {RequestMethod.GET, RequestMethod.POST})
+    public Page<ENTITY> getAll(Pageable pageable) {
+        return getMyRepository().findAll(pageable);
     }
 
     @GetMapping("/id/{id}")
-    public ENTITY getById(@PathVariable Long id) {
-        Optional<ENTITY> entity = getMyRepository().findById(id);
-        return entity.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        ENTITY entity = getMyRepository().findById(id)
+                .orElse(null);
+        return httpResponseHelper.getResponseEntity(entity);
     }
 
     @Transactional
@@ -124,6 +114,6 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
 
     protected Pageable getPageableOf(Integer pageNumber, Integer pageSize) {
         return PageRequest.of(pageNumber == null ? 0 : pageNumber,
-                pageSize == null ? musicDataServerConfiguration.getPagesize() : pageSize);
+                pageSize == null ? musicDataServerConfiguration.getPageSize() : pageSize);
     }
 }

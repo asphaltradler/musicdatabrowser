@@ -1,7 +1,6 @@
 package com.cosmaslang.musicdataserver.controller;
 
-import com.cosmaslang.musicdataserver.db.entities.*;
-import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
+import com.cosmaslang.musicdataserver.services.MusicDataServerStartupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,26 +15,10 @@ import static org.springframework.web.cors.CorsConfiguration.ALL;
 @CrossOrigin(originPatterns = ALL)
 public class HelloController {
     @Autowired
-    NamedEntityRepository<Track> trackRepository;
-    @Autowired
-    NamedEntityRepository<Artist> artistRepository;
-    @Autowired
-    NamedEntityRepository<Album> albumRepository;
-    @Autowired
-    NamedEntityRepository<Work> workRepository;
-    @Autowired
-    NamedEntityRepository<Genre> genreRepository;
-    @Autowired
-    NamedEntityRepository<Composer> composerRepository;
+    MusicDataServerStartupService musicDataServerStartupService;
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
     public String get() {
-        long count = trackRepository.count();
-        if (count > 0) {
-            return String.format("MusicRepository enthält %d tracks mit %d Alben, %d Komponisten, %d Werke, %d Genres, %d Interpreten\n",
-                    count, albumRepository.count(), composerRepository.count(), workRepository.count(), genreRepository.count(), artistRepository.count());
-        } else {
-            return "Service gestartet aber noch leer.";
-        }
+        return musicDataServerStartupService.getInfo();
     }
 }

@@ -74,7 +74,7 @@ public class Track extends NamedEntity {
     private Long size;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, columnDefinition = "TIMESTAMP default '1970-01-01'")
-    private Date lastModifiedDate = DATE_DEFAULT;
+    private Date fileModifiedDate = DATE_DEFAULT;
     private Integer lengthInSeconds;
     private String encoding;
     private Integer samplerate;
@@ -329,12 +329,12 @@ public class Track extends NamedEntity {
     }
 
     @JsonProperty
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
+    public Date getFileModifiedDate() {
+        return fileModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+    public void setFileModifiedDate(Date lastModifiedDate) {
+        this.fileModifiedDate = lastModifiedDate;
     }
 
     @JsonProperty

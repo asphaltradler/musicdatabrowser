@@ -22,12 +22,17 @@ public abstract class NamedEntity implements Comparable<NamedEntity> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NamedEntity entity = (NamedEntity) o;
-        return Objects.equals(getName(), entity.getName());
+        return hashCode() == entity.hashCode();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName());
+        return Objects.hash(getName(), getLastModified());
+    }
+
+    @JsonIgnore
+    public String getETag() {
+        return "\"#" + Integer.toHexString(hashCode()).toUpperCase() + '\"';
     }
 
     @Override

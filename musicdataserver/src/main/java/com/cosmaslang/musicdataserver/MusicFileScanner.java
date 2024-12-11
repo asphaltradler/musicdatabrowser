@@ -1,8 +1,10 @@
 package com.cosmaslang.musicdataserver;
 
+import com.cosmaslang.musicdataserver.configuration.MusicDataServerConfiguration;
 import com.cosmaslang.musicdataserver.db.entities.*;
+import com.cosmaslang.musicdataserver.db.repositories.DocumentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
-import com.cosmaslang.musicdataserver.services.MusicDataServerStartupService;
+import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.PersistenceException;
@@ -16,7 +18,9 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.images.Artwork;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,18 +35,33 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+@Component
 public class MusicFileScanner {
+    @Autowired
+    TrackRepository trackRepository;
+    @Autowired
+    NamedEntityRepository<Artist> artistRepository;
+    @Autowired
+    NamedEntityRepository<Album> albumRepository;
+    @Autowired
+    NamedEntityRepository<Work> workRepository;
+    @Autowired
+    NamedEntityRepository<Genre> genreRepository;
+    @Autowired
+    NamedEntityRepository<Composer> composerRepository;
+    @Autowired
+    DocumentRepository documentRepository;
+    @Autowired
+    MusicDataServerConfiguration musicDataServerConfiguration;
+
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     private final static List<String> audioFileExtensions = Stream.of(SupportedFileFormat.values()).map(SupportedFileFormat::getFilesuffix).toList();
-
-    private final MusicDataServerStartupService musicdataserverStartupService;
 
     private final static List<String> imageNames = Arrays.asList("folder", "cover");
     private final static List<String> imageExts = Arrays.asList("jpg", "png", "gif");
     private final static List<String> bookletExts = Arrays.asList("pdf", "pub");
 
-    private int rootPathSteps;
     private long count = 0;
     private long created = 0;
     private long reused = 0;
@@ -50,16 +69,12 @@ public class MusicFileScanner {
     private long updated = 0;
     private long failed = 0;
 
-    public MusicFileScanner(MusicDataServerStartupService service) {
-        this.musicdataserverStartupService = service;
-    }
-
-    public void scan(Path rootPath, Path startPath) throws IOException {
-        rootPathSteps = rootPath.getNameCount();
-        logger.info(MessageFormat.format("Scanning {0} from start {1}", rootPath, startPath));
+    public void start() throws IOException {
+        logger.info(MessageFormat.format("Scanning {0} from start {1}",
+                musicDataServerConfiguration.getRootPath(), musicDataServerConfiguration.getStartPath()));
 
         long startTime = System.currentTimeMillis();
-        scanDirectory(startPath.toFile());
+        scanDirectory(musicDataServerConfiguration.getStartPath().toFile());
         long endTime = System.currentTimeMillis() - startTime;
 
         logger.info(String.format("Found %d tracks in %ds", count, endTime / 1000));
@@ -95,7 +110,7 @@ public class MusicFileScanner {
                         track.setAlbumart(albumArt);
                     }
                     track.setBooklet(booklet);
-                    musicdataserverStartupService.getTrackRepository().save(track);
+                    trackRepository.save(track);
                 });
             }
         }
@@ -104,12 +119,13 @@ public class MusicFileScanner {
     private Document getDocument(File file) {
         Document document = null;
         if (file != null && file.exists()) {
-            document = new Document(file);
-            Optional<Document> optional = musicdataserverStartupService.getDocumentRepository().findOne(Example.of(document));
+            String relativePathString = musicDataServerConfiguration.getRelativePath(file.toPath());
+            document = new Document(relativePathString);
+            Optional<Document> optional = documentRepository.findOne(Example.of(document));
             if (optional.isPresent()) {
                 document = optional.get();
             } else {
-                document = musicdataserverStartupService.getDocumentRepository().save(document);
+                document = documentRepository.save(document);
             }
         }
         return document;
@@ -155,10 +171,10 @@ public class MusicFileScanner {
     }
 
     private Track createOrUpdateTrack(File file) {
-        Path filepath = file.toPath();
         //path unabhängig von Filesystem notieren, ausgehend von rootDir
-        String pathString = filepath.subpath(rootPathSteps, filepath.getNameCount()).toString().replace('\\', '/');
-        Track track = musicdataserverStartupService.getTrackRepository().findByPath(pathString);
+        //String pathString = filepath.subpath(rootPath.getNameCount(), filepath.getNameCount()).toString().replace('\\', '/');
+        String pathString =  musicDataServerConfiguration.getRelativePath(file.toPath());
+        Track track = trackRepository.findByPath(pathString);
         if (track == null) {
             track = new Track();
             //default
@@ -187,7 +203,7 @@ public class MusicFileScanner {
             header = audioFile.getAudioHeader();
             if (header != null) {
                 String hash = getHash(header, file.getName());
-                Track existingTrack = musicdataserverStartupService.getTrackRepository().findByHash(hash);
+                Track existingTrack = trackRepository.findByHash(hash);
                 if (existingTrack != null) {
                     //wir übernehmen die Daten aus dem bisherigen Track
                     track = existingTrack;
@@ -224,7 +240,7 @@ public class MusicFileScanner {
         //Daten direkt aus File
         track.setPath(pathString);
         track.setSize(file.length());
-        track.setLastModifiedDate(new Date(file.lastModified()));
+        track.setFileModifiedDate(new Date(file.lastModified()));
 
         if (tag != null) {
             try {
@@ -242,7 +258,7 @@ public class MusicFileScanner {
                 }
                 str = tag.getFirst(FieldKey.ALBUM);
                 if (StringUtils.isNotBlank(str)) {
-                    Album album = createOrUpdateEntity(Album.class, musicdataserverStartupService.getAlbumRepository(), str);
+                    Album album = createOrUpdateEntity(Album.class, albumRepository, str);
                     track.setAlbum(album);
                     //album.getTracks().add(track);
                 }
@@ -252,17 +268,17 @@ public class MusicFileScanner {
                     if (StringUtils.isNotBlank(artwork.getDescription())) {
                         document.setName(artwork.getDescription());
                     }
-                    musicdataserverStartupService.getDocumentRepository().save(document);
+                    documentRepository.save(document);
                     track.setAlbumart(document);
                 }
                 str = tag.getFirst(FieldKey.COMPOSER);
                 if (StringUtils.isNotBlank(str)) {
-                    Composer composer = createOrUpdateEntity(Composer.class, musicdataserverStartupService.getComposerRepository(), str);
+                    Composer composer = createOrUpdateEntity(Composer.class, composerRepository, str);
                     track.setComposer(composer);
                 }
                 str = tag.getFirst(Track.FIELDKEY_WORK);
                 if (StringUtils.isNotBlank(str)) {
-                    Work work = createOrUpdateEntity(Work.class, musicdataserverStartupService.getWorkRepository(), str);
+                    Work work = createOrUpdateEntity(Work.class, workRepository, str);
                     track.setWork(work);
                 }
                 //ManyToMany Zuordnung
@@ -273,7 +289,7 @@ public class MusicFileScanner {
                     for (TagField field : tagFields) {
                         str = field.toString();
                         if (StringUtils.isNotBlank(str)) {
-                            Artist artist = createOrUpdateEntity(Artist.class, musicdataserverStartupService.getArtistRepository(), str);
+                            Artist artist = createOrUpdateEntity(Artist.class, artistRepository, str);
                             //track.addartist(artist);
                             artists.add(artist);
                         }
@@ -287,7 +303,7 @@ public class MusicFileScanner {
                     for (TagField field : tagFields) {
                         str = field.toString();
                         if (StringUtils.isNotBlank(str)) {
-                            Genre genre = createOrUpdateEntity(Genre.class, musicdataserverStartupService.getGenreRepository(), str);
+                            Genre genre = createOrUpdateEntity(Genre.class, genreRepository, str);
                             //track.addGenre(genre);
                             genres.add(genre);
                         }
@@ -315,7 +331,7 @@ public class MusicFileScanner {
     }
 
     private static boolean isFileNotModifiedAfterTrack(File file, Track track) {
-        Date modified = track.getLastModifiedDate();
+        Date modified = track.getFileModifiedDate();
         return modified != null && modified.getTime() >= file.lastModified();
     }
 
