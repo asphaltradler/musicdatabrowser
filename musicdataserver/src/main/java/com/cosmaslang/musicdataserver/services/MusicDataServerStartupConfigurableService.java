@@ -41,7 +41,7 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
 
     @Override
     public void configure() throws IOException {
-        logger.info("configure");
+        logger.config("configure");
         Path rootDirPath = musicDataServerConfiguration.getRootPath();
         if (!rootDirPath.toFile().exists()) {
             throw new FileNotFoundException(MessageFormat.format("Root directory {0} doesn't exist", rootDirPath));

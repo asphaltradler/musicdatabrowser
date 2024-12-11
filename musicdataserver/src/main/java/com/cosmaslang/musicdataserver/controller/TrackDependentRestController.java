@@ -42,7 +42,7 @@ public abstract class TrackDependentRestController<ENTITY extends TrackDependent
             page = getMyRepository().findDistinctByTracksArtistsNameContainsIgnoreCaseOrderByName(artist, pageable);
         }
 
-        logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
+        logger.finer(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
         return page;
     }
 
@@ -69,7 +69,7 @@ public abstract class TrackDependentRestController<ENTITY extends TrackDependent
             page = getMyRepository().findDistinctByTracksArtistsIdOrderByName(artistId, pageable);
         }
 
-        logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
+        logger.finer(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
         return page;
     }
 

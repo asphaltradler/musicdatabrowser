@@ -52,14 +52,14 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
             @Nullable Integer pageNumber,
             @Nullable Integer pageSize,
             @Nullable String name) {
-        logger.info(String.format("find name=%s, page=%d pageSize=%d", name, pageNumber, pageSize));
+        logger.fine(String.format("find name=%s, page=%d pageSize=%d", name, pageNumber, pageSize));
 
         Pageable pageable = getPageableOf(pageNumber, pageSize);
         long time = System.currentTimeMillis();
 
         Page<ENTITY> page = getMyRepository().findByNameContainsIgnoreCaseOrderByName(name, pageable);
 
-        logger.info(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
+        logger.finer(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
         return page;
     }
 
@@ -72,7 +72,7 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
 
     protected void logCall(Integer pageNumber, Integer pageSize, String track, String album, String composer,
                            String work, String genre, String artist) {
-        logger.info(String.format("findby track=%s, album=%s, composer=%s, work=%s, genre=%s, artist=%s, page=%d pageSize=%d",
+        logger.fine(String.format("findby track=%s, album=%s, composer=%s, work=%s, genre=%s, artist=%s, page=%d pageSize=%d",
                 track, album, composer, work, genre, artist, pageNumber, pageSize));
     }
 
@@ -84,17 +84,19 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
             Long workId, Long genreId, Long artistId);
 
     protected void logCall(Integer pageNumber, Integer pageSize, Long trackId, Long albumId, Long composerId, Long workId, Long genreId, Long artistId) {
-        logger.info(String.format("get trackId=%d, albumId=%d, composerId=%d, workId=%d, genreId=%d, artistId=%d, page=%d pageSize=%d",
+        logger.fine(String.format("get trackId=%d, albumId=%d, composerId=%d, workId=%d, genreId=%d, artistId=%d, page=%d pageSize=%d",
                 trackId, albumId, composerId, workId, genreId, artistId, pageNumber, pageSize));
     }
 
     @RequestMapping(value = "/getall", method = {RequestMethod.GET, RequestMethod.POST})
     public Page<ENTITY> getAll(Pageable pageable) {
+        logger.fine("getall");
         return getMyRepository().findAll(pageable);
     }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
+        logger.fine(String.format("get id=%d", id));
         ENTITY entity = getMyRepository().findById(id)
                 .orElse(null);
         return httpResponseHelper.getResponseEntity(entity);
@@ -102,11 +104,12 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
 
     @Transactional
     @DeleteMapping("/remove/{id}")
-    protected ENTITY remove(Long id, NamedEntityRepository<ENTITY> repository) {
-        Optional<ENTITY> entity = repository.findById(id);
+    protected ENTITY remove(@PathVariable Long id) {
+        logger.fine(String.format("remove id=%d", id));
+        Optional<ENTITY> entity = getMyRepository().findById(id);
         //TODO was passiert mit Referenzen in artists_tracks usw.?
         if (entity.isPresent()) {
-            repository.delete(entity.get());
+            getMyRepository().delete(entity.get());
             return entity.get();
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);

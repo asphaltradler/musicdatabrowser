@@ -23,7 +23,7 @@ public class MusicDataServerConfiguration {
      * Automatisch gesetzt aus application.properties
      */
     public void setRootPath(String rootPath) {
-        logger.info(MessageFormat.format("setting root directory={0} from config", rootPath));
+        logger.config(MessageFormat.format("setting root directory={0} from config", rootPath));
         this.rootPath = Path.of(rootPath);
     }
 
@@ -32,7 +32,7 @@ public class MusicDataServerConfiguration {
     }
 
     public void setStartPath(String startPath) {
-        logger.info(MessageFormat.format("setting start directory={0} from config", startPath));
+        logger.config(MessageFormat.format("setting start directory={0} from config", startPath));
         this.startPath = Path.of(startPath);
     }
 
@@ -40,16 +40,8 @@ public class MusicDataServerConfiguration {
         return startPath;
     }
 
-    public String getRelativePath(Path path) {
-        return rootPath.relativize(path).normalize().toString().replace('\\', '/');
-    }
-
-    public File getFileFromRelativePath(Path relativePath) {
-        return rootPath.resolve(relativePath).toFile();
-    }
-
     public void setPageSize(int pageSize) {
-        logger.info(MessageFormat.format("setting pageSizeDefault={0} from config", pageSize));
+        logger.config(MessageFormat.format("setting pageSizeDefault={0} from config", pageSize));
         this.pageSize = pageSize;
     }
 
@@ -58,11 +50,19 @@ public class MusicDataServerConfiguration {
     }
 
     public void setDocumentRefreshTimeInMinutes(int documentRefreshTimeInMinutes) {
-        logger.info(MessageFormat.format("setting documentRefreshTimeInHours={0} from config", documentRefreshTimeInMinutes));
+        logger.config(MessageFormat.format("setting documentRefreshTimeInHours={0} from config", documentRefreshTimeInMinutes));
         this.documentRefreshTimeInMinutes = documentRefreshTimeInMinutes;
     }
 
     public int getDocumentRefreshTimeInMinutes() {
         return documentRefreshTimeInMinutes;
+    }
+
+    public String getRelativePath(Path path) {
+        return rootPath.relativize(path).normalize().toString().replace('\\', '/');
+    }
+
+    public File getFileFromRelativePath(Path relativePath) {
+        return rootPath.resolve(relativePath).toFile();
     }
 }

@@ -166,7 +166,7 @@ public class MusicFileScanner {
             failed++;
             logger.log(Level.WARNING, "Unable to read file: " + file, t);
         }
-        logger.info("processed " + file.getName());
+        logger.fine("processed " + file.getName());
         return track;
     }
 
@@ -179,10 +179,10 @@ public class MusicFileScanner {
             track = new Track();
             //default
             track.setName(file.getName());
-            logger.info("create new track " + pathString);
+            logger.fine("create new track " + pathString);
             created++;
         } else if (isFileNotModifiedAfterTrack(file, track)) {
-            logger.info("-   skipping unchanged track " + pathString);
+            logger.finer("-   skipping unchanged track " + pathString);
             unchanged++;
             //muss nicht nochmal gespeichert werden
             //TODO leider können wir das wg. Image und Booklet nicht mehr mit Sicherheit sagen
@@ -190,7 +190,7 @@ public class MusicFileScanner {
             return track;
         }
         else {
-            logger.info("-   update track " + pathString);
+            logger.fine("-   update track " + pathString);
             updated++;
         }
 
@@ -210,13 +210,13 @@ public class MusicFileScanner {
                     reused++;
                     if (isFileNotModifiedAfterTrack(file, track)) {
                         //nur neue Position, aber keine Änderung an Daten
-                        logger.info(MessageFormat.format("-   skipping re-used unchanged track {0} from path {1}", pathString, track.getPath()));
+                        logger.finer(MessageFormat.format("-   skipping re-used unchanged track {0} from path {1}", pathString, track.getPath()));
                         unchanged++;
                         //path muss aber neu gespeichert werden
                         track.setPath(pathString);
                         return track;
                     }
-                    logger.info(MessageFormat.format("-   re-using track {0} from path {1}", pathString, track.getPath()));
+                    logger.finer(MessageFormat.format("-   re-using track {0} from path {1}", pathString, track.getPath()));
                 } else {
                     track.setHash(hash);
                 }
