@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {Album} from '../entities/album';
@@ -21,7 +21,7 @@ import {appDefaults} from '../../config/config';
   templateUrl: './searchfield.component.html',
   styles: ['input.form-control {width:10%}']
 })
-export class SearchfieldComponent implements OnInit {
+export class SearchfieldComponent implements OnChanges {
   public static searchEntities: typeof AbstractEntity[] = [Album, Track, Composer, Work, Genre, Artist];
   searchEntities = SearchfieldComponent.searchEntities;
 
@@ -46,7 +46,7 @@ export class SearchfieldComponent implements OnInit {
     filterField: new FormControl(''),
   });
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     this.searchForm.patchValue({
       searchEntitySelector: this.searchEntity,
       pageSizeSelector: this.pageSize,
