@@ -7,7 +7,7 @@ import {Artist} from './entities/artist';
 import {Genre} from './entities/genre';
 import {Track} from './entities/track';
 import {EntityListComponent} from './entitylist/entity-list.component';
-import {EntityDetailsComponent} from './details/track-details/entity-details.component';
+import {EntityDetailsComponent} from './details/entity-details/entity-details.component';
 import {detailsPath, paramEntity, paramId, paramSearchEntity} from '../config/utilities';
 
 export const routes: Routes = [
