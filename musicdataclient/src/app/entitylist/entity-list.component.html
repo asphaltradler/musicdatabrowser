@@ -11,9 +11,10 @@
     <tbody>
     @for (entity of getEntities(); track entity.id) {
       @defer (on viewport) {
-        <tr *ngComponentOutlet="getTableRowComponent(); inputs: {'entity': entity, 'entityList': this, 'hidden': isEntityFiltered(entity)}"></tr>
+        <tr *ngComponentOutlet="getTableRowComponent();
+          inputs: {'entityList': this, 'entity': entity, 'hidden': isEntityFiltered(entity)}"></tr>
       } @placeholder (minimum 50ms) {
-        <tr class="app-entity-row"><td colspan="99" class="placeholder">... loading ...</td></tr>
+        <tr [id]="EntityComponent.getIdForEntity(this, entity)" class="app-entity-row"><td colspan="99" class="placeholder">... loading ...</td></tr>
       }
     }
     </tbody>

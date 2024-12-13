@@ -11,7 +11,7 @@ import {forkJoin} from 'rxjs';
 import {Router} from '@angular/router';
 
 @Component({
-  selector: 'tr.app-album-row',
+  selector: 'tr.app-entity-row',
   standalone: true,
   imports: [NgForOf],
   templateUrl: './album.component.html',

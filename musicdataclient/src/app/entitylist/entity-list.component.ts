@@ -23,8 +23,7 @@ import {
   getEntityForName,
   paramEntity,
   paramSearchEntity,
-  paramSearchId,
-  paramSearchString
+  paramSourceEntity,
 } from '../../config/utilities';
 
 @Component({
@@ -57,6 +56,8 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
   private lastSearchId?: Number;
   private _searchName = '';
 
+  private lastClickedEntity?: E;
+
   constructor(private route: ActivatedRoute, private router: Router, private titleService: Title,
               public service: EntityService) {
     //default/Vorbelegung bei Aktivierung oder Änderung der Query
@@ -69,12 +70,14 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
     console.log(`destroy ${this.entityType.getNameSingular()}List`);
     this.changeSubscription?.unsubscribe();
     this.lastSearchSubscription?.unsubscribe();
-    this._filter = '';
+    //this._filter = '';
   }
 
   startSearchFromQuery(): void {
     const snapshot = this.route.snapshot;
     const params = snapshot.params;
+    const navigation = this.router.getCurrentNavigation();
+    this.lastClickedEntity = navigation?.previousNavigation?.extras?.state?.[paramSourceEntity];
     //EntityTyp aus Router übergeben oder aus neuer Suche
     this.entityType = getEntityForName(params[paramEntity]) || snapshot.data[0];
 
@@ -90,16 +93,17 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
       console.log(`${this.entityType.getNameSingular()}List created`);
       const searchEntityName = params[paramSearchEntity];
       if (searchEntityName) {
-        const searchEntity = getEntityForName(searchEntityName);
-        if (searchEntity) {
-          const id = params[paramSearchId];
-          const searchString = this.router.getCurrentNavigation()?.extras?.state?.[paramSearchString];
+        const searchEntityType = getEntityForName(searchEntityName);
+        if (searchEntityType) {
+          const entity: AbstractEntity = navigation?.extras?.state?.[paramEntity];
+          const id = entity?.id;
+          const name = entity?.name;
           if (id) {
-            this.titleService.setTitle(`${this.entityType.namePlural} für ${searchString || id}`);
-            this.searchByEntityId(searchEntity, Number.parseInt(id), searchString || '');
-          } else if (searchString) {
-            this.titleService.setTitle(`${this.entityType.namePlural} für ${searchString}`);
-            this.searchByEntityName(searchEntity, searchString);
+            this.titleService.setTitle(`${this.entityType.namePlural} für ${name || id}`);
+            this.searchByEntityId(searchEntityType, id, name || '');
+          } else if (name) {
+            this.titleService.setTitle(`${this.entityType.namePlural} für ${name}`);
+            this.searchByEntityName(searchEntityType, name);
           }
         }
       } else {
@@ -129,7 +133,7 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(page => {
       this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()}='${searchString}'` : 'insgesamt';
-      this.fillData(page, searchEntityType, id, searchString);
+      this.fillEntityList(page, searchEntityType, id, searchString);
       const timeString = (performance.now() - time).toFixed(2);
       this.lastSearchPerformance = this.getSearchMessage(searchEntityType, id, searchString) + ` dauerte ${timeString}ms`;
       console.log(this.lastSearchPerformance);
@@ -140,11 +144,22 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
     return `Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName + id ? 'id ' + id : ''}=${searchString || '*'}`;
   }
 
-  private fillData(page: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
+  private fillEntityList(page: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
     this.page = page;
     this.searchEntityType = searchEntityType;
     this.lastSearchId = searchId;
     this._searchName = searchString || '';
+    this.scrollToLastSelectedElement();
+  }
+
+  private scrollToLastSelectedElement() {
+    //Element, von dem wir vorher gekommen sind
+    if (this.lastClickedEntity) {
+      console.log(`scroll to ${this.lastClickedEntity.name}`);
+      const id = EntityComponent.getIdForEntity(this, this.lastClickedEntity);
+      const element = document.getElementById(id);
+      element?.scrollIntoView({behavior: 'smooth'});
+    }
   }
 
   searchPreviousPage(): void {
@@ -160,11 +175,12 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
   }
 
   navigateOtherEntityByThis(entityType: typeof AbstractEntity, entity: AbstractEntity) {
-    this.navigateOtherEntityBy(entityType, this.entityType, entity);
+    this.navigateOtherEntityBy(entityType, this.entityType, entity, entity);
   }
 
-  navigateOtherEntityByItself(entityType: typeof AbstractEntity, entity: AbstractEntity) {
-    this.navigateOtherEntityBy(entityType, entityType, entity);
+  navigateOtherEntityByItself(entityType: typeof AbstractEntity, entity: AbstractEntity,
+                              sourceEntity?: AbstractEntity) {
+    this.navigateOtherEntityBy(entityType, entityType, entity, sourceEntity);
   }
 
   /**
@@ -174,12 +190,15 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
    * @param entityType der Typ, zu dem navigiert wird
    * @param searchEntityType der Typ, anhand dem gesucht werden soll
    * @param entity eine Entity des searchEntityType, nach der gesucht wird (anhand id)
+   * @param sourceEntity Quell-Entity, von der aus geklickt wurde
    */
   navigateOtherEntityBy(entityType: typeof AbstractEntity,
-                        searchEntityType: typeof AbstractEntity, entity: AbstractEntity) {
+                        searchEntityType: typeof AbstractEntity, entity: AbstractEntity,
+                        sourceEntity?: AbstractEntity) {
     console.log(`Navigiere nach ${entityType.entityName}/${searchEntityType.entityName}/${entity.id}='${entity.name}'`);
     const params: Params = {};
-    params[paramSearchString] = entity.name;
+    params[paramEntity] = entity;
+    params[paramSourceEntity] = sourceEntity;
     this.router.navigate([entityType.entityName, searchEntityType.entityName, entity.id],
       { onSameUrlNavigation: 'reload', state: params} );
   }
@@ -266,4 +285,6 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
   get searchableEntities() {
     return this._searchableEntities;
   }
+
+  protected readonly EntityComponent = EntityComponent;
 }

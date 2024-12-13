@@ -11,7 +11,7 @@ export class Track extends AbstractEntity {
 
   tracknumber?: number;
   path!: string;
-  lastModifiedDate!: string;
+  fileModifiedDate!: string;
   publisher?: string;
   publishedDate?: string;
   lengthInSeconds!: number;
@@ -24,7 +24,7 @@ export class Track extends AbstractEntity {
 
   static getLastModificationSince(t: Track) {
     const now = new Date();
-    const date = new Date(t.lastModifiedDate);
+    const date = new Date(t.fileModifiedDate);
     const differenceInMilliseconds = now.getTime() - date.getTime();
     const differenceInSeconds = differenceInMilliseconds / 1000;
     const differenceInMinutes = differenceInSeconds / 60;

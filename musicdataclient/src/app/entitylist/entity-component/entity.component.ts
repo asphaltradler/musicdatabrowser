@@ -9,7 +9,7 @@ import {Genre} from '../../entities/genre';
 import {Track} from '../../entities/track';
 import {EntityListComponent} from '../entity-list.component';
 import {Params, Router} from '@angular/router';
-import {detailsPath, paramEntity} from '../../../config/utilities';
+import {detailsPath, paramEntity, paramSourceEntity} from '../../../config/utilities';
 
 @Component({
   selector: 'tr.app-entity-row',
@@ -20,9 +20,15 @@ import {detailsPath, paramEntity} from '../../../config/utilities';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntityComponent<ENTITY extends AbstractEntity> {
-  @Input({required: true}) entity!: ENTITY;
+  _entity!: ENTITY;
+
   @Input({required: true}) entityList!: EntityListComponent<ENTITY>;
-  //TODO muss das wirklich so kompliziert sein? wieso kann ich das nicht mit [hidden] setzen?
+  @Input({required: true}) set entity(entity: ENTITY) {
+    this._entity = entity;
+    this.hostElement.nativeElement.setAttribute('id', EntityComponent.getIdForEntity(this.entityList, entity));
+    this.hidden = this.entityList?.isEntityFiltered(entity);
+  }
+
   @Input() set hidden(hide: boolean) {
     if (hide) {
       this.hostElement.nativeElement.setAttribute('hidden', '');
@@ -30,12 +36,19 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
       this.hostElement.nativeElement.removeAttribute('hidden');
     }
   }
+  @Input() set id(id: string) {
+    this.hostElement.nativeElement.setAttribute('id', id);
+  }
 
   constructor(protected hostElement: ElementRef, protected router: Router) {
   }
 
   getOtherEntitiesByThisId(otherEntityType: typeof AbstractEntity) {
     return this.entityList.service.findByOtherId(otherEntityType, this.entityList.entityType!, this.entity.id);
+  }
+
+  get entity(): ENTITY {
+    return this._entity;
   }
 
   getAlbumartUrl() {
@@ -49,8 +62,13 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
     console.log(`Navigiere zu Details für ${this.entityList.entityType.entityName} id ${this.entity.id}='${this.entity.name}'`);
     const params: Params = {};
     params[paramEntity] = this.entity;
+    params[paramSourceEntity] = this.entity;
     this.router.navigate([this.entityList.entityType.entityName, this.entity.id, detailsPath],
       { state: params });
+  }
+
+  public static getIdForEntity<ENTITY extends AbstractEntity>(entityList: EntityListComponent<ENTITY>, entity: ENTITY): string {
+    return `${entityList?.entityType.entityName}-${entity.id}`;
   }
 
   protected readonly Album = Album;

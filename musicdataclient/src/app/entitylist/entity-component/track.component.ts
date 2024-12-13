@@ -4,7 +4,7 @@ import {Track} from '../../entities/track';
 import {EntityComponent} from './entity.component';
 
 @Component({
-  selector: 'tr.app-track-row',
+  selector: 'tr.app-entity-row',
   standalone: true,
   imports: [NgForOf, NgIf],
   templateUrl: './track.component.html',

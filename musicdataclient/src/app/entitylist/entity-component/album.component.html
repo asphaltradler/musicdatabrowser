@@ -11,11 +11,11 @@
     </a>
   } @else {
     <div *ngFor="let searchEntity of this.getSearchEntities(cat)">
-      <a (click)="entityList.navigateOtherEntityByItself(cat, searchEntity)"
+      <a (click)="entityList.navigateOtherEntityByItself(cat, searchEntity, entity)"
          title="Details für {{searchEntity.name}}">
         {{ searchEntity.name }}
       </a>
-      <a (click)="entityList.navigateOtherEntityBy(Album, cat, searchEntity)"
+      <a (click)="entityList.navigateOtherEntityBy(Album, cat, searchEntity, entity)"
          class="btn-link" title="{{ Album.namePlural}} für {{searchEntity.name}}">
         [&nbsp;{{ Album.namePlural }}&nbsp;]
       </a>

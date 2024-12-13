@@ -8,8 +8,8 @@ import {AbstractEntity} from '../app/entities/abstractEntity';
 
 export const paramEntity = 'entity';
 export const paramSearchEntity = 'searchEntity';
-export const paramSearchId = 'id';
-export const paramSearchString = 'searchString';
+export const paramSourceEntity = 'sourceEntity';
+export const paramId = 'id';
 export const detailsPath = 'details';
 
 export const allEntities: typeof AbstractEntity[] = [Album, Track, Composer, Work, Genre, Artist];

@@ -8,7 +8,7 @@ import {Genre} from './entities/genre';
 import {Track} from './entities/track';
 import {EntityListComponent} from './entitylist/entity-list.component';
 import {EntityDetailsComponent} from './details/track-details/entity-details.component';
-import {detailsPath, paramEntity, paramSearchEntity, paramSearchId} from '../config/utilities';
+import {detailsPath, paramEntity, paramId, paramSearchEntity} from '../config/utilities';
 
 export const routes: Routes = [
   { path: Album.entityName, component: EntityListComponent<Album>, title: Album.namePlural, data: [Album] },
@@ -18,10 +18,12 @@ export const routes: Routes = [
   { path: Genre.entityName, component: EntityListComponent<Genre>, title: Genre.namePlural, data: [Genre] },
   { path: Artist.entityName, component: EntityListComponent<Artist>, title: Artist.namePlural, data: [Artist] },
 
-  { path: `:${paramEntity}/:${paramSearchId}/${detailsPath}`, component: EntityDetailsComponent, pathMatch: "full" },
-  { path: `:${paramEntity}/:${paramSearchEntity}/:${paramSearchId}`,
-    component: EntityListComponent, pathMatch: "prefix" },
-
+  { path: `:${paramEntity}`,
+    children: [
+      { path: `:${paramId}/${detailsPath}`, component: EntityDetailsComponent, pathMatch: "full" },
+      { path: `:${paramSearchEntity}/:${paramId}`, component: EntityListComponent, pathMatch: "prefix" }
+    ]
+  },
   { path: 'status', component: StatusComponent, title: 'Status' },
   { path: '**', redirectTo: Album.entityName, pathMatch: 'prefix'}
 ];

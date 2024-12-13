@@ -4,7 +4,7 @@ import {Title} from '@angular/platform-browser';
 import {EntityService} from '../../services/entity.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {AbstractEntity} from '../../entities/abstractEntity';
-import {getEntityForName, paramEntity, paramSearchId} from '../../../config/utilities';
+import {getEntityForName, paramEntity, paramId} from '../../../config/utilities';
 
 @Component({
   selector: 'app-track-details',
@@ -20,20 +20,15 @@ export class EntityDetailsComponent<E extends AbstractEntity> {
   entity?: E;
   title?: string;
 
-  constructor(private route: ActivatedRoute, private router: Router, private titleService: Title,
-              public service: EntityService) {
-    console.log(`EntityDetailsComponent created`);
-    this.init();
-  }
-
-  init(): void {
-    const snapshot = this.route.snapshot;
+  constructor(route: ActivatedRoute, router: Router, private titleService: Title,
+              private service: EntityService) {
+    const snapshot = route.snapshot;
     const params = snapshot.params;
     const entityType = getEntityForName(params[paramEntity]);
-    const id = params[paramSearchId];
+    const id = params[paramId];
 
     //Entity in state übergeben?
-    const entity: E = this.router.getCurrentNavigation()?.extras?.state?.[paramEntity];
+    const entity: E = router.getCurrentNavigation()?.extras?.state?.[paramEntity];
     if (entity) {
       this.setEntity(entity);
     } //sonst neu holen
@@ -81,7 +76,7 @@ export class EntityDetailsComponent<E extends AbstractEntity> {
     return '';
   }
 
-  private filterAttributes = (e: [key: string, val: unknown]) => {
+  private filterAttributes = (e: [string,any]) => {
     return !e[0].includes('albumart') && !e[0].includes('Id');
   }
 

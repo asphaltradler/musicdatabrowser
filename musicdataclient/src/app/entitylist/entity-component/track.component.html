@@ -12,11 +12,11 @@
 </td>
 <td>
   <div *ngIf="entity.composer">
-    <a (click)="entityList.navigateOtherEntityByItself(Composer, entity.composer)"
+    <a (click)="entityList.navigateOtherEntityByItself(Composer, entity.composer, entity)"
        title="Details für {{entity.composer.name}}">
       {{ entity.composer.name }}
     </a>
-    <a (click)="entityList.navigateOtherEntityBy(Album, Composer, entity.composer)"
+    <a (click)="entityList.navigateOtherEntityBy(Album, Composer, entity.composer, entity)"
        class="btn-link" title="{{ Album.namePlural}} für {{entity.composer.name}}">
       [&nbsp;{{ Album.namePlural }}&nbsp;]
     </a>
