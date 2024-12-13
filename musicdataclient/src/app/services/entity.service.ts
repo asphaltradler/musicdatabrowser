@@ -10,52 +10,54 @@ import {Injectable} from '@angular/core';
 )
 export class EntityService {
   baseUrl = appDefaults.serverUrl;
-  findUrl = this.baseUrl + '/{}/find';
-  findByUrl = this.baseUrl + '/{}/findby';
-  getUrl = this.baseUrl + '/{}/get';
-  documentUrl = this.baseUrl + '/document/content/';
-  entityDocumentUrl = this.baseUrl + '/{0}/id/{1}/albumart';
+  findPageUrl = this.baseUrl + '/{}/find';
+  findPageByUrl = this.baseUrl + '/{}/findby';
+  getPageUrl = this.baseUrl + '/{}/get';
+  getByIdUrl = this.baseUrl + '/{}/id/{id}';
+  documentPageUrl = this.baseUrl + '/document/content/';
 
   constructor(private httpClient: HttpClient) {}
 
-  findByOtherNameLike(entityType: typeof AbstractEntity, otherEntity: typeof AbstractEntity, searchString: string, pageNumber: number, pageSize: number): Observable<Page<any>> {
+  public findByOtherNameLike<E extends AbstractEntity>(entityType: typeof AbstractEntity, otherEntity: typeof AbstractEntity, searchString: string, pageNumber?: number, pageSize?: number): Observable<Page<E>> {
     const params = new HttpParams()
       .set(otherEntity.entityName, searchString)
-      .set(appDefaults.serviceParamPageNumber, pageNumber)
-      .set(appDefaults.serviceParamPageSize, pageSize);
-    return this.getPage(this.findByUrl, entityType, params);
+      .set(appDefaults.serviceParamPageNumber, pageNumber || 0)
+      .set(appDefaults.serviceParamPageSize, pageSize || appDefaults.defaultPageSize);
+    return this.getPage<E>(this.findPageByUrl, entityType, params);
   }
 
-  findNameLike(entityType: typeof AbstractEntity, searchString: string, pageNumber: number, pageSize: number): Observable<Page<any>> {
+  public findNameLike<E extends AbstractEntity>(entityType: typeof AbstractEntity, searchString: string, pageNumber?: number, pageSize?: number): Observable<Page<E>> {
     const params = new HttpParams()
       .set(appDefaults.serviceParamName, searchString)
-      .set(appDefaults.serviceParamPageNumber, pageNumber)
-      .set(appDefaults.serviceParamPageSize, pageSize);
-    return this.getPage(this.findUrl, entityType, params);
+      .set(appDefaults.serviceParamPageNumber, pageNumber || 0)
+      .set(appDefaults.serviceParamPageSize, pageSize || appDefaults.defaultPageSize);
+    return this.getPage<E>(this.findPageUrl, entityType, params);
   }
 
-  findByOtherId(entityType: typeof AbstractEntity, otherEntityType: typeof AbstractEntity, otherEntityId: number, pageNumber: number, pageSize: number): Observable<Page<any>> {
+  public findByOtherId<E extends AbstractEntity>(entityType: typeof AbstractEntity, otherEntityType: typeof AbstractEntity, otherEntityId: number, pageNumber?: number, pageSize?: number): Observable<Page<E>> {
     const params = new HttpParams()
       .set(otherEntityType.entityName + appDefaults.serviceParamSuffixId, otherEntityId)
-      .set(appDefaults.serviceParamPageNumber, pageNumber)
-      .set(appDefaults.serviceParamPageSize, pageSize);
-    return this.getPage(this.getUrl, entityType, params);
+      .set(appDefaults.serviceParamPageNumber, pageNumber || 0)
+      .set(appDefaults.serviceParamPageSize, pageSize || appDefaults.defaultPageSize);
+    return this.getPage<E>(this.getPageUrl, entityType, params);
   }
 
-  protected getPage(url: string, entityType: typeof AbstractEntity, params: HttpParams): Observable<Page<any>> {
+  private getPage<E extends AbstractEntity>(url: string, entityType: typeof AbstractEntity, params: HttpParams): Observable<Page<E>> {
     //console.log("getPage", url, params.get(appDefaults.serviceParamPageNumber));
-    return this.httpClient.get<Page<any>>(url.replace('{}', entityType.entityName), {params});
+    return this.httpClient.get<Page<E>>(url.replace('{}', entityType.entityName), {params});
   }
 
-  findDocumentById(id: number) {
+  public getById<E extends AbstractEntity>(entityType: typeof AbstractEntity, id: number): Observable<E> {
+    //console.log("getPage", url, params.get(appDefaults.serviceParamPageNumber));
+    return this.httpClient.get<E>(this.getByIdUrl.replace('{}', entityType.entityName)
+      .replace('{id}', `${id}`));
+  }
+
+  public findDocumentById(id: number) {
     return this.httpClient.get<ImageBitmap>(this.getDocumentUrl(id));
   }
 
-  getDocumentUrl(id: number) {
-    return this.documentUrl + id;
-  }
-
-  getDocumentUrlForEntity(entityType: typeof AbstractEntity, entity: AbstractEntity) {
-    return this.entityDocumentUrl.replace('{0}', entityType.entityName).replace('{1}', `${entity.id}`);
+  public getDocumentUrl(id: number) {
+    return this.documentPageUrl + id;
   }
 }

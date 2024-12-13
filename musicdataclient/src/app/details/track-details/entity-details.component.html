@@ -1,0 +1,30 @@
+<div class="card my3">
+  <div class="card-header">
+    <h5 class="card-title my-1">{{ title }}</h5>
+  </div>
+  <div class="twocolumn">
+    <div class="col-first">
+      <img class="albumart" src="{{ getAlbumartUrl() }}" alt="{{ entity?.albumartName }}"
+           title="{{ entity?.albumartName }}">
+    </div>
+    <div class="col-second" *ngIf="entity">
+      <table class="table table-bordered table-striped table-hover table-sm small my-0">
+        <thead>
+        <tr>
+          <th>Attribut</th>
+          <th>Wert</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let k of getAllProperties()">
+          <td>{{ k[0] }}</td>
+          <td>{{ getAllPropertiesFor(k[1]) }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button class="btn btn-primary" (click)=history.back()>Zurück</button>
+  </div>
+</div>

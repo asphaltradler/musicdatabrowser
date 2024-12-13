@@ -4,7 +4,7 @@
 
 <div class="card my-3">
   <app-list-header [title]="title" [lastSearchPerformance]="lastSearchPerformance"></app-list-header>
-  <table class="card-body small table table-bordered table-striped table-hover table-sm my-0">
+  <table class="table small table-bordered table-striped table-hover table-sm">
     <thead class="thead-dark">
       <tr *ngComponentOutlet="getTableHeaderComponent(); inputs: {'entityList': this}"></tr>
     </thead>

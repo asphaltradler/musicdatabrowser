@@ -1,7 +1,8 @@
 <td class="albumart">
-  <img src="{{ getAlbumartUrl() }}" alt="{{ entity.albumartName }}" title="{{ entity.albumartName }}">
+  <img src="{{ getAlbumartUrl() }}" alt="{{ entity.albumartName }}" title="{{ entity.albumartName }}"
+       (click)="navigateToDetails()">
 </td>
-<td>{{ entity.tracknumber }}</td>
+<td class="text-right">{{ entity.tracknumber }}</td>
 <td class="col-long">{{ entity.name }}</td>
 <td class="col-long">
   <a (click)="entityList.navigateOtherEntityByThis(Album, entity)"

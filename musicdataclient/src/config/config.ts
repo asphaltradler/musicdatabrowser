@@ -1,5 +1,3 @@
-import {InjectionToken} from '@angular/core';
-
 export const appDefaults = {
   serverUrl: 'http://' + window.location.hostname + ':8081/music',
   serviceParamSuffixId: 'Id',
@@ -10,7 +8,5 @@ export const appDefaults = {
   pageSizes: [5, 10, 25, 50, 100, 250, 500, 1000],
   defaultPageSize: 10,
   maxPageSizeForLists: 100,
-
-  //eindeutiges Token für den Service
-  serviceType: new InjectionToken<string>('serviceType')
 }
+

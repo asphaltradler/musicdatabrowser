@@ -1,7 +1,13 @@
 <form [formGroup]="searchForm">
   <div class="input-group my-3">
+    <select class="form-control minwidth" formControlName="pageSizeSelector"
+            title="Ergebnisse pro Seite" (change)="updatePageSize()">
+      <option *ngFor="let num of appDefaults.pageSizes" [value]="num">
+        {{ num }} Erg./Seite
+      </option>
+    </select>
     <label for="searchfield" class="input-group-text">Suche nach:</label>
-    <select class="form-control" formControlName="searchEntitySelector"
+    <select class="form-control minwidth" formControlName="searchEntitySelector"
             title="Auswahl Suchkriterium" (change)="updateSearchEntity()">
       <option *ngFor="let ent of searchEntities" [ngValue]="ent">
         {{ ent.namePlural }}
@@ -10,14 +16,7 @@
     <input class="form-control" formControlName="searchField" id="searchfield"
            type="text" (input)="updateSearchField()"
            placeholder="Suchtext" aria-label="Suchtext"/>
-    <select class="form-control" formControlName="pageSizeSelector"
-            title="Ergebnisse pro Seite" (change)="updatePageSize()">
-      <option *ngFor="let num of appDefaults.pageSizes" [value]="num">
-        {{ num }} Erg./Seite
-      </option>
-    </select>
     <button class="btn btn-secondary" title="Suche zurücksetzen" (click)="clearSearchText()">Reset</button>
-
     <input class="form-control" formControlName="filterField" id="filterfield"
            type="text" (input)="updateFilter()"
            placeholder="Filtere {{ thisEntity.namePlural}} nach" aria-label="Filter"/>

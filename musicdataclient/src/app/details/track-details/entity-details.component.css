@@ -1,0 +1,21 @@
+div.twocolumn {
+  display: flex;
+}
+
+div.twocolumn > div {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+div.twocolumn > div:first-child {
+  padding-right: 0;
+}
+
+img.albumart {
+  max-width: 100%;
+  width: 600px;
+  height: auto;
+  display: block;
+  margin-bottom: 10px;
+}

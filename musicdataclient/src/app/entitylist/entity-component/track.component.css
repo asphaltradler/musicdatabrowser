@@ -1,0 +1,8 @@
+th.albumart, td.albumart {
+  width: 140px;
+  height: 120px;
+}
+
+td.albumart img {
+  width: 140px;
+}

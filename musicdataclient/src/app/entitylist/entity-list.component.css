@@ -6,19 +6,15 @@ div.card {
   overflow: hidden;
 }
 
-table tr > * {
-  vertical-align: top;
-}
-
 th.albumart, td.albumart {
   text-align: center;
-  width: 160px;
-  height: 140px;
-  padding: 0
+  width: 48px;
+  height: 40px;
+  padding: 0;
 }
 
 td.albumart img {
-  width: 160px;
+  width: 48px;
 }
 
 th.col-long, td.col-long {

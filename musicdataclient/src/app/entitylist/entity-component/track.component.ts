@@ -8,7 +8,7 @@ import {EntityComponent} from './entity.component';
   standalone: true,
   imports: [NgForOf, NgIf],
   templateUrl: './track.component.html',
-  styleUrls: ['../entity-list.component.css'],
+  styleUrls: ['../entity-list.component.css', 'track.component.css'],
 })
 export class TrackComponent extends EntityComponent<Track> {
 }

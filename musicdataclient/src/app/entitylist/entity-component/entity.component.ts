@@ -8,7 +8,8 @@ import {Work} from '../../entities/work';
 import {Genre} from '../../entities/genre';
 import {Track} from '../../entities/track';
 import {EntityListComponent} from '../entity-list.component';
-import {appDefaults} from '../../../config/config';
+import {Params, Router} from '@angular/router';
+import {detailsPath, paramEntity} from '../../../config/utilities';
 
 @Component({
   selector: 'tr.app-entity-row',
@@ -30,10 +31,11 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
     }
   }
 
-  constructor(protected hostElement: ElementRef) {}
+  constructor(protected hostElement: ElementRef, protected router: Router) {
+  }
 
   getOtherEntitiesByThisId(otherEntityType: typeof AbstractEntity) {
-    return this.entityList.service.findByOtherId(otherEntityType, this.entityList.entityType, this.entity.id, 0, appDefaults.maxPageSizeForLists);
+    return this.entityList.service.findByOtherId(otherEntityType, this.entityList.entityType!, this.entity.id);
   }
 
   getAlbumartUrl() {
@@ -41,6 +43,14 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
       return this.entityList.service.getDocumentUrl(this.entity.albumartId.valueOf());
     }
     return "";
+  }
+
+  navigateToDetails() {
+    console.log(`Navigiere zu Details für ${this.entityList.entityType.entityName} id ${this.entity.id}='${this.entity.name}'`);
+    const params: Params = {};
+    params[paramEntity] = this.entity;
+    this.router.navigate([this.entityList.entityType.entityName, this.entity.id, detailsPath],
+      { state: params });
   }
 
   protected readonly Album = Album;

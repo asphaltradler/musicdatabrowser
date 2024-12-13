@@ -8,13 +8,14 @@ import {Work} from '../../entities/work';
 import {AbstractEntity} from '../../entities/abstractEntity';
 import {EntityComponent} from './entity.component';
 import {forkJoin} from 'rxjs';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'tr.app-album-row',
   standalone: true,
   imports: [NgForOf],
   templateUrl: './album.component.html',
-  styleUrls: ['../entity-list.component.css'],
+  styleUrls: ['../entity-list.component.css', 'album.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlbumComponent extends EntityComponent<Album> {
@@ -24,8 +25,8 @@ export class AlbumComponent extends EntityComponent<Album> {
   works?: Work[];
   obs: IntersectionObserver;
 
-  constructor(hostElement: ElementRef, private changeRef: ChangeDetectorRef) {
-    super(hostElement);
+  constructor(hostElement: ElementRef, router: Router, private changeRef: ChangeDetectorRef) {
+    super(hostElement, router);
 
     this.obs = new IntersectionObserver(entries => entries.filter(
         e => e.isIntersecting).forEach(() => this.lazyLoadLists()));

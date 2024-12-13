@@ -3,11 +3,13 @@
     <div class="card-body">
       <h2 class="card-title text-center text-white py-1">{{ title }}</h2>
       <ul class="text-center list-inline">
-        <li *ngFor="let r of routes" class="list-inline-item">
-          <a *ngIf="r.path" class="btn btn-outline-light"
-             routerLink="{{ r.path }}" routerLinkActive="active"
-             title="{{ r.title }}">{{ r.title }}</a>
-        </li>
+        <ng-container *ngFor="let r of routes">
+          <li *ngIf="r.title" class="list-inline-item">
+            <a class="btn btn-outline-light"
+               routerLink="{{ r.path }}" routerLinkActive="active"
+               title="{{ r.title }}">{{ r.title }}</a>
+          </li>
+        </ng-container>
       </ul>
     </div>
   </div>

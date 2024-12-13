@@ -1,14 +1,9 @@
 import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AbstractEntity} from '../entities/abstractEntity';
-import {Album} from '../entities/album';
-import {Track} from '../entities/track';
-import {Composer} from '../entities/composer';
-import {Work} from '../entities/work';
-import {Genre} from '../entities/genre';
-import {Artist} from '../entities/artist';
 import {NgForOf} from '@angular/common';
 import {appDefaults} from '../../config/config';
+import {allEntities} from '../../config/utilities';
 
 @Component({
   standalone: true,
@@ -19,11 +14,10 @@ import {appDefaults} from '../../config/config';
     NgForOf
   ],
   templateUrl: './searchfield.component.html',
-  styles: ['input.form-control {width:10%}']
+  styles: ['input.minwidth,select.minwidth {width:120px;flex-grow: 0.1}']
 })
 export class SearchfieldComponent implements OnChanges {
-  public static searchEntities: typeof AbstractEntity[] = [Album, Track, Composer, Work, Genre, Artist];
-  searchEntities = SearchfieldComponent.searchEntities;
+  searchEntities = allEntities;
 
   @Input({required:true}) thisEntity!: typeof AbstractEntity;
 

@@ -17,6 +17,15 @@ import {EntityComponent} from './entity-component/entity.component';
 import {TableHeaderComponent} from './table-header/table-header.component';
 import {TrackTableHeaderComponent} from './table-header/track-table-header.component';
 import {AlbumTableHeaderComponent} from './table-header/album-table-header.component';
+import {Title} from '@angular/platform-browser';
+import {
+  allEntities,
+  getEntityForName,
+  paramEntity,
+  paramSearchEntity,
+  paramSearchId,
+  paramSearchString
+} from '../../config/utilities';
 
 @Component({
   templateUrl: './entity-list.component.html',
@@ -30,9 +39,6 @@ import {AlbumTableHeaderComponent} from './table-header/album-table-header.compo
   ]
 })
 export class EntityListComponent<E extends AbstractEntity> implements OnDestroy {
-  public static urlParamEntitySearchTitle = 'title';
-  private static urlParamEntityName = 'searchby';
-
   public page?: Page<E>;
   private _pageSize = appDefaults.defaultPageSize;
 
@@ -42,57 +48,64 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
   private changeSubscription: Subscription;
   private lastSearchSubscription?: Subscription;
 
-  private _searchEntityType!: typeof AbstractEntity;
+  public lastSearchPerformance?: string;
 
+  public entityType!: typeof AbstractEntity;
+  public searchEntityType!: typeof AbstractEntity;
+
+  private _searchableEntities?: typeof AbstractEntity[];
   private lastSearchId?: Number;
   private _searchName = '';
 
-  public lastSearchPerformance?: string;
-  protected _searchableEntities: typeof AbstractEntity[];
-
-  public entityType: typeof AbstractEntity;
-
-  constructor(protected route: ActivatedRoute, protected router: Router,
+  constructor(private route: ActivatedRoute, private router: Router, private titleService: Title,
               public service: EntityService) {
-    const data = this.route.snapshot.data;
-    //EntityTyp aus Router übergeben
-    this.entityType = data[0];
-    //mit eigenem Typ selbst anfangen als Suchkriterium
-    this._searchEntityType = this.entityType;
-    //eigenen Typ ausschließen in Darstellung
-    this._searchableEntities = SearchfieldComponent.searchEntities.filter(
-      entity => entity != this.entityType
-    );
     //default/Vorbelegung bei Aktivierung oder Änderung der Query
-    this.changeSubscription = route.queryParams.subscribe(() => {
+    this.changeSubscription = route.params.subscribe(() => {
       this.startSearchFromQuery();
     });
-    console.log(`${this.entityType.getNameSingular()}List created`);
   }
 
   ngOnDestroy(): void {
+    console.log(`destroy ${this.entityType.getNameSingular()}List`);
     this.changeSubscription?.unsubscribe();
     this.lastSearchSubscription?.unsubscribe();
     this._filter = '';
   }
 
   startSearchFromQuery(): void {
-    const queryParamMap = this.route.snapshot.queryParamMap;
-    const searchEntityName = queryParamMap.get(EntityListComponent.urlParamEntityName);
-    if (searchEntityName) {
-      const ent = SearchfieldComponent.searchEntities.find(e => e.entityName === searchEntityName);
-      if (ent) {
-        const id = queryParamMap.get('id');
-        const searchString = queryParamMap.get(EntityListComponent.urlParamEntitySearchTitle);
-        if (id) {
-          this.searchByEntityId(ent, Number.parseInt(id || '-1'), searchString || '');
-        } else if (searchString) {
-          this.searchByEntityName(ent, searchString || '');
+    const snapshot = this.route.snapshot;
+    const params = snapshot.params;
+    //EntityTyp aus Router übergeben oder aus neuer Suche
+    this.entityType = getEntityForName(params[paramEntity]) || snapshot.data[0];
+
+    if (this.entityType) {
+      this.titleService.setTitle(this.entityType.namePlural);
+
+      //mit eigenem Typ selbst anfangen als Suchkriterium, falls keiner gegeben
+      this.searchEntityType = getEntityForName(params[paramSearchEntity]) || this.entityType;
+      //eigenen Typ ausschließen in Darstellung
+      this._searchableEntities = allEntities.filter(
+        entity => entity != this.entityType
+      );
+      console.log(`${this.entityType.getNameSingular()}List created`);
+      const searchEntityName = params[paramSearchEntity];
+      if (searchEntityName) {
+        const searchEntity = getEntityForName(searchEntityName);
+        if (searchEntity) {
+          const id = params[paramSearchId];
+          const searchString = this.router.getCurrentNavigation()?.extras?.state?.[paramSearchString];
+          if (id) {
+            this.titleService.setTitle(`${this.entityType.namePlural} für ${searchString || id}`);
+            this.searchByEntityId(searchEntity, Number.parseInt(id), searchString || '');
+          } else if (searchString) {
+            this.titleService.setTitle(`${this.entityType.namePlural} für ${searchString}`);
+            this.searchByEntityName(searchEntity, searchString);
+          }
         }
+      } else {
+        //default: alle anzeigen
+        this.searchByEntityName(this.entityType, '');
       }
-    } else {
-      //default: alle anzeigen
-      this.searchByEntityName(this.entityType, '');
     }
   }
 
@@ -100,45 +113,49 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
     this.searchByEntityIdOrName(searchEntityType, 0, undefined, searchString);
   }
 
-  searchByEntityId(searchEntityType: typeof AbstractEntity, id: number, searchString: string) {
+  searchByEntityId(searchEntityType: typeof AbstractEntity, id: Number, searchString: string) {
     this.searchByEntityIdOrName(searchEntityType, 0, id, searchString);
   }
 
   private searchByEntityIdOrName(searchEntityType: typeof AbstractEntity, pageNumber: number, id?: Number, searchString?: string) {
     //falls noch eine Suche unterwegs ist: abbrechen
     this.lastSearchSubscription?.unsubscribe();
-    console.log(`Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'}`);
+    console.log(this.getSearchMessage(searchEntityType, id, searchString));
     const obs = id
-      ? this.service.findByOtherId(this.entityType, searchEntityType, id.valueOf(), pageNumber, this._pageSize)
+      ? this.service.findByOtherId<E>(this.entityType, searchEntityType, id.valueOf(), pageNumber, this._pageSize)
       : searchEntityType === this.entityType
-        ? this.service.findNameLike(this.entityType, searchString?.toLowerCase() || '', pageNumber, this._pageSize)
-        : this.service.findByOtherNameLike(this.entityType, searchEntityType, searchString?.toLowerCase() || '', pageNumber, this._pageSize);
+        ? this.service.findNameLike<E>(this.entityType, searchString?.toLowerCase() || '', pageNumber, this._pageSize)
+        : this.service.findByOtherNameLike<E>(this.entityType, searchEntityType, searchString?.toLowerCase() || '', pageNumber, this._pageSize);
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(page => {
       this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()}='${searchString}'` : 'insgesamt';
       this.fillData(page, searchEntityType, id, searchString);
       const timeString = (performance.now() - time).toFixed(2);
-      this.lastSearchPerformance = `Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName}=${searchString || '*'} dauerte ${timeString}ms`;
+      this.lastSearchPerformance = this.getSearchMessage(searchEntityType, id, searchString) + ` dauerte ${timeString}ms`;
       console.log(this.lastSearchPerformance);
     });
   }
 
+  private getSearchMessage = (searchEntityType: typeof AbstractEntity, id: Number | undefined, searchString: string | undefined) => {
+    return `Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName + id ? 'id ' + id : ''}=${searchString || '*'}`;
+  }
+
   private fillData(page: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
     this.page = page;
-    this._searchEntityType = searchEntityType;
+    this.searchEntityType = searchEntityType;
     this.lastSearchId = searchId;
     this._searchName = searchString || '';
   }
 
   searchPreviousPage(): void {
-    if (this._searchEntityType && this.hasPreviousPage()) {
-      this.searchByEntityIdOrName(this._searchEntityType, this.page!.number - 1, this.lastSearchId, this._searchName);
+    if (this.searchEntityType && this.hasPreviousPage()) {
+      this.searchByEntityIdOrName(this.searchEntityType, this.page!.number - 1, this.lastSearchId, this._searchName);
     }
   }
 
   searchNextPage(): void {
-    if (this._searchEntityType && this.hasNextPage()) {
-      this.searchByEntityIdOrName(this._searchEntityType, this.page!.number + 1, this.lastSearchId, this._searchName);
+    if (this.searchEntityType && this.hasNextPage()) {
+      this.searchByEntityIdOrName(this.searchEntityType, this.page!.number + 1, this.lastSearchId, this._searchName);
     }
   }
 
@@ -160,12 +177,11 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
    */
   navigateOtherEntityBy(entityType: typeof AbstractEntity,
                         searchEntityType: typeof AbstractEntity, entity: AbstractEntity) {
+    console.log(`Navigiere nach ${entityType.entityName}/${searchEntityType.entityName}/${entity.id}='${entity.name}'`);
     const params: Params = {};
-    params[EntityListComponent.urlParamEntityName] = searchEntityType.entityName;
-    params[EntityListComponent.urlParamEntitySearchTitle] = entity.name;
-    params['id'] = entity.id;
-    console.log(`Navigiere nach ${entityType.entityName} mit ${Object.entries(params).join('|')}`);
-    this.router.navigate([entityType.entityName], {queryParams: params});
+    params[paramSearchString] = entity.name;
+    this.router.navigate([entityType.entityName, searchEntityType.entityName, entity.id],
+      { onSameUrlNavigation: 'reload', state: params} );
   }
 
   getTableHeaderComponent() {
@@ -210,16 +226,8 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
     this._filter = value.toLowerCase();
   }
 
-  get searchEntityType(): typeof AbstractEntity {
-    return this._searchEntityType;
-  }
-
-  set searchEntityType(value: typeof AbstractEntity) {
-    this._searchEntityType = value;
-  }
-
   get title() {
-    if (!this.page) {
+    if (!this.page || !this.entityType) {
       return '';
     }
     let title;
