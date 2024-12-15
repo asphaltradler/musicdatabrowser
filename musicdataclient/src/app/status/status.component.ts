@@ -18,13 +18,15 @@ export class StatusComponent implements OnInit {
   status?: string
 
   constructor(private http: HttpClient) {
-    this.url = appDefaults.serverUrl;
+    this.url = appDefaults.serverUrl + '/status';
   }
 
   ngOnInit() {
     const obs =  this.http.get(this.url, {responseType: 'text'});
+    console.log(`get status from ${this.url}`);
     obs.subscribe(data => {
       this.status = data;
+      console.log(`status=${this.status}`);
     });
   }
 }

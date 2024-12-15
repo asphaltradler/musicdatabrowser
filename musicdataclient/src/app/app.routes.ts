@@ -17,13 +17,13 @@ export const routes: Routes = [
   { path: Work.entityName, component: EntityListComponent<Work>, title: Work.namePlural, data: [Work] },
   { path: Genre.entityName, component: EntityListComponent<Genre>, title: Genre.namePlural, data: [Genre] },
   { path: Artist.entityName, component: EntityListComponent<Artist>, title: Artist.namePlural, data: [Artist] },
+  { path: 'status', component: StatusComponent, title: 'Status', pathMatch: "prefix" },
 
   { path: `:${paramEntity}`,
     children: [
       { path: `:${paramId}/${detailsPath}`, component: EntityDetailsComponent, pathMatch: "full" },
-      { path: `:${paramSearchEntity}/:${paramId}`, component: EntityListComponent, pathMatch: "prefix" }
+      { path: `:${paramSearchEntity}/:${paramId}`, component: EntityListComponent, pathMatch: "full" }
     ]
   },
-  { path: 'status', component: StatusComponent, title: 'Status' },
   { path: '**', redirectTo: Album.entityName, pathMatch: 'prefix'}
 ];
