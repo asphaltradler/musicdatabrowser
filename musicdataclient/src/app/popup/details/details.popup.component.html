@@ -1,0 +1,6 @@
+<div class="popup-background-layer" (click)="close()" [hidden]="!isOpen()"></div>
+<div class="popup card" id="details-popup" [hidden]="!isOpen()">
+  <h2>{{ title }}</h2>
+  <p [innerHTML]="message()"></p>
+  <button class="btn btn-secondary" (click)="close()">Schließen</button>
+</div>
