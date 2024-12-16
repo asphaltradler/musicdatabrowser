@@ -142,7 +142,7 @@ public class MusicFileScanner {
     }
 
     private static boolean filenameContainedIn(String filename, List<String> names) {
-        if (names== null || names.isEmpty()) {
+        if (names == null || names.isEmpty()) {
             return true;
         } else {
             int idx = filename.lastIndexOf('.');
