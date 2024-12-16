@@ -21,6 +21,7 @@ export class Track extends AbstractEntity {
   genres?: Genre[];
   work?: Work;
   bookletId?: Number;
+  bookletName?: string;
 
   static getLastModificationSince(t: Track) {
     const now = new Date();

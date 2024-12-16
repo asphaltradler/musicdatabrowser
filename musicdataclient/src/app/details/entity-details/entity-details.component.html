@@ -2,11 +2,9 @@
   <div class="card-header">
     <h5 class="card-title my-1">{{ title }}</h5>
   </div>
-  <div class="twocolumn">
-    <div class="col-first">
-      <img class="albumart" src="{{ getAlbumartUrl() }}" alt="{{ entity?.albumartName }}"
+  <div class="flex">
+      <img class="albumart col-first" src="{{ getAlbumartUrl() }}" alt="{{ entity?.albumartName }}"
            title="{{ entity?.albumartName }}">
-    </div>
     <div class="col-second" *ngIf="entity">
       <table class="table table-bordered table-striped table-hover table-sm small my-0">
         <thead>

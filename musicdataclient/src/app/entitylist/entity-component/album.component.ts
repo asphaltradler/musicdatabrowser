@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef} from '@angular/core';
 import {Album} from '../../entities/album';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import {Composer} from '../../entities/composer';
 import {Artist} from '../../entities/artist';
 import {Genre} from '../../entities/genre';
@@ -13,7 +13,7 @@ import {Router} from '@angular/router';
 @Component({
   selector: 'tr.app-entity-row',
   standalone: true,
-  imports: [NgForOf],
+  imports: [NgForOf, NgIf],
   templateUrl: './album.component.html',
   styleUrls: ['../entity-list.component.css', 'album.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,6 +60,14 @@ export class AlbumComponent extends EntityComponent<Album> {
       return this.entityList.service.getDocumentUrl(this.entity.bookletId.valueOf());
     }
     return "";
+  }
+
+  getBookletName(maxlen: number = 24) {
+    let name = this.entity.bookletName?.replace(/^.*\//, '');
+    if (name && name.length > maxlen) {
+      name = '...' + name.substring(name.length - maxlen);
+    }
+    return name;
   }
 
   getSearchEntities(entity: typeof AbstractEntity): AbstractEntity[] | undefined {

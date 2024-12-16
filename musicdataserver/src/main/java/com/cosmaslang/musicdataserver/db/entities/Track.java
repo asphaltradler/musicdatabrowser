@@ -118,7 +118,6 @@ public class Track extends NamedEntity {
     }
 
     @Nullable
-    @JsonProperty
     public Document getBooklet() {
         return booklet;
     }
@@ -127,6 +126,12 @@ public class Track extends NamedEntity {
     @JsonProperty
     public Long getBookletId() {
         return booklet == null ? null : booklet.getId();
+    }
+
+    @Nullable
+    @JsonProperty
+    public String getBookletName() {
+        return booklet == null ? null : booklet.getName();
     }
 
     public void setBooklet(@Nullable Document booklet) {

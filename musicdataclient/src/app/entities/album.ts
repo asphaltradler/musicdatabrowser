@@ -5,4 +5,5 @@ export class Album extends AbstractEntity {
   static override namePlural = 'Alben';
 
   bookletId?: Number;
+  bookletName?: string;
 }

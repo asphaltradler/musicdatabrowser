@@ -74,4 +74,11 @@ public class Album extends TrackDependentEntity {
     public Long getBookletId() {
         return getBooklet().map(Document::getId).orElse(null);
     }
+
+
+    @Nullable
+    @JsonProperty
+    public String getBookletName() {
+        return getBooklet().map(Document::getName).orElse(null);
+    }
 }

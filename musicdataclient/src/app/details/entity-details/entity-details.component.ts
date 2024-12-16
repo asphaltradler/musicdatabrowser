@@ -17,8 +17,8 @@ import {getEntityForName, paramEntity, paramId} from '../../../config/utilities'
   styleUrl: './entity-details.component.css'
 })
 export class EntityDetailsComponent<E extends AbstractEntity> {
-  entity?: E;
-  title?: string;
+  public entity?: E;
+  public title?: string;
 
   constructor(route: ActivatedRoute, router: Router, private titleService: Title,
               private service: EntityService) {

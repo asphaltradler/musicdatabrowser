@@ -10,7 +10,8 @@
       {{ Track.namePlural }}
     </a>
   } @else {
-    <div *ngFor="let searchEntity of this.getSearchEntities(cat)">
+    <div>
+    <ng-container *ngFor="let searchEntity of this.getSearchEntities(cat)">
       <a (click)="entityList.navigateOtherEntityByItself(cat, searchEntity, entity)"
          title="Details für {{searchEntity.name}}">
         {{ searchEntity.name }}
@@ -19,6 +20,13 @@
          class="btn-link" title="{{ Album.namePlural}} für {{searchEntity.name}}">
         [&nbsp;{{ Album.namePlural }}&nbsp;]
       </a>
+      <br>
+    </ng-container>
     </div>
   }
+</td>
+<td class="text-center">
+  <a *ngIf="getBookletUrl()" [href]="getBookletUrl()" target="_blank"
+                           [title]="entity.bookletName">{{ getBookletName() }}
+  </a>
 </td>

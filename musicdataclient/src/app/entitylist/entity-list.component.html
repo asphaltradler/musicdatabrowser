@@ -1,10 +1,11 @@
+<app-popup (closed)="onPopupClosed()"></app-popup>
 <app-searchfield [thisEntity]="entityType" [(searchEntity)]="searchEntityType" [(pageSize)]="pageSize"
                  [(searchString)]="searchName" [(filterString)]="filter"/>
 <app-paging [entityList]="this"/>
 
 <div class="card my-3">
   <app-list-header [title]="title" [lastSearchPerformance]="lastSearchPerformance"></app-list-header>
-  <table class="table small table-bordered table-striped table-hover table-sm">
+  <table class="table small table-bordered table-striped table-hover table-sm my-0" id="entity-list">
     <thead class="thead-dark">
       <tr *ngComponentOutlet="getTableHeaderComponent(); inputs: {'entityList': this}"></tr>
     </thead>
@@ -14,7 +15,9 @@
         <tr *ngComponentOutlet="getTableRowComponent();
           inputs: {'entityList': this, 'entity': entity, 'hidden': isEntityFiltered(entity)}"></tr>
       } @placeholder (minimum 50ms) {
-        <tr [id]="EntityComponent.getIdForEntity(this, entity)" class="app-entity-row"><td colspan="99" class="placeholder">... loading ...</td></tr>
+        <tr [id]="EntityComponent.getIdForEntity(this, entity)" class="entity-row {{ entityType.entityName }}"><td colspan="99" class="placeholder">
+          <div>... loading ...</div>
+        </td></tr>
       }
     }
     </tbody>

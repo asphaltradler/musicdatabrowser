@@ -26,6 +26,7 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
   @Input({required: true}) set entity(entity: ENTITY) {
     this._entity = entity;
     this.hostElement.nativeElement.setAttribute('id', EntityComponent.getIdForEntity(this.entityList, entity));
+    this.hostElement.nativeElement.setAttribute('class', `entity-row ${this.entityList.entityType.entityName}`);
     this.hidden = this.entityList?.isEntityFiltered(entity);
   }
 
@@ -36,11 +37,8 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
       this.hostElement.nativeElement.removeAttribute('hidden');
     }
   }
-  @Input() set id(id: string) {
-    this.hostElement.nativeElement.setAttribute('id', id);
-  }
 
-  constructor(protected hostElement: ElementRef, protected router: Router) {
+  constructor(protected hostElement: ElementRef<HTMLElement>, protected router: Router) {
   }
 
   getOtherEntitiesByThisId(otherEntityType: typeof AbstractEntity) {

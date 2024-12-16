@@ -6,31 +6,54 @@ div.card {
   overflow: hidden;
 }
 
-th.albumart, td.albumart {
+td div {
+  overflow: auto;
+}
+
+th.albumart, td.albumart, td.placeholder {
+  display: table-cell;
   text-align: center;
   width: 48px;
-  height: 40px;
+  height: 44px;
   padding: 0;
+}
+
+td.albumart div, td.placeholder div {
+  overflow: hidden;
+  height: 44px;
 }
 
 td.albumart img {
   width: 48px;
 }
 
+tr.album th.albumart, tr.track th.albumart,
+tr.album td.albumart, tr.track td.albumart,
+tr.album td.placeholder, tr.track td.placeholder {
+  width: 140px;
+  height: 160px;
+}
+
+tr.album td div, tr.track td div {
+  height: 160px;
+}
+
+tr.album td.albumart img, tr.track td.albumart img {
+  width: 140px;
+}
+
 th.col-long, td.col-long {
   width: 20%;
   max-width: 200px;
-  overflow: hidden;
-}
-
-td.placeholder {
-  height: 2em;
-  text-align: center;
-  display: table-cell;
+  text-overflow: ellipsis;
 }
 
 .text-right {
   text-align: right;
+}
+
+.text-center {
+  text-align: center;
 }
 
 .footer-absolute {

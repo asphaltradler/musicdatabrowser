@@ -1,21 +1,20 @@
-div.twocolumn {
+div.flex {
   display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
 
-div.twocolumn > div {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
+div.flex > * {
+  padding: 10px 0 10px 10px;
+  flex-grow: 1;
 }
 
-div.twocolumn > div:first-child {
-  padding-right: 0;
+div.flex > :last-child {
+  padding-right: 10px;
 }
 
-img.albumart {
-  max-width: 100%;
+div.flex img.albumart {
   width: 600px;
   height: auto;
-  display: block;
-  margin-bottom: 10px;
+  flex-grow: 0;
 }

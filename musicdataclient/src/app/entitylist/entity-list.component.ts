@@ -1,16 +1,12 @@
-import {Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {EntityService} from '../services/entity.service';
 import {Subscription} from 'rxjs';
-import {SearchfieldComponent} from '../controls/searchfield.component';
 import {Page} from '../entities/page';
 import {appDefaults} from '../../config/config';
-import {NgComponentOutlet} from '@angular/common';
 import {Album} from '../entities/album';
 import {Track} from '../entities/track';
-import {ListHeaderComponent} from './list-header/list-header.component';
-import {PagingComponent} from '../controls/paging.component';
 import {TrackComponent} from './entity-component/track.component';
 import {AlbumComponent} from './entity-component/album.component';
 import {EntityComponent} from './entity-component/entity.component';
@@ -25,26 +21,32 @@ import {
   paramSearchEntity,
   paramSourceEntity,
 } from '../../config/utilities';
+import {DetailsPopupComponent} from '../popup/details/details.popup.component';
+import {SearchfieldComponent} from '../controls/searchfield.component';
+import {PagingComponent} from '../controls/paging.component';
+import {ListHeaderComponent} from './list-header/list-header.component';
+import {NgComponentOutlet} from '@angular/common';
 
 @Component({
   templateUrl: './entity-list.component.html',
   styleUrls: ['./entity-list.component.css'],
   standalone: true,
   imports: [
-    NgComponentOutlet,
+    DetailsPopupComponent,
     SearchfieldComponent,
-    ListHeaderComponent,
     PagingComponent,
+    ListHeaderComponent,
+    NgComponentOutlet,
   ]
 })
-export class EntityListComponent<E extends AbstractEntity> implements OnDestroy {
+export class EntityListComponent<E extends AbstractEntity> implements OnDestroy, AfterViewInit {
   public page?: Page<E>;
   private _pageSize = appDefaults.defaultPageSize;
 
   private _filter = '';
   private titleFor = '';
 
-  private changeSubscription: Subscription;
+  private routeChangeSubscription: Subscription;
   private lastSearchSubscription?: Subscription;
 
   public lastSearchPerformance?: string;
@@ -58,19 +60,38 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
 
   private lastClickedEntity?: E;
 
+  @ViewChild(DetailsPopupComponent) popup!: DetailsPopupComponent<E>;
+  @ViewChildren(EntityComponent) entityComponents!: QueryList<any>;
+
   constructor(private route: ActivatedRoute, private router: Router, private titleService: Title,
               public service: EntityService) {
     //default/Vorbelegung bei Aktivierung oder Änderung der Query
-    this.changeSubscription = route.params.subscribe(() => {
+    this.routeChangeSubscription = route.params.subscribe(() => {
       this.startSearchFromQuery();
     });
   }
 
+  ngAfterViewInit(): void {
+    //TODO geht wohl nicht wg. ngComponentOutlet
+    this.entityComponents.changes.subscribe(changes => {
+      console.log(`changes ${changes}`);
+    });
+  }
+
+  openPopup(entity: E, event: MouseEvent) {
+    this.popup.open(entity.name, entity.albumartName || '',
+      //TODO Position einfacher bestimmbar?
+      { x: event.pageX + 10, y: event.pageY-event.offsetY + 10});
+  }
+
+  onPopupClosed() {
+    console.log('Popup wurde geschlossen');
+  }
+
   ngOnDestroy(): void {
     console.log(`destroy ${this.entityType.getNameSingular()}List`);
-    this.changeSubscription?.unsubscribe();
+    this.routeChangeSubscription?.unsubscribe();
     this.lastSearchSubscription?.unsubscribe();
-    //this._filter = '';
   }
 
   startSearchFromQuery(): void {
@@ -78,7 +99,8 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
     const params = snapshot.params;
     const navigation = this.router.getCurrentNavigation();
     this.lastClickedEntity = navigation?.previousNavigation?.extras?.state?.[paramSourceEntity];
-    //EntityTyp aus Router übergeben oder aus neuer Suche
+    console.log(`lastClickedEntity=${this.lastClickedEntity?.name}`);
+    //EntityTyp aus neuer Suche in params oder direkt aus aus Router (app-routes data) übergeben
     this.entityType = getEntityForName(params[paramEntity]) || snapshot.data[0];
 
     if (this.entityType) {
@@ -141,7 +163,7 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
   }
 
   private getSearchMessage = (searchEntityType: typeof AbstractEntity, id: Number | undefined, searchString: string | undefined) => {
-    return `Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName + id ? 'id ' + id : ''}=${searchString || '*'}`;
+    return `Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName + (id ? 'id ' + id : '')}=${searchString || '*'}`;
   }
 
   private fillEntityList(page: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
@@ -149,16 +171,23 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy 
     this.searchEntityType = searchEntityType;
     this.lastSearchId = searchId;
     this._searchName = searchString || '';
-    this.scrollToLastSelectedElement();
+    //TODO offenbar noch zu früh, wenn Liste gefüllt - DOM muss erst geändert sein!
+    setTimeout(() => {
+      this.scrollToLastSelectedElement();
+    }, 200);
   }
 
   private scrollToLastSelectedElement() {
     //Element, von dem wir vorher gekommen sind
     if (this.lastClickedEntity) {
-      console.log(`scroll to ${this.lastClickedEntity.name}`);
       const id = EntityComponent.getIdForEntity(this, this.lastClickedEntity);
       const element = document.getElementById(id);
-      element?.scrollIntoView({behavior: 'smooth'});
+      if (element) {
+        console.log(`Scroll zu ${this.lastClickedEntity.name} mit html.id=${id}`);
+        element.scrollIntoView({behavior: 'smooth'});
+      } else {
+        console.log(`Element ${this.lastClickedEntity.name} für scroll nicht vorhanden`);
+      }
     }
   }
 
