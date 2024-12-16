@@ -26,7 +26,8 @@ public class Work extends TrackDependentEntity implements Serializable {
     @JsonIgnore
     private Date lastModified;
 
-    @OneToMany(mappedBy = "work", fetch = FetchType.LAZY)
+    //verwaiste Tracks ohne gelöschtes Genre auch rauslöschen
+    @OneToMany(mappedBy = "work", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonBackReference
     private Set<Track> tracks;
 

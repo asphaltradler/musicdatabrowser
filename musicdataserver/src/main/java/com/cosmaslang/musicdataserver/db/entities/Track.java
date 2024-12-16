@@ -2,6 +2,8 @@ package com.cosmaslang.musicdataserver.db.entities;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.lang.Nullable;
@@ -9,7 +11,6 @@ import org.springframework.lang.Nullable;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 //@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"hash", "path"})})
@@ -41,7 +42,6 @@ public class Track extends NamedEntity {
     private String name;
     //Bei den ManyToOne dürfen wir NICHT Lazy kaskadieren!!!
     @ManyToOne(cascade = CascadeType.MERGE /*, fetch = FetchType.LAZY*/)
-    //@JoinColumn(name = "album_id")
     @JsonManagedReference
     private Album album;
     @ManyToOne(cascade = CascadeType.MERGE)
@@ -52,13 +52,15 @@ public class Track extends NamedEntity {
     private Work work;
     //statt EAGER laden wir lazy und definieren startup-Service als @Transactional
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JoinTable()
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    //@JoinTable()
             //name = "artists_tracks",
             //joinColumns = @JoinColumn(name = "track_id"),
             //inverseJoinColumns = @JoinColumn(name = "artist_id"))
     private Set<Artist> artists; // = new HashSet<>();
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JoinTable()
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    //@JoinTable()
             //name = "genre_tracks",
             //joinColumns = @JoinColumn(name = "track_id"),
             //inverseJoinColumns = @JoinColumn(name = "genre_id"))
@@ -354,7 +356,6 @@ public class Track extends NamedEntity {
     @Override
     public String toString() {
         return "Track [path=" + path + ", name=" + name + ", album=" + (album == null ? "NULL" : album.getName())
-                + ", artists=" + artists.stream().map(Artist::toString).collect(Collectors.joining(","))
                 + "]";
     }
 

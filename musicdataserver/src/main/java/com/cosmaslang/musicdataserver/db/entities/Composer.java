@@ -26,7 +26,8 @@ public class Composer extends TrackDependentEntity implements Serializable {
     @JsonIgnore
     private Date lastModified;
 
-    @OneToMany(mappedBy = "composer", fetch = FetchType.LAZY)
+    //verwaiste Tracks ohne gelöschten Komponisten rauslöschen
+    @OneToMany(mappedBy = "composer", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonBackReference
     private Set<Track> tracks;
 

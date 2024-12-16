@@ -192,14 +192,16 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
   }
 
   searchPreviousPage(): void {
-    if (this.searchEntityType && this.hasPreviousPage()) {
-      this.searchByEntityIdOrName(this.searchEntityType, this.page!.number - 1, this.lastSearchId, this._searchName);
-    }
+    this.loadPage(-1);
   }
 
   searchNextPage(): void {
-    if (this.searchEntityType && this.hasNextPage()) {
-      this.searchByEntityIdOrName(this.searchEntityType, this.page!.number + 1, this.lastSearchId, this._searchName);
+    this.loadPage(+1);
+  }
+
+  loadPage(add: number = 0): void {
+    if (this.searchEntityType && this.page && this.page.number + add >= 0 && this.page.number + add <= this.page.totalPages) {
+      this.searchByEntityIdOrName(this.searchEntityType, this.page.number + add, this.lastSearchId, this._searchName);
     }
   }
 
@@ -230,6 +232,19 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
     params[paramSourceEntity] = sourceEntity;
     this.router.navigate([entityType.entityName, searchEntityType.entityName, entity.id],
       { onSameUrlNavigation: 'reload', state: params} );
+  }
+
+  removeEntity(entity: E) {
+    this.service.removeById(this.entityType, entity.id).subscribe({
+        next: () => {
+          console.log(`Löschen von ${entity.id}=${entity.name} erfolgreich`);
+          //this.page!.content = this.page!.content.filter(e => e !== entity);
+          this.loadPage();
+        },
+        error: err => {
+          console.log(`Löschen von ${entity.id}=${entity.name} ERROR`, err);
+        }
+      })
   }
 
   getTableHeaderComponent() {
@@ -285,7 +300,8 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
     } else {
       const entityStart = this.page.number * this.page.size;
       title = entityCount !== this.page.totalElements
-        ? `${this.entityType.getNumbersDescription(entityStart+1, this.page.numberOfElements + entityStart)} von ${this.page.totalElements}`
+        //verwende hier this.page.content.length statt this.page.numberOfElements da wir evtl. selber rauslöschen
+        ? `${this.entityType.getNumbersDescription(entityStart+1, this.page.content.length + entityStart)} von ${this.page.totalElements}`
         : this.entityType.getNumberDescription(this.page.totalElements);
     }
     return `${title} ${this.titleFor}`;

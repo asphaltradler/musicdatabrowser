@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.lang.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 @NoRepositoryBean
-public abstract class TrackDependentEntity extends NamedEntity{
+public abstract class TrackDependentEntity extends NamedEntity {
     @JsonBackReference
     public abstract Set<Track> getTracks();
 
@@ -21,15 +20,13 @@ public abstract class TrackDependentEntity extends NamedEntity{
     }
 
     /** Statt des kompletten Dokuments übermitteln wir nur die ID, falls gegeben */
-    @Nullable
     @JsonProperty
-    public Long getAlbumartId() {
-        return getAlbumart().map(Document::getId).orElse(null);
+    public Optional<Long> getAlbumartId() {
+        return getAlbumart().map(Document::getId);
     }
 
-    @Nullable
     @JsonProperty
-    public String getAlbumartName() {
-        return getAlbumart().map(Document::getName).orElse(null);
+    public Optional<String> getAlbumartName() {
+        return getAlbumart().map(Document::getName);
     }
 }

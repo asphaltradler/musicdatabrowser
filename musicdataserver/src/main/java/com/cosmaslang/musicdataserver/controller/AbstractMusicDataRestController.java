@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import static org.springframework.web.cors.CorsConfiguration.ALL;
@@ -104,15 +103,10 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
 
     @Transactional
     @DeleteMapping("/remove/{id}")
-    protected ENTITY remove(@PathVariable Long id) {
-        logger.fine(String.format("remove id=%d", id));
-        Optional<ENTITY> entity = getMyRepository().findById(id);
-        //TODO was passiert mit Referenzen in artists_tracks usw.?
-        if (entity.isPresent()) {
-            getMyRepository().delete(entity.get());
-            return entity.get();
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No item found with id " + id);
+    protected void remove(@PathVariable Long id) {
+        logger.info(String.format("remove id=%d", id));
+        getMyRepository().delete(
+                getMyRepository().findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
     protected Pageable getPageableOf(Integer pageNumber, Integer pageSize) {

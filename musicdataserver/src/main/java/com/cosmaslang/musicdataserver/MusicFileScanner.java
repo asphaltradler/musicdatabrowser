@@ -110,7 +110,13 @@ public class MusicFileScanner {
                         track.setAlbumart(albumArt);
                     }
                     track.setBooklet(booklet);
-                    trackRepository.save(track);
+                    try {
+                        trackRepository.save(track);
+                    } catch (RuntimeException e) {
+                        logger.log(Level.WARNING, MessageFormat.format("error when processing track {0}", track.getPath()),
+                                e);
+                        failed++;
+                    }
                 });
             }
         }

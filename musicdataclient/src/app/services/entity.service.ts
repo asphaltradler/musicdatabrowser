@@ -14,6 +14,7 @@ export class EntityService {
   findPageByUrl = this.baseUrl + '/{}/findby';
   getPageUrl = this.baseUrl + '/{}/get';
   getByIdUrl = this.baseUrl + '/{}/id/{id}';
+  removeByIdUrl = this.baseUrl + '/{}/remove/{id}';
   documentPageUrl = this.baseUrl + '/document/content/';
 
   constructor(private httpClient: HttpClient) {}
@@ -48,8 +49,13 @@ export class EntityService {
   }
 
   public getById<E extends AbstractEntity>(entityType: typeof AbstractEntity, id: number): Observable<E> {
-    //console.log("getPage", url, params.get(appDefaults.serviceParamPageNumber));
     return this.httpClient.get<E>(this.getByIdUrl.replace('{}', entityType.entityName)
+      .replace('{id}', `${id}`));
+  }
+
+  public removeById(entityType: typeof AbstractEntity, id: number) {
+    console.log("removeById", id);
+    return this.httpClient.delete(this.removeByIdUrl.replace('{}', entityType.entityName)
       .replace('{id}', `${id}`));
   }
 

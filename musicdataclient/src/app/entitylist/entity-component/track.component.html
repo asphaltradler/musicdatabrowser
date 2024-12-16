@@ -72,3 +72,8 @@
 <td class="text-right">{{ Track.getLength(entity) }}</td>
 <td class="col-long">{{ entity.path }}</td>
 <td>{{ Track.getLastModificationSince(entity) }}</td>
+<td>
+  <div class="flex">
+    <button class="btn btn-secondary" (click)="entityList.removeEntity(entity)">Löschen</button>
+  </div>
+</td>

@@ -10,6 +10,14 @@ td div {
   overflow: auto;
 }
 
+td div.flex {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+}
+
 th.albumart, td.albumart, td.placeholder {
   display: table-cell;
   text-align: center;
@@ -31,11 +39,11 @@ tr.album th.albumart, tr.track th.albumart,
 tr.album td.albumart, tr.track td.albumart,
 tr.album td.placeholder, tr.track td.placeholder {
   width: 140px;
-  height: 160px;
+  height: 140px;
 }
 
 tr.album td div, tr.track td div {
-  height: 160px;
+  height: 140px;
 }
 
 tr.album td.albumart img, tr.track td.albumart img {

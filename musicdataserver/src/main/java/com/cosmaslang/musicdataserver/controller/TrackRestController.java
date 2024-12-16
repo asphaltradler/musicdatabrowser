@@ -1,11 +1,21 @@
 package com.cosmaslang.musicdataserver.controller;
 
 import com.cosmaslang.musicdataserver.db.entities.Track;
+import com.cosmaslang.musicdataserver.db.entities.TrackDependentEntity;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
+import com.cosmaslang.musicdataserver.db.repositories.TrackDependentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/music/track")
@@ -68,6 +78,44 @@ public class TrackRestController extends AbstractMusicDataRestController<Track> 
 
         logger.finer(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
         return page;
+    }
+
+    @Override
+    @Transactional
+    protected void remove(@PathVariable Long id) {
+        Track track = trackRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        trackRepository.delete(track);
+
+        //Beim Löschen eines Tracks müssen wir selber auf evtl. entstehende Orphans achten
+        removeFromDependentParent(track, track.getAlbum(), albumRepository);
+        removeFromDependentParent(track, track.getComposer(), composerRepository);
+        removeFromDependentParent(track, track.getWork(), workRepository);
+        track.getGenres().forEach(g -> removeFromDependentParent(track, g, genreRepository));
+        track.getArtists().forEach(a -> removeFromDependentParent(track, a, artistRepository));
+        /*
+        //löscht ALLE Orphans, nicht nur die jetzt entstandenen
+        deleteDependentParents(albumRepository);
+        deleteDependentParents(composerRepository);
+        deleteDependentParents(workRepository);
+        deleteDependentParents(genreRepository);
+        deleteDependentParents(artistRepository);
+         */
+    }
+
+    private <E extends TrackDependentEntity> void removeFromDependentParent(Track track, E trackDependentEntity, TrackDependentRepository<E> trackDependentRepository) {
+        Set<Track> tracks = Optional.ofNullable(trackDependentEntity).map(TrackDependentEntity::getTracks).orElse(null);
+        if (tracks != null) {
+            tracks.remove(track);
+            //bleibt kein Track mehr übrig? => nicht mehr referenzierte Entity löschen
+            if (tracks.isEmpty()) {
+                trackDependentRepository.delete(trackDependentEntity);
+            }
+        }
+    }
+
+    private <E extends TrackDependentEntity>void deleteDependentParents(TrackDependentRepository<E> repository) {
+        List<E> orphans = repository.findByTracksIsEmpty();
+        repository.deleteAll(orphans);
     }
 }
 

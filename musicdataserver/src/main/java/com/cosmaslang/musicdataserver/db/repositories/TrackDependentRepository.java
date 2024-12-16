@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.List;
+
 @NoRepositoryBean
 public interface TrackDependentRepository<ENTITY extends NamedEntity> extends NamedEntityRepository<ENTITY> {
     Page<ENTITY> findDistinctByTracksNameContainsIgnoreCaseOrderByName(String track, Pageable pageable);
@@ -19,4 +21,6 @@ public interface TrackDependentRepository<ENTITY extends NamedEntity> extends Na
     Page<ENTITY> findDistinctByTracksArtistsIdOrderByName(Long artistId, Pageable pageable);
     Page<ENTITY> findDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(String work, Pageable pageable);
     Page<ENTITY> findDistinctByTracksWorkIdOrderByName(Long workId, Pageable pageable);
+
+    List<ENTITY> findByTracksIsEmpty();
 }

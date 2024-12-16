@@ -3,6 +3,8 @@ package com.cosmaslang.musicdataserver.db.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -27,6 +29,7 @@ public class Artist extends TrackDependentEntity implements Serializable {
     private Date lastModified;
 
     @ManyToMany(mappedBy = "artists", fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonBackReference
     private Set<Track> tracks;
 

@@ -1,10 +1,10 @@
 tr th.albumart, tr td.albumart, tr td.placeholder {
   width: 140px;
-  height: 160px;
+  height: 140px;
 }
 
 td div {
-  height: 160px;
+  height: 140px;
 }
 
 td.albumart img {
