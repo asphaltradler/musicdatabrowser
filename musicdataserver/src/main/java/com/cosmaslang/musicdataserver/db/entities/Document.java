@@ -25,6 +25,7 @@ public class Document extends NamedEntity {
     private String mimeType;
 
     @JsonIgnore
+    //@Lob - bei Postgres nicht nötig
     public byte[] embeddedDocument;
     public String externalDocument;
 
