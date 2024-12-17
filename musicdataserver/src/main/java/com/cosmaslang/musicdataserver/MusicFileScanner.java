@@ -19,7 +19,6 @@ import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.images.Artwork;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,9 +126,9 @@ public class MusicFileScanner {
         if (file != null && file.exists()) {
             String relativePathString = musicDataServerConfiguration.getRelativePath(file.toPath());
             document = new Document(relativePathString);
-            Optional<Document> optional = documentRepository.findOne(Example.of(document));
-            if (optional.isPresent()) {
-                document = optional.get();
+            Document existing = documentRepository.findByName(document.getName());
+            if (existing != null) {
+                document = existing;
             } else {
                 document = documentRepository.save(document);
             }
