@@ -30,24 +30,24 @@ export class Track extends AbstractEntity {
     const differenceInSeconds = differenceInMilliseconds / 1000;
     const differenceInMinutes = differenceInSeconds / 60;
     const differenceInHours = differenceInMinutes / 60;
-    const differenceInDays = Math.floor(differenceInHours / 24);
-    const differenceInWeeks = Math.floor(differenceInDays / 7);
-    const differenceInMonths = Math.floor(differenceInDays / 30);
-    const differenceInYears = Math.floor(differenceInDays / 365);
+    const differenceInDays = differenceInHours / 24;
+    const differenceInWeeks = differenceInDays / 7;
+    const differenceInMonths = differenceInDays / 30;
+    const differenceInYears = differenceInDays / 365;
     if (differenceInYears > 1) {
-      return differenceInYears + 'y';
+      return differenceInYears.toFixed(1) + 'y';
     } else if (differenceInMonths > 1) {
-      return differenceInMonths + 'mon';
+      return differenceInMonths.toFixed(1) + 'mon';
     } else if (differenceInWeeks > 1) {
-      return differenceInWeeks + 'w';
+      return differenceInWeeks.toFixed(1) + 'w';
     } else if (differenceInDays > 1) {
-      return differenceInDays + 'd';
+      return differenceInDays.toFixed(1) + 'd';
     } else if (differenceInHours > 1) {
-      return differenceInHours + 'h';
+      return differenceInHours.toFixed(1) + 'h';
     } else if (differenceInMinutes > 1) {
-      return differenceInMinutes + 'm';
+      return differenceInMinutes.toFixed(1) + 'm';
     } else if (differenceInSeconds > 1) {
-      return differenceInSeconds + 's';
+      return differenceInSeconds.toFixed(1) + 's';
     } else {
       return 'JETZT';
     }
