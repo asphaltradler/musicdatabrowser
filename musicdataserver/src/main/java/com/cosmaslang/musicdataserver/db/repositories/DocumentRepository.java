@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface DocumentRepository extends NamedEntityRepository<Document> {
-    Optional<Document> findFirstByNameContainsIgnoreCase(String name);
+    Optional<Document> findByHash(String hash);
 }

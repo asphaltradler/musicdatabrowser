@@ -18,6 +18,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.images.Artwork;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -26,8 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -125,13 +130,7 @@ public class MusicFileScanner {
         Document document = null;
         if (file != null && file.exists()) {
             String relativePathString = musicDataServerConfiguration.getRelativePath(file.toPath());
-            document = new Document(relativePathString);
-            Document existing = documentRepository.findByName(document.getName());
-            if (existing != null) {
-                document = existing;
-            } else {
-                document = documentRepository.save(document);
-            }
+            document = getOrCreateDocument(file, relativePathString);
         }
         return document;
     }
@@ -207,7 +206,7 @@ public class MusicFileScanner {
             //technical data
             header = audioFile.getAudioHeader();
             if (header != null) {
-                String hash = getHash(header, file.getName());
+                String hash = getHash(header, file);
                 Track existingTrack = trackRepository.findByHash(hash);
                 if (existingTrack != null) {
                     //wir übernehmen die Daten aus dem bisherigen Track
@@ -231,7 +230,7 @@ public class MusicFileScanner {
                 track.setEncoding(header.getFormat());
                 track.setLengthInSeconds(header.getTrackLength());
                 //ist null bei Ogg, WMA, manchen WAV, etc.
-                track.setNoOfSamples(getNumberOfSamples(header));
+                track.setNoOfSamples(getNoOfSamples(header));
             }
         } catch (PersistenceException e) {
             throw e;
@@ -269,11 +268,9 @@ public class MusicFileScanner {
                 }
                 Artwork artwork = tag.getFirstArtwork();
                 if (artwork != null) {
-                    Document document = new Document(artwork.getBinaryData(), artwork.getMimeType());
-                    if (StringUtils.isNotBlank(artwork.getDescription())) {
-                        document.setName(artwork.getDescription());
-                    }
-                    documentRepository.save(document);
+                    Document document = getOrCreateDocument(artwork.getBinaryData(),
+                        artwork.getMimeType(),
+                        track.getName(), artwork.getDescription());
                     track.setAlbumart(document);
                 }
                 str = tag.getFirst(FieldKey.COMPOSER);
@@ -340,7 +337,7 @@ public class MusicFileScanner {
         return modified != null && modified.getTime() >= file.lastModified();
     }
 
-    private static String getHash(AudioHeader header, String filename) {
+    private String getHash(AudioHeader header, File file) {
         //nur Flac hat (meistens) einen korrekten Audio-MD5, der unabhängig von Tags ist
         if (header instanceof FlacAudioHeader) {
             String hash = ((FlacAudioHeader) header).getMd5();
@@ -350,21 +347,10 @@ public class MusicFileScanner {
             }
         }
         //beim Rest muss filepath-hash plus Länge in samples reichen, um Änderungen anzuzeigen
-        return getFileHash(filename, header);
-        //Leider viel zu langsam...
-        /*
-        try {
-            HashCode md5 = Files.asByteSource(file).hash(Hashing.md5());
-            hash = md5.toString();
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Can't hash " + path, e);
-            hash = Long.toHexString(path.hashCode())
-                    + '-' + header.getNoOfSamples().toString();
-        }
-        */
+        return getFileHash(file, header);
     }
 
-    private static boolean containsOnlyZero(String hash) {
+    private boolean containsOnlyZero(String hash) {
         if (hash != null) {
             for (int i = 0; i < hash.length(); i++) {
                 if (hash.charAt(i) != '0') {
@@ -375,12 +361,23 @@ public class MusicFileScanner {
         return true;
     }
 
-    private static String getFileHash(String filename, AudioHeader header) {
-        return Long.toHexString(filename.hashCode())
-                + '-' + Long.toHexString(getNumberOfSamples(header));
+    private String getFileHash(File file, AudioHeader header) {
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.update(file.getName().getBytes(StandardCharsets.UTF_8));
+            md5.update(String.valueOf(file.length()).getBytes(StandardCharsets.UTF_8));
+            md5.update(getNoOfSamples(header).toString().getBytes(StandardCharsets.UTF_8));
+            byte[] bytes = md5.digest();
+            BigInteger bigInteger = new BigInteger(1, bytes);
+            return bigInteger.toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            logger.log(Level.SEVERE, "Encoding Fehler", e);
+        }
+        //fallback
+        return Long.toHexString(Objects.hash(file.getName(), file.length(), getNoOfSamples(header)));
     }
 
-    private static Long getNumberOfSamples(AudioHeader header) {
+    private static Long getNoOfSamples(AudioHeader header) {
         Long noOfSamples = header.getNoOfSamples();
         if (noOfSamples == null) {
             //dann selbst berechnen (wieso macht das jaudiotagger nicht schon?)
@@ -418,4 +415,39 @@ public class MusicFileScanner {
         }
         return entity;
     }
+
+    private @NotNull Document getOrCreateDocument(byte[] content, String mimeType, String trackName, String suffix) {
+        Document document = new Document(content, mimeType,trackName, suffix);
+        Optional<Document> existing = documentRepository.findByHash(document.getHash());
+        if (existing.isPresent()) {
+            Document existingDocument = existing.get();
+            //nichts zu ändern
+            if (existingDocument.getName().equals(document.getName())) {
+                return existingDocument;
+            }
+            logger.finer(MessageFormat.format("-   updating document {0} => {1}", existingDocument, document));
+            document = existingDocument;
+            document.setTrackNameForEmbedded(trackName, suffix);
+        } //ansonsten erzeugen wir document neu
+        return documentRepository.save(document);
+    }
+
+    private @NotNull Document getOrCreateDocument(File file, String relativePathString) {
+        Document document = new Document(file, relativePathString);
+        Optional<Document> existing = documentRepository.findByHash(document.getHash());
+        if (existing.isPresent()) {
+            Document existingDocument = existing.get();
+            //nichts zu ändern
+            if (existingDocument.getName().equals(document.getName())) {
+                return existingDocument;
+            }
+            logger.finer(MessageFormat.format("-   updating document {0} => {1}", existingDocument, document));
+            document = existingDocument;
+            //update: Pfad könnte sich geändert haben und hash trotzdem gleich geblieben
+            //dann ändert sich das hash aber jetzt nach Neusetzen des Files
+            document.setExternalDocument(file, relativePathString);
+        }
+        return documentRepository.save(document);
+    }
+
 }

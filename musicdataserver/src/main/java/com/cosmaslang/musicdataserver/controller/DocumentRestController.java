@@ -36,12 +36,4 @@ public class DocumentRestController {
                 .orElse(null);
         return httpResponseHelper.getResponseEntityForContent(doc);
     }
-
-    @GetMapping("/find")
-    public ResponseEntity<?> getDocumentByName(String name) {
-        logger.fine(String.format("find name=%s", name));
-        Document doc = documentRepository.findFirstByNameContainsIgnoreCase(name)
-                .orElse(null);
-        return httpResponseHelper.getResponseEntityForContent(doc);
-    }
 }
