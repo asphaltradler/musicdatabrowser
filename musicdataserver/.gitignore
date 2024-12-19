@@ -22,6 +22,7 @@ yarn-error.log
 *.iws
 *.iml
 *.ipr
+.idea/
 
 ### NetBeans ###
 /nbproject/private/
