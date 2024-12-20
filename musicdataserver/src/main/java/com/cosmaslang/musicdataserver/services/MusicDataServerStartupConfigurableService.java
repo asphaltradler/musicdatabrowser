@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class MusicDataServerStartupConfigurableService implements MusicDataServerStartupService {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -85,6 +84,7 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     }
 
     @Override
+    @Transactional
     public void deleteOrphans() {
         logger.info("Orphaned entities:");
         List<TrackDependentRepository<?>> repos = Arrays.asList(
@@ -95,7 +95,7 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     private <E extends NamedEntity> void deleteOrphanedEntities(TrackDependentRepository<E> repo) {
         List<E> orphans = repo.findByTracksIsEmpty();
         if (!orphans.isEmpty()) {
-            logger.info(MessageFormat.format("  {0}: {1}", repo.getName(), orphans.stream().map(E::getName).collect(Collectors.joining(", "))));
+            logger.info(MessageFormat.format("  {0}: {1}", repo.getName(), orphans.stream().distinct().map(e -> '\'' + e.getName() + '\'').collect(Collectors.joining(", "))));
             repo.deleteAllByTracksIsEmpty();
         }
     }
