@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GenreRepository extends TrackDependentRepository<Genre> {
+    @Override
+    default String getName() { return "Genre"; }
 }

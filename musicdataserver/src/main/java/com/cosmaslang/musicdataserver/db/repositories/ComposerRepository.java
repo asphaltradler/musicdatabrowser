@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ComposerRepository extends TrackDependentRepository<Composer> {
+    @Override
+    default String getName() { return "Composer"; }
 }

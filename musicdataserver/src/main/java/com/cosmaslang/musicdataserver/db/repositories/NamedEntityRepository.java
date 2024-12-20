@@ -14,6 +14,8 @@ import org.springframework.data.repository.NoRepositoryBean;
  */
 @NoRepositoryBean
 public interface NamedEntityRepository<ENTITY extends NamedEntity> extends JpaRepository<ENTITY, Long> {
+    String getName();
+
     ENTITY findByName(String name);
     Page<ENTITY> findByNameContainsIgnoreCaseOrderByName(String name, Pageable pageable);
     Page<ENTITY> findById(long id, Pageable pageable);

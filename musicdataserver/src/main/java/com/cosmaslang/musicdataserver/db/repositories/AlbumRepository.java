@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AlbumRepository extends TrackDependentRepository<Album> {
+    @Override
+    default String getName() { return "Album"; }
 }
