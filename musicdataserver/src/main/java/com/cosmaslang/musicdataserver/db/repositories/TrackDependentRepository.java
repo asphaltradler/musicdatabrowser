@@ -23,4 +23,5 @@ public interface TrackDependentRepository<ENTITY extends NamedEntity> extends Na
     Page<ENTITY> findDistinctByTracksWorkIdOrderByName(Long workId, Pageable pageable);
 
     List<ENTITY> findByTracksIsEmpty();
+    void deleteAllByTracksIsEmpty();
 }

@@ -7,4 +7,5 @@ public interface MusicDataServerStartupService {
     void init() throws IOException;
     void start();
     String getInfo();
+    void deleteOrphans();
 }

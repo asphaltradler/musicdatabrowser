@@ -16,6 +16,7 @@ public class MusicDataServerApplication {
         if (args.length <= 0 || !args[args.length - 1].equals("-noreload")) {
             service.init();
         }
+        service.deleteOrphans();
         service.start();
     }
 }

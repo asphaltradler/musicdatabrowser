@@ -4,19 +4,24 @@ import com.cosmaslang.musicdataserver.MusicFileScanner;
 import com.cosmaslang.musicdataserver.configuration.MusicDataServerConfiguration;
 import com.cosmaslang.musicdataserver.db.entities.*;
 import com.cosmaslang.musicdataserver.db.repositories.DocumentRepository;
-import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
+import com.cosmaslang.musicdataserver.db.repositories.TrackDependentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class MusicDataServerStartupConfigurableService implements MusicDataServerStartupService {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -27,15 +32,15 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     @Autowired
     TrackRepository trackRepository;
     @Autowired
-    NamedEntityRepository<Artist> artistRepository;
+    TrackDependentRepository<Album> albumRepository;
     @Autowired
-    NamedEntityRepository<Album> albumRepository;
+    TrackDependentRepository<Composer> composerRepository;
     @Autowired
-    NamedEntityRepository<Work> workRepository;
+    TrackDependentRepository<Work> workRepository;
     @Autowired
-    NamedEntityRepository<Genre> genreRepository;
+    TrackDependentRepository<Genre> genreRepository;
     @Autowired
-    NamedEntityRepository<Composer> composerRepository;
+    TrackDependentRepository<Artist> artistRepository;
     @Autowired
     DocumentRepository documentRepository;
 
@@ -76,6 +81,22 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
                     count, albumRepository.count(), composerRepository.count(), workRepository.count(), genreRepository.count(), artistRepository.count(), documentRepository.count());
         } else {
             return "Service gestartet aber noch leer.";
+        }
+    }
+
+    @Override
+    public void deleteOrphans() {
+        logger.info("Orphaned entities:");
+        List<TrackDependentRepository<?>> repos = Arrays.asList(
+                albumRepository, workRepository, genreRepository, artistRepository);
+        repos.forEach(this::deleteOrphanedEntities);
+    }
+
+    private <E extends NamedEntity> void deleteOrphanedEntities(TrackDependentRepository<E> repo) {
+        List<E> orphans = repo.findByTracksIsEmpty();
+        if (!orphans.isEmpty()) {
+            logger.info(MessageFormat.format("  {0}: {1}", repo.getName(), orphans.stream().map(E::getName).collect(Collectors.joining(", "))));
+            repo.deleteAllByTracksIsEmpty();
         }
     }
 }
