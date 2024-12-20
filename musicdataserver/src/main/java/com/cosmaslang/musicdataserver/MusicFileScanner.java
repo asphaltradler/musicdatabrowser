@@ -4,6 +4,7 @@ import com.cosmaslang.musicdataserver.configuration.MusicDataServerConfiguration
 import com.cosmaslang.musicdataserver.db.entities.*;
 import com.cosmaslang.musicdataserver.db.repositories.DocumentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.NamedEntityRepository;
+import com.cosmaslang.musicdataserver.db.repositories.TrackDependentRepository;
 import com.cosmaslang.musicdataserver.db.repositories.TrackRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Nullable;
@@ -44,15 +45,15 @@ public class MusicFileScanner {
     @Autowired
     TrackRepository trackRepository;
     @Autowired
-    NamedEntityRepository<Artist> artistRepository;
+    TrackDependentRepository<Artist> artistRepository;
     @Autowired
-    NamedEntityRepository<Album> albumRepository;
+    TrackDependentRepository<Album> albumRepository;
     @Autowired
-    NamedEntityRepository<Work> workRepository;
+    TrackDependentRepository<Work> workRepository;
     @Autowired
-    NamedEntityRepository<Genre> genreRepository;
+    TrackDependentRepository<Genre> genreRepository;
     @Autowired
-    NamedEntityRepository<Composer> composerRepository;
+    TrackDependentRepository<Composer> composerRepository;
     @Autowired
     DocumentRepository documentRepository;
     @Autowired
@@ -100,8 +101,8 @@ public class MusicFileScanner {
                         });
             }
 
-            final Document albumArt = getDocument(getDocumentFile(dir, imageExts, imageNames));
-            final Document booklet = getDocument(getDocumentFile(dir, bookletExts, null));
+            final Document albumArt = getDocument(getDocumentFile(dir, imageExts, imageNames), true);
+            final Document booklet = getDocument(getDocumentFile(dir, bookletExts, null), false);
 
             try (Stream<Path> paths = Files.list(dir.toPath())) {
                 Stream<Track> tracks = paths.map(Path::toFile).filter(
@@ -113,7 +114,9 @@ public class MusicFileScanner {
                     if (track.getAlbumart() == null) {
                         track.setAlbumart(albumArt);
                     }
-                    track.setBooklet(booklet);
+                    if (track.getBooklet() == null) {
+                        track.setBooklet(booklet);
+                    }
                     try {
                         trackRepository.save(track);
                     } catch (RuntimeException e) {
@@ -126,11 +129,11 @@ public class MusicFileScanner {
         }
     }
 
-    private Document getDocument(File file) {
+    private Document getDocument(File file, boolean withThumbnail) {
         Document document = null;
         if (file != null && file.exists()) {
             String relativePathString = musicDataServerConfiguration.getRelativePath(file.toPath());
-            document = getOrCreateDocument(file, relativePathString);
+            document = getOrCreateDocument(file, relativePathString, withThumbnail);
         }
         return document;
     }
@@ -157,6 +160,7 @@ public class MusicFileScanner {
             return names.contains(name);
         }
     }
+
     @Transactional
     @Nullable
     protected Track processAudioFile(File file) {
@@ -177,7 +181,7 @@ public class MusicFileScanner {
     private Track createOrUpdateTrack(File file) {
         //path unabhängig von Filesystem notieren, ausgehend von rootDir
         //String pathString = filepath.subpath(rootPath.getNameCount(), filepath.getNameCount()).toString().replace('\\', '/');
-        String pathString =  musicDataServerConfiguration.getRelativePath(file.toPath());
+        String pathString = musicDataServerConfiguration.getRelativePath(file.toPath());
         Track track = trackRepository.findByPath(pathString);
         if (track == null) {
             track = new Track();
@@ -192,8 +196,7 @@ public class MusicFileScanner {
             //TODO leider können wir das wg. Image und Booklet nicht mehr mit Sicherheit sagen
             //return null
             return track;
-        }
-        else {
+        } else {
             logger.fine("-   update track " + pathString);
             updated++;
         }
@@ -269,8 +272,8 @@ public class MusicFileScanner {
                 Artwork artwork = tag.getFirstArtwork();
                 if (artwork != null) {
                     Document document = getOrCreateDocument(artwork.getBinaryData(),
-                        artwork.getMimeType(),
-                        track.getName(), artwork.getDescription());
+                            artwork.getMimeType(),
+                            track.getName(), artwork.getDescription());
                     track.setAlbumart(document);
                 }
                 str = tag.getFirst(FieldKey.COMPOSER);
@@ -417,28 +420,37 @@ public class MusicFileScanner {
     }
 
     private @NotNull Document getOrCreateDocument(byte[] content, String mimeType, String trackName, String suffix) {
-        Document document = new Document(content, mimeType,trackName, suffix);
+        Document document = new Document(content, mimeType, trackName, suffix);
         Optional<Document> existing = documentRepository.findByHash(document.getHash());
         if (existing.isPresent()) {
             Document existingDocument = existing.get();
             //nichts zu ändern
-            if (existingDocument.getName().equals(document.getName())) {
+            if (existingDocument.getName().equals(document.getName())
+                    && existing.get().getThumbnail() != null) {
                 return existingDocument;
             }
             logger.finer(MessageFormat.format("-   updating document {0} => {1}", existingDocument, document));
             document = existingDocument;
             document.setTrackNameForEmbedded(trackName, suffix);
         } //ansonsten erzeugen wir document neu
+        if (document.getThumbnail() == null) {
+            try {
+                document.setThumbnail(ImageUtilities.buildThumbnail(document.getEmbeddedDocument()));
+            } catch (Throwable e) {
+                logger.log(Level.WARNING, MessageFormat.format("Thumbnail creation for {0} not possible", document.getName()), e);
+            }
+        }
         return documentRepository.save(document);
     }
 
-    private @NotNull Document getOrCreateDocument(File file, String relativePathString) {
+    private @NotNull Document getOrCreateDocument(File file, String relativePathString, boolean withThumbnail) {
         Document document = new Document(file, relativePathString);
         Optional<Document> existing = documentRepository.findByHash(document.getHash());
         if (existing.isPresent()) {
             Document existingDocument = existing.get();
             //nichts zu ändern
-            if (existingDocument.getName().equals(document.getName())) {
+            if (existingDocument.getExternalDocument().equals(document.getExternalDocument())
+                    && !withThumbnail || existingDocument.getThumbnail() != null) {
                 return existingDocument;
             }
             logger.finer(MessageFormat.format("-   updating document {0} => {1}", existingDocument, document));
@@ -447,7 +459,16 @@ public class MusicFileScanner {
             //dann ändert sich das hash aber jetzt nach Neusetzen des Files
             document.setExternalDocument(file, relativePathString);
         }
+        if (withThumbnail && document.getThumbnail() == null) {
+            File originalFile = musicDataServerConfiguration.getFileFromRelativePath(
+                    Path.of(document.getExternalDocument()));
+            try {
+                document.setThumbnail(ImageUtilities.buildThumbnail(originalFile));
+                //kann auch null sein, falls Bild schon klein genug ist, dann muss auch kein Thumbnail gespeichert werden
+            } catch (Throwable e) {
+                logger.log(Level.WARNING, MessageFormat.format("Thumbnail creation for {0} not possible", document.getName()), e);
+            }
+        }
         return documentRepository.save(document);
     }
-
 }

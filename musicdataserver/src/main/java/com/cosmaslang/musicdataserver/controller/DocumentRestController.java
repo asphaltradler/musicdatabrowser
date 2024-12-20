@@ -34,6 +34,14 @@ public class DocumentRestController {
         logger.fine(String.format("getContent id=%d", id));
         Document doc = documentRepository.findById(id)
                 .orElse(null);
-        return httpResponseHelper.getResponseEntityForContent(doc);
+        return httpResponseHelper.getResponseEntityForContent(doc, false);
+    }
+
+    @GetMapping("/thumb/{id}")
+    public ResponseEntity<?> getThumbnail(@PathVariable Long id) {
+        logger.fine(String.format("get thumbnail id=%d", id));
+        Document doc = documentRepository.findById(id)
+                .orElse(null);
+        return httpResponseHelper.getResponseEntityForContent(doc, true);
     }
 }

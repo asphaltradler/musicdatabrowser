@@ -50,7 +50,7 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
 
   getAlbumartUrl() {
     if (this.entity.albumartId) {
-      return this.entityList.service.getDocumentUrl(this.entity.albumartId.valueOf());
+      return this.entityList.service.getThumbnailUrl(this.entity.albumartId.valueOf());
     }
     return "";
   }

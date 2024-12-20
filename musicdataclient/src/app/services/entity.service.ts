@@ -15,7 +15,8 @@ export class EntityService {
   getPageUrl = this.baseUrl + '/{}/get';
   getByIdUrl = this.baseUrl + '/{}/id/{id}';
   removeByIdUrl = this.baseUrl + '/{}/remove/{id}';
-  documentPageUrl = this.baseUrl + '/document/content/';
+  documentUrl = this.baseUrl + '/document/content/';
+  thumbnailUrl = this.baseUrl + '/document/thumb/';
 
   constructor(private httpClient: HttpClient) {}
 
@@ -64,6 +65,10 @@ export class EntityService {
   }
 
   public getDocumentUrl(id: number) {
-    return this.documentPageUrl + id;
+    return this.documentUrl + id;
+  }
+
+  public getThumbnailUrl(id: number) {
+    return this.thumbnailUrl + id;
   }
 }

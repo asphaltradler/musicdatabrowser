@@ -25,22 +25,25 @@ public class HttpResponseHelper {
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(entity);
     }
 
-    public @NotNull ResponseEntity<?> getResponseEntityForContent(@Nullable Document doc) {
+    public @NotNull ResponseEntity<?> getResponseEntityForContent(@Nullable Document doc, boolean useThumbnail) {
         HttpHeaders headers = getHttpHeaders(doc);
         try {
-            headers.setContentType(MediaType.valueOf(doc.getMimeType()));
-            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(getContent(doc));
+            headers.setContentType(useThumbnail
+                    ? MediaType.IMAGE_GIF
+                    : MediaType.valueOf(doc.getMimeType()));
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(
+                    useThumbnail && doc.getThumbnail() != null ? doc.getThumbnail() : getContent(doc));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     private byte[] getContent(Document doc) throws IOException {
-        if (doc.embeddedDocument != null) {
-            return doc.embeddedDocument;
-        } else if (doc.externalDocument != null) {
+        if (doc.getEmbeddedDocument() != null) {
+            return doc.getEmbeddedDocument();
+        } else if (doc.getExternalDocument() != null) {
             return Files.readAllBytes(musicDataServerConfiguration.getFileFromRelativePath(
-                    Path.of(doc.externalDocument)).toPath());
+                    Path.of(doc.getExternalDocument())).toPath());
         }
         return null;
     }

@@ -40,8 +40,11 @@ public class Document extends NamedEntity {
 
     @JsonIgnore
     //@Lob - bei Postgres nicht nötig
-    public byte[] embeddedDocument;
-    public String externalDocument;
+    private byte[] embeddedDocument;
+
+    @JsonIgnore
+    private byte[] thumbnail;
+    private String externalDocument;
 
     public Document() {}
 
@@ -86,6 +89,10 @@ public class Document extends NamedEntity {
         } else {
             mimeType = "image/" + ext;
         }
+    }
+
+    public void setThumbnail(byte[] thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     private String createHash(byte[] content) {
@@ -144,9 +151,12 @@ public class Document extends NamedEntity {
         return externalDocument;
     }
 
+    public byte[] getThumbnail() {
+        return thumbnail;
+    }
+
     @Override
     public Date getLastModified() {
         return lastModified;
     }
-
 }
