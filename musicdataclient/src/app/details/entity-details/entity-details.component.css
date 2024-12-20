@@ -13,10 +13,14 @@ div.flex > :last-child {
   padding-right: 10px;
 }
 
-div.flex img.albumart {
+div.flex div.albumart {
+  display: flex;
+  align-items: start;
+}
+
+div.flex div.albumart img {
   width: 600px;
-  height: auto;
-  flex-grow: 0;
+  flex-grow: 1;
 }
 
 div.flex > .col-second {
