@@ -104,7 +104,7 @@ class AlbumRepositoryTest {
 
     @Test
     void findTracksForAlbum() {
-        List<Track> albumTracks = trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumName(ALBUM_1, pageable).stream().toList();
+        List<Track> albumTracks = trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumNameAscTracknumber(ALBUM_1, pageable).stream().toList();
         assertEquals(2, albumTracks.size());
         assertTrue(albumTracks.contains(trackRepository.findByName(TRACK_1)));
         assertTrue(albumTracks.contains(trackRepository.findByName(TRACK_2)));

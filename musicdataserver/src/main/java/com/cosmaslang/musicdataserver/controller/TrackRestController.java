@@ -36,18 +36,18 @@ public class TrackRestController extends AbstractMusicDataRestController<Track> 
         if (track != null) {
             page = trackRepository.findByNameContainsIgnoreCaseOrderByName(track, pageable);
         } else if (album != null) {
-            page = trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumName(album, pageable);
+            page = trackRepository.findByAlbumNameContainsIgnoreCaseOrderByAlbumNameAscTracknumber(album, pageable);
         } else if (composer != null) {
-            page = trackRepository.findByComposerNameContainsIgnoreCaseOrderByComposerNameAscAlbumNameAscId(composer, pageable);
+            page = trackRepository.findByComposerNameContainsIgnoreCaseOrderByComposerNameAscAlbumNameAscTracknumber(composer, pageable);
         } else if (work != null) {
-            page = trackRepository.findByWorkNameContainsIgnoreCaseOrderByWorkNameAscAlbumNameAscId(work, pageable);
+            page = trackRepository.findByWorkNameContainsIgnoreCaseOrderByWorkNameAscAlbumNameAscTracknumber(work, pageable);
         } else if (genre != null) {
             //Page<Genre> genres = genreRepository.findByNameContaining(genre);
-            page = trackRepository.findDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscId(genre, pageable); //.findByGenresIsIn(new HashSet<>(genres));
+            page = trackRepository.findDistinctByGenresNameContainsIgnoreCaseOrderByGenresNameAscAlbumNameAscTracknumber(genre, pageable); //.findByGenresIsIn(new HashSet<>(genres));
         } else if (artist != null) {
             //Page<artist> artists = artistRepository.findByNameContaining(artist);
             //page = trackRepository.findByArtistsIsIn(new HashSet<>(artists));
-            page = trackRepository.findDistinctByArtistsNameContainsIgnoreCaseOrderByArtistsNameAscAlbumNameAscId(artist, pageable);
+            page = trackRepository.findDistinctByArtistsNameContainsIgnoreCaseOrderByArtistsNameAscAlbumNameAscTracknumber(artist, pageable);
         }
 
         logger.finer(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
@@ -65,15 +65,15 @@ public class TrackRestController extends AbstractMusicDataRestController<Track> 
         if (trackId != null) {
             page = trackRepository.findById(trackId, pageable);
         } else if (albumId != null) {
-            page = trackRepository.findByAlbumId(albumId, pageable);
+            page = trackRepository.findByAlbumIdOrderByAlbumNameAscTracknumber(albumId, pageable);
         } else if (composerId != null) {
-            page = trackRepository.findByComposerId(composerId, pageable);
+            page = trackRepository.findByComposerIdOrderByAlbumNameAscTracknumber(composerId, pageable);
         } else if (workId != null) {
-            page = trackRepository.findByWorkId(workId, pageable);
+            page = trackRepository.findByWorkIdOrderByAlbumNameAscTracknumber(workId, pageable);
         } else if (genreId != null) {
-            page = trackRepository.findByGenresId(genreId, pageable);
+            page = trackRepository.findByGenresIdOrderByAlbumNameAscTracknumber(genreId, pageable);
         } else if (artistId != null) {
-            page = trackRepository.findByArtistsId(artistId, pageable);
+            page = trackRepository.findByArtistsIdOrderByAlbumNameAscTracknumber(artistId, pageable);
         }
 
         logger.finer(String.format("page %d of %d: %d of %d elements, in %dms", page.getNumber(), page.getTotalPages(), page.getNumberOfElements(), page.getTotalElements(), System.currentTimeMillis() - time));
