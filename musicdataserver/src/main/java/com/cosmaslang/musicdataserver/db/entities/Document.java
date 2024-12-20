@@ -46,6 +46,9 @@ public class Document extends NamedEntity {
     private byte[] thumbnail;
     private String externalDocument;
 
+    /**
+     * Notwendig für Datenbank-Entities
+     */
     public Document() {}
 
     public Document(byte[] content, String mimeType, String trackName, String suffix) {
