@@ -10,10 +10,17 @@
       <tr *ngComponentOutlet="getTableHeaderComponent(); inputs: {'entityList': this}"></tr>
     </thead>
     <tbody>
-      <ng-container *ngFor="let entity of getEntities()">
+    @for (entity of getEntities(); track entity.id) {
+      @defer (on viewport) {
         <tr *ngComponentOutlet="getTableRowComponent();
           inputs: {'entityList': this, 'entity': entity, 'hidden': isEntityFiltered(entity)}"></tr>
-      </ng-container>
+      } @placeholder (minimum 50ms) {
+        <tr [id]="EntityComponent.getIdForEntity(this, entity)" class="entity-row">
+          <td colspan="99" class="placeholder">
+            <div class="flex">... loading ...</div>
+        </td></tr>
+      }
+    }
     </tbody>
   </table>
 </div>

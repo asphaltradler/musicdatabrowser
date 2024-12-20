@@ -8,7 +8,7 @@ import {Genre} from './entities/genre';
 import {Track} from './entities/track';
 import {EntityListComponent} from './entitylist/entity-list.component';
 import {EntityDetailsComponent} from './details/entity-details/entity-details.component';
-import {detailsPath, paramEntity, paramId, paramSearchEntity} from '../config/utilities';
+import {detailsPath, paramEntityType, paramId, paramSearchEntity} from '../config/utilities';
 
 export const routes: Routes = [
   { path: Album.entityName, component: EntityListComponent<Album>, title: Album.namePlural, data: [Album] },
@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: Artist.entityName, component: EntityListComponent<Artist>, title: Artist.namePlural, data: [Artist] },
   { path: 'status', component: StatusComponent, title: 'Status', pathMatch: "prefix" },
 
-  { path: `:${paramEntity}`,
+  { path: `:${paramEntityType}`,
     children: [
       { path: `:${paramId}/${detailsPath}`, component: EntityDetailsComponent, pathMatch: "full" },
       { path: `:${paramSearchEntity}/:${paramId}`, component: EntityListComponent, pathMatch: "full" }

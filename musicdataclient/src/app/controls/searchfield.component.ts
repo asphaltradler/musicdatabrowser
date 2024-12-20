@@ -53,11 +53,11 @@ export class SearchfieldComponent implements OnChanges {
     this.searchEntity = this.searchForm.value.searchEntitySelector || AbstractEntity;
     this.searchEntityChange.emit(this.searchEntity);
     this.clearSearchText();
-    this.updateSearchField();
   }
 
   clearSearchText() {
     this.searchForm.controls.searchField.reset();
+    this.updateSearchField();
   }
 
   updateSearchField() {
@@ -67,6 +67,7 @@ export class SearchfieldComponent implements OnChanges {
 
   clearFilter() {
     this.searchForm.controls.filterField.reset();
+    this.updateFilter();
   }
 
   updateFilter() {

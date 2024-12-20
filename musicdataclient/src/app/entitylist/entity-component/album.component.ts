@@ -20,14 +20,14 @@ import {Router} from '@angular/router';
 })
 export class AlbumComponent extends EntityComponent<Album> {
   composers?: Composer[];
-  artists?: Artist[];
-  genres?: Genre[];
   works?: Work[];
+  genres?: Genre[];
+  artists?: Artist[];
+
   obs: IntersectionObserver;
 
   constructor(hostElement: ElementRef, router: Router, private changeRef: ChangeDetectorRef) {
     super(hostElement, router);
-
     this.obs = new IntersectionObserver(entries => entries.filter(
         e => e.isIntersecting).forEach(() => this.lazyLoadLists()));
     this.obs.observe(this.hostElement.nativeElement);
@@ -62,23 +62,20 @@ export class AlbumComponent extends EntityComponent<Album> {
     return "";
   }
 
-  getBookletName(maxlen: number = 24) {
+  getBookletName(maxlen: number = 28) {
     let name = this.entity.bookletName?.replace(/^.*\//, '');
-    if (name && name.length > maxlen) {
+    if (name && name.length > maxlen - 3) {
       name = '...' + name.substring(name.length - maxlen);
     }
     return name;
   }
 
   getSearchEntities(entity: typeof AbstractEntity): AbstractEntity[] | undefined {
-    if (entity === Composer) {
-      return this.composers;
-    } else if (entity === Artist) {
-      return this.artists;
-    } else if (entity === Work) {
-      return this.works;
-    } else if (entity === Genre) {
-      return this.genres;
+    switch (entity) {
+      case Composer: return this.composers;
+      case Work: return this.works;
+      case Genre: return this.genres;
+      case Artist: return this.artists;
     }
     return [];
   }

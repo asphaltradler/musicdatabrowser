@@ -4,7 +4,7 @@ import {Title} from '@angular/platform-browser';
 import {EntityService} from '../../services/entity.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {AbstractEntity} from '../../entities/abstractEntity';
-import {getEntityForName, paramEntity, paramId} from '../../../config/utilities';
+import {getEntityForName, paramEntityType, paramId, paramSourceEntity} from '../../../config/utilities';
 
 @Component({
   selector: 'app-track-details',
@@ -24,11 +24,11 @@ export class EntityDetailsComponent<E extends AbstractEntity> {
               private service: EntityService) {
     const snapshot = route.snapshot;
     const params = snapshot.params;
-    const entityType = getEntityForName(params[paramEntity]);
+    const entityType = getEntityForName(params[paramEntityType]);
     const id = params[paramId];
 
     //Entity in state übergeben?
-    const entity: E = router.getCurrentNavigation()?.extras?.state?.[paramEntity];
+    const entity: E = router.getCurrentNavigation()?.extras?.state?.[paramSourceEntity];
     if (entity) {
       this.setEntity(entity);
     } //sonst neu holen

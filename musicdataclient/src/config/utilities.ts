@@ -7,9 +7,14 @@ import {Artist} from '../app/entities/artist';
 import {AbstractEntity} from '../app/entities/abstractEntity';
 
 export const paramEntity = 'entity';
+export const paramEntityType = 'entityType';
 export const paramSearchEntity = 'searchEntity';
 export const paramSourceEntity = 'sourceEntity';
 export const paramId = 'id';
+export const paramSearchText = 'searchText';
+export const paramFilterText = 'filterText';
+export const paramPageNumber = 'pageNumber';
+export const paramPageSize = 'pageSize';
 export const detailsPath = 'details';
 
 export const allEntities: typeof AbstractEntity[] = [Album, Track, Composer, Work, Genre, Artist];

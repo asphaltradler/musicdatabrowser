@@ -8,8 +8,7 @@ import {Work} from '../../entities/work';
 import {Genre} from '../../entities/genre';
 import {Track} from '../../entities/track';
 import {EntityListComponent} from '../entity-list.component';
-import {Params, Router} from '@angular/router';
-import {detailsPath, paramEntity, paramSourceEntity} from '../../../config/utilities';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'tr.app-entity-row',
@@ -26,7 +25,7 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
   @Input({required: true}) set entity(entity: ENTITY) {
     this._entity = entity;
     this.hostElement.nativeElement.setAttribute('id', EntityComponent.getIdForEntity(this.entityList, entity));
-    this.hostElement.nativeElement.setAttribute('class', `entity-row ${this.entityList.entityType.entityName}`);
+    //this.hostElement.nativeElement.setAttribute('class', this.entityList.entityType.entityName);
     this.hidden = this.entityList?.isEntityFiltered(entity);
   }
 
@@ -57,12 +56,7 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
   }
 
   navigateToDetails() {
-    console.log(`Navigiere zu Details für ${this.entityList.entityType.entityName} id ${this.entity.id}='${this.entity.name}'`);
-    const params: Params = {};
-    params[paramEntity] = this.entity;
-    params[paramSourceEntity] = this.entity;
-    this.router.navigate([this.entityList.entityType.entityName, this.entity.id, detailsPath],
-      { state: params });
+    this.entityList.navigateToDetails(this.entity);
   }
 
   public static getIdForEntity<ENTITY extends AbstractEntity>(entityList: EntityListComponent<ENTITY>, entity: ENTITY): string {

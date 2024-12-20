@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {ActivatedRoute, NavigationStart, Params, Router} from '@angular/router';
 import {EntityService} from '../services/entity.service';
 import {Subscription} from 'rxjs';
 import {Page} from '../entities/page';
@@ -16,16 +16,23 @@ import {AlbumTableHeaderComponent} from './table-header/album-table-header.compo
 import {Title} from '@angular/platform-browser';
 import {
   allEntities,
+  detailsPath,
   getEntityForName,
   paramEntity,
+  paramEntityType,
+  paramFilterText,
+  paramId,
+  paramPageNumber,
+  paramPageSize,
   paramSearchEntity,
+  paramSearchText,
   paramSourceEntity,
 } from '../../config/utilities';
 import {DetailsPopupComponent} from '../popup/details/details.popup.component';
 import {SearchfieldComponent} from '../controls/searchfield.component';
 import {PagingComponent} from '../controls/paging.component';
 import {ListHeaderComponent} from './list-header/list-header.component';
-import {NgComponentOutlet} from '@angular/common';
+import {NgComponentOutlet, NgForOf} from '@angular/common';
 
 @Component({
   templateUrl: './entity-list.component.html',
@@ -37,13 +44,14 @@ import {NgComponentOutlet} from '@angular/common';
     PagingComponent,
     ListHeaderComponent,
     NgComponentOutlet,
+    NgForOf,
   ]
 })
 export class EntityListComponent<E extends AbstractEntity> implements OnDestroy, AfterViewInit {
   public page?: Page<E>;
   private _pageSize = appDefaults.defaultPageSize;
 
-  private _filter = '';
+  private _filterText = '';
   private titleFor = '';
 
   private routeChangeSubscription: Subscription;
@@ -56,12 +64,14 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
 
   private _searchableEntities?: typeof AbstractEntity[];
   private lastSearchId?: Number;
-  private _searchName = '';
+  private _searchText = '';
 
   private lastClickedEntity?: E;
+  private restoredFlag = false;
 
   @ViewChild(DetailsPopupComponent) popup!: DetailsPopupComponent<E>;
-  @ViewChildren(EntityComponent) entityComponents!: QueryList<any>;
+  @ViewChild(SearchfieldComponent) searchFieldComponent!: SearchfieldComponent;
+  @ViewChildren(EntityComponent) entityComponents!: QueryList<EntityComponent<E>>;
 
   constructor(private route: ActivatedRoute, private router: Router, private titleService: Title,
               public service: EntityService) {
@@ -69,6 +79,17 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
     this.routeChangeSubscription = route.params.subscribe(() => {
       this.startSearchFromQuery();
     });
+    router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        //console.log(`${this.entityType.entityName} NavigationStart ${event}`);
+        if (event.restoredState) {
+          console.log(`${this.entityType.entityName} aus Browser-Back/Forward`, event.restoredState);
+          this.restoredFlag = true;
+        } else {
+          this.restoredFlag = false;
+        }
+      }
+    })
   }
 
   ngAfterViewInit(): void {
@@ -98,49 +119,45 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
     const snapshot = this.route.snapshot;
     const params = snapshot.params;
     const navigation = this.router.getCurrentNavigation();
-    this.lastClickedEntity = navigation?.previousNavigation?.extras?.state?.[paramSourceEntity];
+    //state, bevor wir von dieser Seite weggegangen sind
+    const previousState = navigation?.previousNavigation?.extras?.state;
+    this.lastClickedEntity = previousState?.[paramSourceEntity];
     console.log(`lastClickedEntity=${this.lastClickedEntity?.name}`);
     //EntityTyp aus neuer Suche in params oder direkt aus aus Router (app-routes data) übergeben
-    this.entityType = getEntityForName(params[paramEntity]) || snapshot.data[0];
+    this.entityType = getEntityForName(params[paramEntityType]) || snapshot.data[0];
 
     if (this.entityType) {
-      this.titleService.setTitle(this.entityType.namePlural);
-
-      //mit eigenem Typ selbst anfangen als Suchkriterium, falls keiner gegeben
-      this.searchEntityType = getEntityForName(params[paramSearchEntity]) || this.entityType;
       //eigenen Typ ausschließen in Darstellung
       this._searchableEntities = allEntities.filter(
         entity => entity != this.entityType
       );
       console.log(`${this.entityType.getNameSingular()}List created`);
-      const searchEntityName = params[paramSearchEntity];
-      if (searchEntityName) {
-        const searchEntityType = getEntityForName(searchEntityName);
-        if (searchEntityType) {
-          const entity: AbstractEntity = navigation?.extras?.state?.[paramEntity];
-          const id = entity?.id;
-          const name = entity?.name;
-          if (id) {
-            this.titleService.setTitle(`${this.entityType.namePlural} für ${name || id}`);
-            this.searchByEntityId(searchEntityType, id, name || '');
-          } else if (name) {
-            this.titleService.setTitle(`${this.entityType.namePlural} für ${name}`);
-            this.searchByEntityName(searchEntityType, name);
-          }
-        }
+      //SearchEntityType als Parameter übergeben
+      const searchEntityType = getEntityForName(params[paramSearchEntity]
+        || previousState?.[paramSearchEntity])  //oder aus vorhergehendem State
+        || this.entityType;  //oder default: unser eigener (bei Start aus Router)
+      const pageNumber = previousState?.[paramPageNumber];
+      //nicht setter aufrufen, der macht selber Suche!
+      this._pageSize = previousState?.[paramPageSize] || appDefaults.defaultPageSize;
+      this.filterText = previousState?.[paramFilterText] || '';
+
+      const entity: AbstractEntity = navigation?.extras?.state?.[paramEntity];
+      const id = entity?.id;
+      const name = entity?.name || previousState?.[paramSearchText];
+      if (id) {
+        this.searchByEntityId(searchEntityType, id, name || '', pageNumber);
       } else {
-        //default: alle anzeigen
-        this.searchByEntityName(this.entityType, '');
+        this.searchByEntityName(searchEntityType, name, pageNumber);
       }
     }
   }
 
-  searchByEntityName(searchEntityType: typeof AbstractEntity, searchString: string) {
-    this.searchByEntityIdOrName(searchEntityType, 0, undefined, searchString);
+  searchByEntityName(searchEntityType: typeof AbstractEntity, searchString: string, pageNumber = 0) {
+    this.searchByEntityIdOrName(searchEntityType, pageNumber, undefined, searchString);
   }
 
-  searchByEntityId(searchEntityType: typeof AbstractEntity, id: Number, searchString: string) {
-    this.searchByEntityIdOrName(searchEntityType, 0, id, searchString);
+  searchByEntityId(searchEntityType: typeof AbstractEntity, id: Number, searchString: string, pageNumber = 0) {
+    this.searchByEntityIdOrName(searchEntityType, pageNumber, id, searchString);
   }
 
   private searchByEntityIdOrName(searchEntityType: typeof AbstractEntity, pageNumber: number, id?: Number, searchString?: string) {
@@ -152,9 +169,11 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
       : searchEntityType === this.entityType
         ? this.service.findNameLike<E>(this.entityType, searchString?.toLowerCase() || '', pageNumber, this._pageSize)
         : this.service.findByOtherNameLike<E>(this.entityType, searchEntityType, searchString?.toLowerCase() || '', pageNumber, this._pageSize);
+    this.lastSearchPerformance = 'Suche ...';
     const time = performance.now();
     this.lastSearchSubscription = obs.subscribe(page => {
       this.titleFor = searchString ? `für ${searchEntityType.getNameSingular()}='${searchString}'` : 'insgesamt';
+      this.titleService.setTitle(`${this.entityType.namePlural}${searchString || id ? ' für ' + searchString || id : ''}`);
       this.fillEntityList(page, searchEntityType, id, searchString);
       const timeString = (performance.now() - time).toFixed(2);
       this.lastSearchPerformance = this.getSearchMessage(searchEntityType, id, searchString) + ` dauerte ${timeString}ms`;
@@ -163,14 +182,14 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
   }
 
   private getSearchMessage = (searchEntityType: typeof AbstractEntity, id: Number | undefined, searchString: string | undefined) => {
-    return `Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName + (id ? 'id ' + id : '')}=${searchString || '*'}`;
+    return `Suche ${this.entityType.namePlural} nach ${searchEntityType.entityName + (id ? ' id ' + id : '')}=${searchString || '*'}`;
   }
 
   private fillEntityList(page: Page<E>, searchEntityType: typeof AbstractEntity, searchId?: Number, searchString?: string) {
     this.page = page;
     this.searchEntityType = searchEntityType;
     this.lastSearchId = searchId;
-    this._searchName = searchString || '';
+    this._searchText = searchString || '';
     //TODO offenbar noch zu früh, wenn Liste gefüllt - DOM muss erst geändert sein!
     setTimeout(() => {
       this.scrollToLastSelectedElement();
@@ -200,8 +219,12 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
   }
 
   loadPage(add: number = 0): void {
-    if (this.searchEntityType && this.page && this.page.number + add >= 0 && this.page.number + add <= this.page.totalPages) {
-      this.searchByEntityIdOrName(this.searchEntityType, this.page.number + add, this.lastSearchId, this._searchName);
+    if (this.searchEntityType) {
+      let pageNumber = this.page?.number || 0;
+      if (this.page) {
+        pageNumber = Math.min(Math.max(this.page.number + add, 0), this.page.totalPages - 1);
+      }
+      this.searchByEntityIdOrName(this.searchEntityType, pageNumber, this.lastSearchId, this._searchText);
     }
   }
 
@@ -227,11 +250,37 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
                         searchEntityType: typeof AbstractEntity, entity: AbstractEntity,
                         sourceEntity?: AbstractEntity) {
     console.log(`Navigiere nach ${entityType.entityName}/${searchEntityType.entityName}/${entity.id}='${entity.name}'`);
-    const params: Params = {};
-    params[paramEntity] = entity;
-    params[paramSourceEntity] = sourceEntity;
+    const state = this.storeState(entity, sourceEntity);
     this.router.navigate([entityType.entityName, searchEntityType.entityName, entity.id],
-      { onSameUrlNavigation: 'reload', state: params} );
+      { onSameUrlNavigation: 'reload', state: state});
+  }
+
+  navigateToRoot(searchString: string) {
+    console.log(`Gehe wieder zu root ${this.entityType.entityName}/${this.searchEntityType.entityName}'`);
+    //entity & sourceEntity verwerfen
+    const state = this.storeState(undefined, undefined);
+    state[paramSearchText] = searchString;
+    this.router.navigate([this.entityType.entityName],
+      { onSameUrlNavigation: 'ignore', state: state });
+  }
+
+  navigateToDetails(entity: AbstractEntity) {
+    console.log(`Navigiere zu Details für ${this.entityType.entityName} id ${entity.id}='${entity.name}'`);
+    const state = this.storeState(undefined, entity);
+    this.router.navigate([this.entityType.entityName, entity.id, detailsPath],
+      { onSameUrlNavigation: 'reload', state: state});
+  }
+
+  private storeState(entity?: AbstractEntity, sourceEntity?: AbstractEntity) {
+    const state: Params = {};
+    state[paramEntity] = entity;
+    state[paramSourceEntity] = sourceEntity;
+    state[paramSearchEntity] = this.searchFieldComponent.searchEntity.entityName;
+    state[paramSearchText] = this.searchText;
+    state[paramFilterText] = this.filterText;
+    state[paramPageNumber] = this.page?.number;
+    state[paramPageSize] = this.pageSize;
+    return state;
   }
 
   removeEntity(entity: E) {
@@ -269,33 +318,38 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
 
   set pageSize(value: number) {
     this._pageSize = value;
-    this.searchByEntityName(this.searchEntityType, this.searchName);
+    this.searchByEntityName(this.searchEntityType, this.searchText);
   }
 
-  get searchName(): string {
-    return this._searchName;
+  get searchText(): string {
+    return this._searchText;
   }
 
-  set searchName(value: string) {
-    this._searchName = value;
-    this.searchByEntityName(this.searchEntityType, this.searchName);
+  set searchText(value: string) {
+    this._searchText = value;
+    if (this.route.snapshot.params[paramId]) {
+      //wir haben schon nach ID usw. gesucht => müssen jetzt auf die Basisseite
+      this.navigateToRoot(value);
+    } else {
+      this.searchByEntityName(this.searchEntityType, value);
+    }
   }
 
-  get filter(): string {
-    return this._filter;
+  get filterText(): string {
+    return this._filterText;
   }
 
-  set filter(value: string) {
-    this._filter = value.toLowerCase();
+  set filterText(value: string) {
+    this._filterText = value.toLowerCase();
   }
 
-  get title() {
+  get listTitle() {
     if (!this.page || !this.entityType) {
       return '';
     }
     let title;
     const entityCount = this.getEntities().filter(e => this.isEntityShown(e)).length;
-    if (this._filter && entityCount < this.page.numberOfElements) {
+    if (this._filterText && entityCount < this.page.numberOfElements) {
       title = `${entityCount} von ${this.entityType.getNumberDescription(this.page.totalElements)}`;
     } else {
       const entityStart = this.page.number * this.page.size;
@@ -311,8 +365,12 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
     return this.page?.content || [];
   }
 
+  getEntityId(index: any, entity: AbstractEntity): number {
+    return entity.id;
+  }
+
   isEntityFiltered(entity: AbstractEntity): boolean {
-    return !!this._filter && !entity.name?.toLowerCase().includes(this._filter);
+    return !!this._filterText && !entity.name?.toLowerCase().includes(this._filterText);
   }
 
   isEntityShown(entity: AbstractEntity): boolean {
