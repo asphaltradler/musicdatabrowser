@@ -28,11 +28,12 @@ public class HttpResponseHelper {
     public @NotNull ResponseEntity<?> getResponseEntityForContent(@Nullable Document doc, boolean useThumbnail) {
         HttpHeaders headers = getHttpHeaders(doc);
         try {
-            headers.setContentType(useThumbnail
+            byte[] thumbnail = useThumbnail ? doc.getThumbnail() : null;
+            headers.setContentType(thumbnail != null
                     ? MediaType.IMAGE_GIF
                     : MediaType.valueOf(doc.getMimeType()));
             return ResponseEntity.status(HttpStatus.OK).headers(headers).body(
-                    useThumbnail && doc.getThumbnail() != null ? doc.getThumbnail() : getContent(doc));
+                    thumbnail != null ? thumbnail : getContent(doc));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
