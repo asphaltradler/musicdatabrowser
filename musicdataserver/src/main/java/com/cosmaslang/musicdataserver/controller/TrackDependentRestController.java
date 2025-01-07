@@ -7,6 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 import java.util.List;
@@ -82,5 +86,27 @@ public abstract class TrackDependentRestController<ENTITY extends TrackDependent
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), allEntitiesForTracks.size());
         return new PageImpl<>(allEntitiesForTracks.subList(start, end), pageable, allEntitiesForTracks.size());
+    }
+
+    @Override
+    @Transactional
+    protected void remove(@PathVariable Long id) {
+        ENTITY entity = getMyRepository().findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        getMyRepository().delete(entity);
+
+        //removeDependentParents(entity, entity::getTracks, trackRepository);
+        removeDependentParent(entity, Track::getAlbum, albumRepository);
+        removeDependentParent(entity, Track::getComposer, composerRepository);
+        removeDependentParent(entity, Track::getWork, workRepository);
+        removeDependentParents(entity, Track::getGenres, genreRepository);
+        removeDependentParents(entity, Track::getArtists, artistRepository);
+        /*
+        //löscht ALLE Orphans, nicht nur die jetzt entstandenen
+        deleteDependentParents(albumRepository);
+        deleteDependentParents(composerRepository);
+        deleteDependentParents(workRepository);
+        deleteDependentParents(genreRepository);
+        deleteDependentParents(artistRepository);
+         */
     }
 }
