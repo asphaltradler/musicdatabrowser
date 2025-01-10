@@ -44,6 +44,7 @@ public class Document extends NamedEntity {
 
     @JsonIgnore
     private byte[] thumbnail;
+
     private String externalDocument;
 
     /**

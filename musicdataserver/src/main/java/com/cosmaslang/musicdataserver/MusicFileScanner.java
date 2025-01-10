@@ -426,7 +426,7 @@ public class MusicFileScanner {
             Document existingDocument = existing.get();
             //nichts zu ändern
             if (existingDocument.getName().equals(document.getName())
-                    && existing.get().getThumbnail() != null) {
+                    && existingDocument.getThumbnail() != null) {
                 return existingDocument;
             }
             logger.finer(MessageFormat.format("-   updating document {0} => {1}", existingDocument, document));
