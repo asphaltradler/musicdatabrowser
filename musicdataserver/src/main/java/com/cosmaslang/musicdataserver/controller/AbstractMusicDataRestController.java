@@ -162,13 +162,11 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
         Set<Track> tracks = Optional.ofNullable(sourceEntity).map(TrackDependentEntity::getTracks).orElse(Collections.emptySet());
         List<DEST> deletes = new ArrayList<>();
         Stream<Set<DEST>> entitySets = tracks.stream().map(mapFunction).filter(Objects::nonNull).distinct();
-        entitySets.forEach(entitySet -> {
-            entitySet.stream().distinct().forEach(entity -> {
-                if (tracks.containsAll(entity.getTracks())) {
-                    deletes.add(entity);
-                }
-            });
-        });
+        entitySets.forEach(entitySet -> entitySet.stream().distinct().forEach(entity -> {
+            if (tracks.containsAll(entity.getTracks())) {
+                deletes.add(entity);
+            }
+        }));
         trackDependentRepository.deleteAll(deletes);
     }
 

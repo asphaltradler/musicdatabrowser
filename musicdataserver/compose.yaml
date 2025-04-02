@@ -23,7 +23,7 @@ services:
       - ${MUSICDATASERVER_ROOT_DIR:?error}:/usr/src/app/Musikarchiv
       #- /C/Users/CosmasLang/Music:/usr/src/app/Musikarchiv
     environment:
-      #      POSTGRES_USER: postgres
+      # POSTGRES_USER: postgres
       POSTGRES_PASSWORD_FILE: /run/secrets/database-password
       #benutze lokale Datenbank mit IP aus ipconfig
       #SPRING_DATASOURCE_URL: jdbc:postgresql://192.168.0.60:5432/musik
@@ -68,4 +68,3 @@ volumes:
 secrets:
   database-password:
     file: database/password.txt
-

@@ -23,6 +23,10 @@ import java.util.Objects;
 })
 @EntityListeners(AuditingEntityListener.class)
 public class Document extends NamedEntity {
+    public static final String PDF_EXT = "pdf";
+    public static final String JPG_EXT = "jpg";
+    public static final String JPEG_EXT = "jpeg";
+
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private long id;
@@ -85,10 +89,10 @@ public class Document extends NamedEntity {
         name = externalDocument.substring(secondLastIndex + 1);
         hash = createHash(name, file.length());
 
-        String ext = name.substring(name.lastIndexOf('.') + 1);
-        if ("pdf".equalsIgnoreCase(ext)) {
+        String ext = name.substring(name.lastIndexOf('.') + 1).toLowerCase();
+        if (PDF_EXT.equals(ext)) {
             mimeType = MediaType.APPLICATION_PDF.toString();
-        } else if ("jpg".equalsIgnoreCase(ext) || "jpeg".equalsIgnoreCase(ext)) {
+        } else if (JPG_EXT.equals(ext) || JPEG_EXT.equals(ext)) {
             mimeType = MediaType.IMAGE_JPEG.toString();
         } else {
             mimeType = "image/" + ext;
