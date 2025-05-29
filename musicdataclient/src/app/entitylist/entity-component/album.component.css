@@ -1,4 +1,4 @@
-tr th.albumart, tr td.albumart, tr td.placeholder {
+th.albumart, td.albumart, td.placeholder {
   width: 140px;
   height: 140px;
 }
