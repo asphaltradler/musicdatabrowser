@@ -1,25 +1,26 @@
-<form [formGroup]="searchForm">
-  <div class="input-group my-3">
-    <label for="searchfield" class="input-group-text">Suche nach:</label>
-    <select class="form-control minwidth" formControlName="searchEntitySelector"
-            title="Auswahl Suchkriterium" (change)="updateSearchEntity()">
-      <option *ngFor="let ent of searchEntities" [ngValue]="ent">
-        {{ ent.namePlural }}
-      </option>
-    </select>
-    <input class="form-control" formControlName="searchField" id="searchfield"
-           type="text" (input)="updateSearchField()"
-           placeholder="Suchtext" aria-label="Suchtext"/>
-    <button class="btn btn-secondary" title="Suche zurücksetzen" (click)="clearSearchText()">Reset</button>
-    <input class="form-control" formControlName="filterField" id="filterfield"
-           type="text" (input)="updateFilter()"
-           placeholder="Filtere {{ thisEntity.namePlural}} nach" aria-label="Filter"/>
-    <button class="btn btn-primary" title="Suchfilter leeren" (click)="clearFilter()">Alle</button>
-    <select class="form-control minwidth" formControlName="pageSizeSelector"
-            title="Ergebnisse pro Seite" (change)="updatePageSize()">
-      <option *ngFor="let num of appDefaults.pageSizes" [value]="num">
-        {{ num }} Erg./Seite
-      </option>
-    </select>
-  </div>
-</form>
+<div class="input-group my-3">
+  <label for="searchfield" class="input-group-text">Suche nach:</label>
+  <select class="form-control minwidth"
+          [ngModel]="searchEntity" (ngModelChange)="searchEntityChange.emit($event)"
+          title="Auswahl Suchkriterium">
+    <option *ngFor="let ent of searchEntities" [ngValue]="ent">
+      {{ ent.namePlural }}
+    </option>
+  </select>
+  <input class="form-control" id="searchfield"
+         type="text" [ngModel]="searchString" (ngModelChange)="searchStringChange.emit($event)"
+         placeholder="Suchtext" aria-label="Suchtext"/>
+  <button class="btn btn-secondary" title="Suche zurücksetzen" (click)="clearSearchText()">Reset</button>
+  <input class="form-control" id="filterfield"
+         [ngModel]="filterString" (ngModelChange)="filterStringChange.emit($event)"
+         type="text"
+         placeholder="Filtere {{ thisEntity.namePlural}} nach" aria-label="Filter"/>
+  <button class="btn btn-primary" title="Suchfilter leeren" (click)="clearFilter()">Alle</button>
+  <select class="form-control minwidth"
+          [ngModel]="pageSize" (ngModelChange)="pageSizeChange.emit($event)"
+          title="Ergebnisse pro Seite">
+    <option *ngFor="let num of appDefaults.pageSizes" [value]="num">
+      {{ num }} Erg./Seite
+    </option>
+  </select>
+</div>

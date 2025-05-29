@@ -129,7 +129,7 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
     if (this.entityType) {
       //eigenen Typ ausschließen in Darstellung
       this._searchableEntities = allEntities.filter(
-        entity => entity != this.entityType
+        entity => entity !== this.entityType
       );
       console.log(`${this.entityType.getNameSingular()}List created`);
       //SearchEntityType als Parameter übergeben

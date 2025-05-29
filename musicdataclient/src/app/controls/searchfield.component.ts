@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {NgForOf} from '@angular/common';
 import {appDefaults} from '../../config/config';
@@ -16,7 +16,7 @@ import {allEntities} from '../../config/utilities';
   templateUrl: './searchfield.component.html',
   styles: ['input.minwidth,select.minwidth {width:120px;flex-grow: 0.1}']
 })
-export class SearchfieldComponent implements OnChanges {
+export class SearchfieldComponent {
   searchEntities = allEntities;
 
   @Input({required:true}) thisEntity!: typeof AbstractEntity;
@@ -33,51 +33,14 @@ export class SearchfieldComponent implements OnChanges {
   @Input() filterString: string = '';
   @Output() filterStringChange = new EventEmitter<string>();
 
-  searchForm = new FormGroup({
-    searchEntitySelector: new FormControl<typeof AbstractEntity>(AbstractEntity),
-    pageSizeSelector: new FormControl(0),
-    searchField: new FormControl(''),
-    filterField: new FormControl(''),
-  });
-
-  ngOnChanges(): void {
-    this.searchForm.patchValue({
-      searchEntitySelector: this.searchEntity,
-      pageSizeSelector: this.pageSize,
-      searchField: this.searchString,
-      filterField: this.filterString
-    }, { emitEvent: false });
-  }
-
-  updateSearchEntity() {
-    this.searchEntity = this.searchForm.value.searchEntitySelector || AbstractEntity;
-    this.searchEntityChange.emit(this.searchEntity);
-    this.clearSearchText();
-  }
-
   clearSearchText() {
-    this.searchForm.controls.searchField.reset();
-    this.updateSearchField();
-  }
-
-  updateSearchField() {
-    this.searchString = this.searchForm.value.searchField || '';
+    this.searchString = '';
     this.searchStringChange.emit(this.searchString);
   }
 
   clearFilter() {
-    this.searchForm.controls.filterField.reset();
-    this.updateFilter();
-  }
-
-  updateFilter() {
-    this.filterString = this.searchForm.value.filterField || '';
+    this.filterString = '';
     this.filterStringChange.emit(this.filterString);
-  }
-
-  updatePageSize() {
-    this.pageSize = this.searchForm.value.pageSizeSelector || 0;
-    this.pageSizeChange.emit(this.pageSize);
   }
 
   protected readonly appDefaults = appDefaults;
