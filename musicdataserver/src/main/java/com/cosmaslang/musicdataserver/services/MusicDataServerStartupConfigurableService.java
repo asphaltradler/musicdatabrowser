@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -93,9 +94,9 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
     }
 
     private <E extends NamedEntity> void deleteOrphanedEntities(TrackDependentRepository<E> repo) {
-        List<E> orphans = repo.findByTracksIsEmpty();
+        Set<E> orphans = repo.findByTracksIsEmpty();
         if (!orphans.isEmpty()) {
-            logger.info(MessageFormat.format("  {0}: {1}", repo.getName(), orphans.stream().distinct().map(e -> '\'' + e.getName() + '\'').collect(Collectors.joining(", "))));
+            logger.info(MessageFormat.format("  {0}: {1}", repo.getName(), orphans.stream().map(e -> '\'' + e.getName() + '\'').collect(Collectors.joining(", "))));
             repo.deleteAllByTracksIsEmpty();
         }
     }

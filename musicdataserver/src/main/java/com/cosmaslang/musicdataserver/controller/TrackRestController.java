@@ -114,7 +114,7 @@ public class TrackRestController extends AbstractMusicDataRestController<Track> 
     }
 
     private <E extends TrackDependentEntity>void deleteDependentParents(TrackDependentRepository<E> repository) {
-        List<E> orphans = repository.findByTracksIsEmpty();
+        Set<E> orphans = repository.findByTracksIsEmpty();
         repository.deleteAll(orphans);
     }
 }

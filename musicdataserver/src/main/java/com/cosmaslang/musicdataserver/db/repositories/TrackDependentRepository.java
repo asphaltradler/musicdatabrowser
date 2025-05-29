@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
+import java.util.Set;
 
 @NoRepositoryBean
 public interface TrackDependentRepository<ENTITY extends NamedEntity> extends NamedEntityRepository<ENTITY> {
@@ -22,6 +23,6 @@ public interface TrackDependentRepository<ENTITY extends NamedEntity> extends Na
     Page<ENTITY> findDistinctByTracksWorkNameContainsIgnoreCaseOrderByName(String work, Pageable pageable);
     Page<ENTITY> findDistinctByTracksWorkIdOrderByName(Long workId, Pageable pageable);
 
-    List<ENTITY> findByTracksIsEmpty();
+    Set<ENTITY> findByTracksIsEmpty();
     void deleteAllByTracksIsEmpty();
 }
