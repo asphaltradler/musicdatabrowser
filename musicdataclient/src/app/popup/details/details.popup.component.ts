@@ -10,6 +10,25 @@ import {AbstractEntity} from '../../entities/abstractEntity';
   styleUrl: 'details.popup.component.css',
 })
 //TODO gemeinsamen Code für Darstellung E auslagern
+/**
+ * A popup component for displaying details of an entity.
+ *
+ * @template E - The type of entity extending AbstractEntity.
+ * @extends EntityDetailsComponent<E>
+ *
+ * @property {Signal<boolean>} isOpen - Signal indicating whether the popup is open.
+ * @property {Signal<string>} message - Signal holding the message to display in the popup.
+ * @property {EventEmitter<void>} closed - Emits when the popup is closed.
+ *
+ * @method open
+ * Opens the popup with the specified title, message, and position.
+ * @param {string} title - The title to display in the popup.
+ * @param {string} message - The message to display in the popup.
+ * @param {{ x: number, y: number }} position - The position (in pixels) to display the popup.
+ *
+ * @method close
+ * Closes the popup and emits the `closed` event.
+ */
 export class DetailsPopupComponent<E extends AbstractEntity> extends EntityDetailsComponent<E> {
   isOpen = signal(false);
   //title = signal('');

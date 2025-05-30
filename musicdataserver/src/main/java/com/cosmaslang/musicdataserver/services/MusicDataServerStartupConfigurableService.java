@@ -49,14 +49,14 @@ public class MusicDataServerStartupConfigurableService implements MusicDataServe
         logger.config("configure");
         Path rootDirPath = musicDataServerConfiguration.getRootPath();
         if (!rootDirPath.toFile().exists()) {
-            throw new FileNotFoundException(MessageFormat.format("Root directory {0} doesn't exist", rootDirPath));
+            throw new FileNotFoundException(MessageFormat.format("Root directory ''{0}'' doesn't exist", rootDirPath));
         }
         Path startDirPath = musicDataServerConfiguration.getStartPath();
         if (!startDirPath.toFile().exists()) {
-            throw new FileNotFoundException(MessageFormat.format("Start directory {0} doesn't exist", startDirPath));
+            throw new FileNotFoundException(MessageFormat.format("Start directory ''{0}'' doesn't exist", startDirPath));
         }
         if (!startDirPath.startsWith(rootDirPath)) {
-            throw new IOException(MessageFormat.format("Start directory {0} is not in root {1}", startDirPath, rootDirPath));
+            throw new IOException(MessageFormat.format("Start directory ''{0}'' is not in root ''{1}''", startDirPath, rootDirPath));
         }
     }
 

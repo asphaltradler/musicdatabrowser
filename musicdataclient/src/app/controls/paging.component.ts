@@ -1,6 +1,6 @@
-import {Component, Input} from '@angular/core';
-import {EntityListComponent} from '../entitylist/entity-list.component';
-import {NgIf} from '@angular/common';
+import {Component, input, Input} from '@angular/core';
+import { EntityListComponent } from '../entitylist/entity-list.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-paging',
@@ -9,24 +9,29 @@ import {NgIf} from '@angular/common';
     NgIf
   ],
   templateUrl: './paging.component.html',
-  styleUrl: './paging.component.css'
+  styleUrls: ['./paging.component.css']
 })
 export class PagingComponent {
-  @Input({required:true})
-  entityList!: EntityListComponent<any>;
+  private static readonly NO_RESULTS_MESSAGE = "< Keine Ergebnisse >";
 
-  handlePrevious() {
-    this.entityList.searchPreviousPage();
+  entityList = input.required<EntityListComponent<any>>();
+
+  handlePrevious(): void {
+    this.entityList().searchPreviousPage();
   }
 
-  handleNext() {
-    this.entityList.searchNextPage();
+  handleNext(): void {
+    this.entityList().searchNextPage();
   }
 
-  getPageTitle() {
-    if (this.entityList.page && !this.entityList.page.empty) {
-      return `Seite ${this.entityList.page.number + 1} von ${this.entityList.page.totalPages}`;
+  getPageTitle(): string {
+    if (this.hasValidPage()) {
+      return `Seite ${this.entityList()!.page!.number + 1} von ${this.entityList()!.page!.totalPages}`;
     }
-    return "< Keine Ergebnisse >";
+    return PagingComponent.NO_RESULTS_MESSAGE;
+  }
+
+  private hasValidPage(): boolean {
+    return !this.entityList().page?.empty;
   }
 }

@@ -4,20 +4,20 @@
   </a>
 </td>
 <td class="text-right">{{ entity.tracknumber }}</td>
-<td class="name col-long"><a (click)="entityList.openPopup(entity, $event)" title="Details">{{ entity.name }}</a></td>
+<td class="name col-long"><a (click)="entityList().openEntityPopup(entity, $event)" title="Details">{{ entity.name }}</a></td>
 <td class="col-long">
-  <a (click)="entityList.navigateOtherEntityByThis(Album, entity)"
+  <a (click)="entityList().navigateOtherEntityByThis(Album, entity)"
      class="btn-link" title="{{ Album.getNameSingular() }} für Track">
     {{ entity.album?.name }}
   </a>
 </td>
 <td>
   <div *ngIf="entity.composer">
-    <a (click)="entityList.navigateOtherEntityByItself(Composer, entity.composer, entity)"
+    <a (click)="entityList().navigateOtherEntityByItself(Composer, entity.composer, entity)"
        title="Details für {{entity.composer.name}}">
       {{ entity.composer.name }}
     </a>
-    <a (click)="entityList.navigateOtherEntityBy(Album, Composer, entity.composer, entity)"
+    <a (click)="entityList().navigateOtherEntityBy(Album, Composer, entity.composer, entity)"
        class="btn-link" title="{{ Album.namePlural}} für {{entity.composer.name}}">
       [&nbsp;{{ Album.namePlural }}&nbsp;]
     </a>
@@ -25,11 +25,11 @@
 </td>
 <td>
   <div *ngIf="entity.work">
-    <a (click)="entityList.navigateOtherEntityByItself(Work, entity.work, entity)"
+    <a (click)="entityList().navigateOtherEntityByItself(Work, entity.work, entity)"
        title="Details für {{entity.work.name}}">
       {{ entity.work.name }}
     </a>
-    <a (click)="entityList.navigateOtherEntityBy(Album, Work, entity.work, entity)"
+    <a (click)="entityList().navigateOtherEntityBy(Album, Work, entity.work, entity)"
        class="btn-link"
        title="{{ Album.namePlural }} für {{ entity.work.name }}">
       [&nbsp;{{ Album.namePlural }}&nbsp;]
@@ -39,11 +39,11 @@
 <td>
   <div>
   <ng-container *ngFor="let g of entity.genres">
-    <a (click)="entityList.navigateOtherEntityByItself(Genre, g, entity)"
+    <a (click)="entityList().navigateOtherEntityByItself(Genre, g, entity)"
        title="Details für {{g.name}}">
       {{ g.name }}
     </a>
-    <a (click)="entityList.navigateOtherEntityBy(Album, Genre, g, entity)"
+    <a (click)="entityList().navigateOtherEntityBy(Album, Genre, g, entity)"
        class="btn-link"
        title="{{ Album.namePlural}} für {{g.name}}">
       [&nbsp;{{ Album.namePlural }}&nbsp;]
@@ -55,11 +55,11 @@
 <td>
   <div>
   <ng-container *ngFor="let a of entity.artists">
-    <a (click)="entityList.navigateOtherEntityByItself(Artist, a, entity)"
+    <a (click)="entityList().navigateOtherEntityByItself(Artist, a, entity)"
        title="Details für {{a.name}}">
       {{ a.name }}
     </a>
-    <a (click)="entityList.navigateOtherEntityBy(Album, Artist, a, entity)"
+    <a (click)="entityList().navigateOtherEntityBy(Album, Artist, a, entity)"
        class="btn-link"
        title="{{ Album.namePlural}} für {{a.name}}">
       [&nbsp;{{ Album.namePlural }}&nbsp;]
@@ -75,6 +75,6 @@
 <td>{{ Track.getLastModificationSince(entity) }}</td>
 <td>
   <div class="flex">
-    <button class="btn btn-secondary" (click)="entityList.removeEntity(entity)">Löschen</button>
+    <button class="btn btn-secondary" (click)="entityList().removeEntity(entity)">Löschen</button>
   </div>
 </td>
