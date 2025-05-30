@@ -11,48 +11,69 @@ import java.awt.image.ImagingOpException;
 import java.io.*;
 
 public class ImageUtilities {
+
     public static final int MAX_WIDTH = 240;
+    public static final String OUTPUT_IMAGE_FORMAT = "gif";
 
     /**
-     * Liefert ein skaliertes Image als byte[] zurück, oder null falls nicht skaliert werden muss
+     * Generates a scaled thumbnail image from the given input (byte array or file).
+     * Returns null if scaling is not necessary.
+     *
+     * @param input The image input (byte array or file).
+     * @return Scaled image as byte[] or null if no scaling is needed.
      */
-    public static byte @Nullable[] buildThumbnail(byte[] imageContent) throws IOException, ImagingOpException {
-        BufferedImage originalImage = getImageFromStream(new ByteArrayInputStream(imageContent));
+    public static byte @Nullable [] buildThumbnail(Object input) throws IOException, ImagingOpException {
+        BufferedImage originalImage;
+
+        if (input instanceof byte[]) {
+            originalImage = readImageFromStream(new ByteArrayInputStream((byte[]) input));
+        } else if (input instanceof File) {
+            originalImage = readImageFromStream(new FileInputStream((File) input));
+        } else {
+            throw new IllegalArgumentException("Unsupported input type. Must be byte[] or File.");
+        }
+
         return createScaledImage(originalImage);
     }
 
-    /**
-     * Liefert ein skaliertes Image als byte[] zurück, oder null falls nicht skaliert werden muss
-     */
-    public static byte @Nullable[] buildThumbnail(File imageFile) throws IOException, ImagingOpException {
-        BufferedImage originalImage = getImageFromStream(new FileInputStream(imageFile));
-        return createScaledImage(originalImage);
-    }
-
-    private static BufferedImage getImageFromStream(InputStream inputStream) throws IOException {
+    private static BufferedImage readImageFromStream(InputStream inputStream) throws IOException {
         ImageInputStream imageInputStream = ImageIO.createImageInputStream(inputStream);
         return ImageIO.read(imageInputStream);
     }
 
-    private static byte @Nullable[] createScaledImage(BufferedImage originalImage) throws IOException, ImagingOpException {
-        int w = originalImage.getWidth();
-        int h = originalImage.getHeight();
-        int max = Math.max(w,h);
-        if (max > MAX_WIDTH) {
-            double scaleFactor = (double) MAX_WIDTH / max;
-            //BufferedImage scaledImage = new BufferedImage(w, h,
-            //        BufferedImage.TYPE_INT_ARGB);
-            AffineTransform transform = AffineTransform.getScaleInstance(scaleFactor, scaleFactor);
-            AffineTransformOp scaleOp =
-                    new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-            BufferedImage scaledImage = scaleOp.filter(originalImage, null);
+    /**
+     * Creates a scaled image if necessary, returning it as a byte array.
+     *
+     * @param originalImage The original image to scale.
+     * @return Scaled image as byte[], or null if scaling is not needed.
+     */
+    private static byte @Nullable [] createScaledImage(BufferedImage originalImage) throws IOException, ImagingOpException {
+        int originalWidth = originalImage.getWidth();
+        int originalHeight = originalImage.getHeight();
+        int maxDimension = Math.max(originalWidth, originalHeight);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(scaledImage, "gif", byteArrayOutputStream);
-            byteArrayOutputStream.flush();
-            byteArrayOutputStream.close();
-            return byteArrayOutputStream.toByteArray();
+        if (maxDimension > MAX_WIDTH) {
+            double scaleFactor = (double) MAX_WIDTH / maxDimension;
+            BufferedImage scaledImage = scaleImage(originalImage, scaleFactor);
+
+            try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                ImageIO.write(scaledImage, OUTPUT_IMAGE_FORMAT, byteArrayOutputStream);
+                return byteArrayOutputStream.toByteArray();
+            }
         }
         return null;
+    }
+
+    /**
+     * Scales the given image by the specified scale factor.
+     *
+     * @param image       The image to scale.
+     * @param scaleFactor The scaling factor.
+     * @return The scaled BufferedImage.
+     */
+    private static BufferedImage scaleImage(BufferedImage image, double scaleFactor) throws ImagingOpException {
+        AffineTransform transform = AffineTransform.getScaleInstance(scaleFactor, scaleFactor);
+        AffineTransformOp scaleOp = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
+        return scaleOp.filter(image, null);
     }
 }
