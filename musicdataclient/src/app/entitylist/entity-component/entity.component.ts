@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Input, input} from '@angular/core';
 import {NgForOf} from '@angular/common';
 import {AbstractEntity} from '../../entities/abstractEntity';
 import {Album} from '../../entities/album';
@@ -18,15 +18,46 @@ import {Router} from '@angular/router';
   styleUrls: ['../entity-list.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+/**
+ * Generic Angular component for displaying and interacting with a single entity of type `ENTITY`.
+ *
+ * @typeParam ENTITY - The type of the entity, extending `AbstractEntity`.
+ *
+ * @template ENTITY
+ *
+ * @remarks
+ * This component is designed to be used within an `EntityListComponent` context.
+ * It manages the display, visibility, and navigation for a single entity instance.
+ *
+ * @example
+ * ```html
+ * <app-entity [entity]="myEntity"></app-entity>
+ * ```
+ *
+ * @property entity - The entity instance to display. Setting this updates the component's state and visibility.
+ * @property hidden - Controls the visibility of the component in the DOM.
+ *
+ * @method getOtherEntitiesByThisId - Finds related entities of a different type by this entity's ID.
+ * @method getAlbumartUrl - Returns the URL for the entity's album art, if available.
+ * @method navigateToDetails - Navigates to the details view for this entity.
+ * @method getIdForEntity - Static helper to generate a unique DOM id for an entity.
+ *
+ * @protected
+ * @readonly Album, Composer, Artist, Work, Genre, Track - Entity type references for use in templates.
+ *
+ * @constructor
+ * @param hostElement - Reference to the host DOM element.
+ * @param router - Angular Router for navigation.
+ */
 export class EntityComponent<ENTITY extends AbstractEntity> {
   _entity!: ENTITY;
 
-  @Input({required: true}) entityList!: EntityListComponent<ENTITY>;
+  entityList = input.required<EntityListComponent<ENTITY>>();
   @Input({required: true}) set entity(entity: ENTITY) {
     this._entity = entity;
-    this.hostElement.nativeElement.setAttribute('id', EntityComponent.getIdForEntity(this.entityList, entity));
+    this.hostElement.nativeElement.setAttribute('id', EntityComponent.getIdForEntity(this.entityList(), entity));
     //this.hostElement.nativeElement.setAttribute('class', this.entityList.entityType.entityName);
-    this.hidden = this.entityList?.isEntityFiltered(entity);
+    this.hidden = this.entityList()?.isEntityFiltered(entity);
   }
 
   @Input() set hidden(hide: boolean) {
@@ -41,7 +72,7 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
   }
 
   getOtherEntitiesByThisId(otherEntityType: typeof AbstractEntity) {
-    return this.entityList.service.findByOtherId(otherEntityType, this.entityList.entityType!, this.entity.id);
+    return this.entityList().service.findByOtherId(otherEntityType, this.entityList().entityType!, this.entity.id);
   }
 
   get entity(): ENTITY {
@@ -50,13 +81,13 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
 
   getAlbumartUrl() {
     if (this.entity.albumartId) {
-      return this.entityList.service.getThumbnailUrl(this.entity.albumartId.valueOf());
+      return this.entityList().service.getThumbnailUrl(this.entity.albumartId.valueOf());
     }
     return "";
   }
 
   navigateToDetails() {
-    this.entityList.navigateToDetails(this.entity);
+    this.entityList().navigateToDetails(this.entity);
   }
 
   public static getIdForEntity<ENTITY extends AbstractEntity>(entityList: EntityListComponent<ENTITY>, entity: ENTITY): string {

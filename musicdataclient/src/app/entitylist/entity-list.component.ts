@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, QueryList, viewChild, ViewChildren} from '@angular/core';
 import {AbstractEntity} from '../entities/abstractEntity';
 import {ActivatedRoute, NavigationStart, Params, Router} from '@angular/router';
 import {EntityService} from '../services/entity.service';
@@ -69,11 +69,11 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
   private lastClickedEntity?: E;
   private restoredFlag = false;
 
-  @ViewChild(DetailsPopupComponent) popup!: DetailsPopupComponent<E>;
-  @ViewChild(SearchfieldComponent) searchFieldComponent!: SearchfieldComponent;
+  readonly popup = viewChild.required(DetailsPopupComponent);
+  readonly searchFieldComponent = viewChild.required(SearchfieldComponent);
   @ViewChildren(EntityComponent) entityComponents!: QueryList<EntityComponent<E>>;
 
-  constructor(private route: ActivatedRoute, private router: Router, private titleService: Title,
+  constructor(protected route: ActivatedRoute, public router: Router, protected titleService: Title,
               public service: EntityService) {
     //default/Vorbelegung bei Aktivierung oder Änderung der Query
     this.routeChangeSubscription = route.params.subscribe(() => {
@@ -100,7 +100,7 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
   }
 
   openPopup(entity: E, event: MouseEvent) {
-    this.popup.open(entity.name, entity.albumartName || '',
+    this.popup().open(entity.name, entity.albumartName || '',
       //TODO Position einfacher bestimmbar?
       { x: event.pageX + 10, y: event.pageY-event.offsetY + 10});
   }
@@ -271,11 +271,11 @@ export class EntityListComponent<E extends AbstractEntity> implements OnDestroy,
       { onSameUrlNavigation: 'reload', state: state});
   }
 
-  private storeState(entity?: AbstractEntity, sourceEntity?: AbstractEntity) {
+  storeState(entity?: AbstractEntity, sourceEntity?: AbstractEntity) {
     const state: Params = {};
     state[paramEntity] = entity;
     state[paramSourceEntity] = sourceEntity;
-    state[paramSearchEntity] = this.searchFieldComponent.searchEntity.entityName;
+    state[paramSearchEntity] = this.searchFieldComponent().searchEntity.entityName;
     state[paramSearchText] = this.searchText;
     state[paramFilterText] = this.filterText;
     state[paramPageNumber] = this.page?.number;
