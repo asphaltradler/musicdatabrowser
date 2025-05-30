@@ -1,13 +1,13 @@
 <div class="input-group paging">
-  <button class="btn btn-outline-primary"  [disabled]="!entityList.hasPreviousPage()" title="Zurück blättern" (click)="handlePrevious()">
+  <button class="btn btn-outline-primary" [disabled]="!entityList().hasPreviousPage()" title="Zurück blättern" (click)="handlePrevious()">
     << Zurück <<
   </button>
   <div class="center form-control">
-    <span *ngIf="entityList.page">
+    <span *ngIf="entityList().page">
       <b>{{ getPageTitle() }}</b>
     </span>
   </div>
-  <button class="btn btn-outline-primary" [disabled]="!entityList.hasNextPage()" title="Weiter blättern" (click)="handleNext()">
+  <button class="btn btn-outline-primary" [disabled]="!entityList().hasNextPage()" title="Weiter blättern" (click)="handleNext()">
     >> Weiter >>
   </button>
 </div>

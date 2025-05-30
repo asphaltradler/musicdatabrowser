@@ -54,11 +54,11 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
 
   /**
    * Reference to the required parent EntityListComponent instance for the current entity.
-   * 
+   *
    * @remarks
    * This property is initialized using the `input.required` decorator, ensuring that
    * the parent EntityListComponent of type `ENTITY` is always provided and accessible.
-   * 
+   *
    * @typeParam ENTITY - The type of the entity managed by the EntityListComponent.
    */
   entityList = input.required<EntityListComponent<ENTITY>>();
@@ -66,7 +66,7 @@ export class EntityComponent<ENTITY extends AbstractEntity> {
     this._entity = entity;
     this.hostElement.nativeElement.setAttribute('id', EntityComponent.getIdForEntity(this.entityList(), entity));
     //this.hostElement.nativeElement.setAttribute('class', this.entityList.entityType.entityName);
-    this.hidden = this.entityList()?.isEntityFiltered(entity);
+    this.hidden = this.entityList().isEntityFiltered(entity);
   }
 
   @Input() set hidden(hide: boolean) {

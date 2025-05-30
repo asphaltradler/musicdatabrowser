@@ -110,12 +110,12 @@ describe('EntityListComponent', () => {
         expect(unsub2).toHaveBeenCalled();
     });
 
-    it('should call openPopup', () => {
+    it('should call openEntityPopup', () => {
         const entity = new MockEntity();
         const event = { pageX: 10, pageY: 20, offsetY: 5 } as MouseEvent;
         const openSpy = jest.fn();
         (component as any).popup = jest.fn(() => ({ open: openSpy }));
-        component.openPopup(entity, event);
+        component.openEntityPopup(entity, event);
         expect(openSpy).toHaveBeenCalledWith(entity.name, '', { x: 20, y: 25 });
     });
 
