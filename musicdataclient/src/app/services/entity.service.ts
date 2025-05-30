@@ -8,6 +8,27 @@ import {Injectable} from '@angular/core';
 @Injectable(
   { providedIn: 'root' }
 )
+/**
+ * Service for performing CRUD and search operations on entities via HTTP requests.
+ *
+ * Provides generic methods to interact with different types of entities that extend `AbstractEntity`.
+ * Supports searching by name, related entity name or ID, retrieving by ID, removing by ID,
+ * and fetching associated documents or thumbnails.
+ *
+ * @template E Type of the entity extending `AbstractEntity`.
+ *
+ * @example
+ * // Find entities by name
+ * entityService.findNameLike(MyEntity, 'searchTerm').subscribe(...);
+ *
+ * @example
+ * // Get entity by ID
+ * entityService.getById(MyEntity, 123).subscribe(...);
+ *
+ * @example
+ * // Remove entity by ID
+ * entityService.removeById(MyEntity, 123).subscribe(...);
+ */
 export class EntityService {
   baseUrl = appDefaults.serverUrl;
   findPageUrl = this.baseUrl + '/{}/find';

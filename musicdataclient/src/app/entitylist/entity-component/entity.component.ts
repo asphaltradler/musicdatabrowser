@@ -52,6 +52,15 @@ import {Router} from '@angular/router';
 export class EntityComponent<ENTITY extends AbstractEntity> {
   _entity!: ENTITY;
 
+  /**
+   * Reference to the required parent EntityListComponent instance for the current entity.
+   * 
+   * @remarks
+   * This property is initialized using the `input.required` decorator, ensuring that
+   * the parent EntityListComponent of type `ENTITY` is always provided and accessible.
+   * 
+   * @typeParam ENTITY - The type of the entity managed by the EntityListComponent.
+   */
   entityList = input.required<EntityListComponent<ENTITY>>();
   @Input({required: true}) set entity(entity: ENTITY) {
     this._entity = entity;
