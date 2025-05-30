@@ -17,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static org.springframework.web.cors.CorsConfiguration.ALL;
 
@@ -107,6 +110,64 @@ public abstract class AbstractMusicDataRestController<ENTITY extends NamedEntity
         logger.info(String.format("remove id=%d", id));
         getMyRepository().delete(
                 getMyRepository().findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
+    }
+
+    protected <E extends TrackDependentEntity> void removeFromTrackDependentParent(
+            Track track,
+            Function<Track, E> mapFunction,
+            TrackDependentRepository<E> trackDependentRepository) {
+        E entity = mapFunction.apply(track);
+        if (entity != null && entity.getTracks().stream().allMatch(track::equals)) {
+                //bleibt kein Track außer track mehr übrig? => nicht mehr referenzierte Entity löschen
+            trackDependentRepository.delete(entity);
+        }
+    }
+
+    protected <E extends TrackDependentEntity> void removeFromTrackDependentParents(
+            Track track,
+            Function<Track, Set<E>> mapFunction,
+            TrackDependentRepository<E> trackDependentRepository) {
+        Set<E> entities = mapFunction.apply(track);
+        entities.forEach(entity -> {
+            if (entity.getTracks().stream().allMatch(track::equals)) {
+                //bleibt kein Track außer track mehr übrig? => nicht mehr referenzierte Entity löschen
+                trackDependentRepository.delete(entity);
+            }
+        });
+    }
+
+    protected <SRC extends TrackDependentEntity, DEST extends TrackDependentEntity>
+        void removeDependentParent(
+            SRC sourceEntity,
+            Function<Track, DEST> mapFunction,
+            TrackDependentRepository<DEST> trackDependentRepository) {
+        Set<Track> tracks = Optional.ofNullable(sourceEntity).map(TrackDependentEntity::getTracks).orElse(Collections.emptySet());
+        List<DEST> deletes = new ArrayList<>();
+        Stream<DEST> entities = tracks.stream().map(mapFunction).filter(Objects::nonNull).distinct();
+        entities.forEach(entity -> {
+            //ausschließlich die Tracks aus SRC enthalten?
+            if (tracks.containsAll(entity.getTracks())) {
+                deletes.add(entity);
+            }
+        });
+        trackDependentRepository.deleteAll(deletes);
+    }
+
+    protected <SRC extends TrackDependentEntity, DEST extends TrackDependentEntity>
+    void removeDependentParents(
+            SRC sourceEntity,
+            Function<Track, Set<DEST>> mapFunction,
+            TrackDependentRepository<DEST> trackDependentRepository) {
+        //FALSCH
+        Set<Track> tracks = Optional.ofNullable(sourceEntity).map(TrackDependentEntity::getTracks).orElse(Collections.emptySet());
+        List<DEST> deletes = new ArrayList<>();
+        Stream<Set<DEST>> entitySets = tracks.stream().map(mapFunction).filter(Objects::nonNull).distinct();
+        entitySets.forEach(entitySet -> entitySet.stream().distinct().forEach(entity -> {
+            if (tracks.containsAll(entity.getTracks())) {
+                deletes.add(entity);
+            }
+        }));
+        trackDependentRepository.deleteAll(deletes);
     }
 
     protected Pageable getPageableOf(Integer pageNumber, Integer pageSize) {

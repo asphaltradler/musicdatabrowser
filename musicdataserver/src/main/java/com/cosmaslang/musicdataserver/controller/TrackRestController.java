@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/music/track")
@@ -87,11 +85,11 @@ public class TrackRestController extends AbstractMusicDataRestController<Track> 
         trackRepository.delete(track);
 
         //Beim Löschen eines Tracks müssen wir selber auf evtl. entstehende Orphans achten
-        removeFromDependentParent(track, track.getAlbum(), albumRepository);
-        removeFromDependentParent(track, track.getComposer(), composerRepository);
-        removeFromDependentParent(track, track.getWork(), workRepository);
-        track.getGenres().forEach(g -> removeFromDependentParent(track, g, genreRepository));
-        track.getArtists().forEach(a -> removeFromDependentParent(track, a, artistRepository));
+        removeFromTrackDependentParent(track, Track::getAlbum, albumRepository);
+        removeFromTrackDependentParent(track, Track::getComposer, composerRepository);
+        removeFromTrackDependentParent(track, Track::getWork, workRepository);
+        removeFromTrackDependentParents(track, Track::getGenres, genreRepository);
+        removeFromTrackDependentParents(track, Track::getArtists, artistRepository);
         /*
         //löscht ALLE Orphans, nicht nur die jetzt entstandenen
         deleteDependentParents(albumRepository);
@@ -100,17 +98,6 @@ public class TrackRestController extends AbstractMusicDataRestController<Track> 
         deleteDependentParents(genreRepository);
         deleteDependentParents(artistRepository);
          */
-    }
-
-    private <E extends TrackDependentEntity> void removeFromDependentParent(Track track, E trackDependentEntity, TrackDependentRepository<E> trackDependentRepository) {
-        Set<Track> tracks = Optional.ofNullable(trackDependentEntity).map(TrackDependentEntity::getTracks).orElse(null);
-        if (tracks != null) {
-            tracks.remove(track);
-            //bleibt kein Track mehr übrig? => nicht mehr referenzierte Entity löschen
-            if (tracks.isEmpty()) {
-                trackDependentRepository.delete(trackDependentEntity);
-            }
-        }
     }
 
     private <E extends TrackDependentEntity>void deleteDependentParents(TrackDependentRepository<E> repository) {
